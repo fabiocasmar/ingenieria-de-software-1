@@ -1,0 +1,16 @@
+﻿Changelog:
+-Se cambiaron los campos en forms.py y en models.py de TimeField a DateTimeField
+-Se reescribieron las pruebas para que creen objetos datetime, sin embargo todas siguen trabajando en el mismo día (2000-06-15)
+-Se reescribieron las pruebas de Marzullo para que tomen objetos datetime, sin embargo todas siguen trabajando en el mismo día (2015-01-20)
+-Se instaló la librería Pitz para hacer los naive datetimes en aware datetimes automáticamente con Django
+-Se puso USE_TZ en False por el momento para verificar que corrieran las pruebas
+-Se arreglaron las importaciones de librerías en models.py, tests.py y forms.py
+-Se puso consistente la indentación de las pruebas de las tarifas (usaba tabs)
+-Se realizaron las pruebas de regresión, todas funcionan
+
+To-Do:
+-Se debe arreglar el problema de los naive datetimes y los aware datetimes
+-Se debe agregar la restricción de 7 dias, en este momento permite cualquier fecha
+-Se deben reescribir los validadores para que tomen en cuenta la diferencias de fecha
+-Se deben escribir pruebas para probar las reservas, pagos, etc. para diferentes días
+-Se debe agregar en forms.py y en los templates lo necesario para reflejar el cambio

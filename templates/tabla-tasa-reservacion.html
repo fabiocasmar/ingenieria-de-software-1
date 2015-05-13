@@ -1,0 +1,24 @@
+<table class="table table-striped">
+  <thead>
+	<tr>
+	  <td>
+	    <b>Fecha</b>
+	  </td>
+	  <td>
+	    <b>Porcentaje</b>
+	  </td>
+	</tr>
+  </thead>
+  <tbody>
+    {% for key, value in ocupacion.items %} 
+      <tr>
+	    <td>
+  	      {{ key }}
+        </td>
+        <td>
+  	      {{ value }}%
+        </td>
+      </tr>
+  {% endfor %}
+  </tbody>
+</table>

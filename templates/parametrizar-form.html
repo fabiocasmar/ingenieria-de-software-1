@@ -1,0 +1,74 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <div class="panel-title">
+      <i class="glyphicon glyphicon-wrench pull-right"></i>
+      <h4>
+        Parametrizar
+      </h4>
+    </div>
+  </div>
+  <div class="panel-body">
+    <form action="." method="post" class="form form-vertical">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="control-group">
+          <div class="controls">
+            {{ field }}
+            <span class='error' id='{{field.name}}_error' aria-live="polite">
+              {{ field.errors }}
+            </span>
+            <p>
+          </div>
+        </div>
+      {% endfor %}
+      <div class="control-group">
+        <label></label>
+        <div class="controls">
+          <button type="submit" class="btn btn-primary">
+            Parametrizar Estacionamiento
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% include "validator.js.html" %}
+<script type="text/javascript">
+  esquema = document.getElementById('id_esquema');
+  tarifa1 = document.getElementById('id_tarifa');
+  tarifa2 = document.getElementById('id_tarifa2');
+  inicio  = document.getElementById('id_inicioTarifa2');
+  fin     = document.getElementById('id_finTarifa2');
+  tarifa2.style.display='none';
+  inicio.style.display='none';
+  fin.style.display='none';
+  if (esquema) {
+    esquema.onchange=function() {
+      if (this.value == "TarifaHoraPico") {
+        inicio.style.display='';
+        inicio.placeholder = "Inicio horario pico"
+        fin.style.display='';
+        fin.placeholder = "Fin horario pico"
+        tarifa2.style.display = '';
+        tarifa1.placeholder="Tarifa normal";
+        tarifa2.placeholder="Tarifa pico";
+      } else if (this.value == "TarifaFinDeSemana") {
+        inicio.style.display='none';
+        inicio.value = ""
+        fin.style.display='none';
+        fin.value = ""
+        tarifa1.placeholder="Tarifa normal";
+        tarifa2.style.display = '';
+        tarifa2.placeholder="Tarifa fin de semana";
+      } else {
+        tarifa1.placeholder="Tarifa";
+        inicio.style.display='none';
+        inicio.value = ""
+        fin.style.display='none';
+        fin.value = ""
+        tarifa2.style.display='none';
+        tarifa2.value = ""
+      }
+    }
+  }
+</script>

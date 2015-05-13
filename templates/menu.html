@@ -1,0 +1,26 @@
+<div class="col-sm-2">
+  <h3><i class="glyphicon glyphicon-briefcase"></i>
+      Menú
+  </h3>
+  <hr>
+  <ul class="nav nav-stacked">
+    <li><a href=".."><i class="fa fa-bus"></i>
+      Estacionamientos
+    </a></li>
+    <li><a href="/estacionamientos/ingreso"><i class="fa fa-money"></i>
+      Consultar Ingreso
+    </a></li>
+    <li><a href="/estacionamientos/consulta_reserva"><i class="fa fa-clock-o"></i>
+      Consultar Reservas
+    </a></li>
+    {% if estacionamiento.capacidad %}
+      <li><a href="./"><i class="fa fa-wrench"></i>
+        Parametrizar
+      </a></li>
+      <li><a href="./reserva"><i class="fa fa-pencil-square-o"></i>
+        Reservar
+      </a></li>
+    {% endif %}
+  </ul>
+  <hr>
+</div>

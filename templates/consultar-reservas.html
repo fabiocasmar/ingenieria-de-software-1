@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load firstof from future %}
+
+{% block title %}
+  SAGE - Estacionamiento {{estacionamiento.nombre}}
+{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Estacionamientos
+    </h3>
+    <hr>
+    <div class="col-md-8">
+      <table class="table table-striped">
+        {% if listaFacturas %}
+          <thead>
+            <tr>
+              <th></th>
+              <th>Inicio</th>
+              <th>Fin</th>
+              <th>Estacionamiento</th>
+              <th>Telefono</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for factura in listaFacturas%}
+              <tr>
+                <td></td>
+                <td>{{factura.reserva.inicioReserva}}</td>
+                <td>{{factura.reserva.finalReserva}}</td>
+                <td>{{factura.reserva.estacionamiento.nombre}}</td>
+                <td>{%firstof factura.reserva.estacionamiento.telefono1 factura.reserva.estacionamiento.telefono2 factura.reserva.estacionamiento.telefono3 "N/A"%}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        {% else %}
+          <h3>Introduzca su Cédula</h3>
+        {% endif %}
+      </table>
+      <hr>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <i class="glyphicon glyphicon-wrench pull-right"></i>
+            <h4>
+              Consultar Reservas
+            </h4>
+          </div>
+        </div>
+        <div class="panel-body">
+          <form
+            action="/estacionamientos/consulta_reserva"
+            method="post"
+            class="form form-vertical"
+          >
+            {% csrf_token %}
+              {% for field in form %}
+                <div class="control-group">
+                  <div class="controls">
+                    {{ field }}
+                    <span class='error' id='{{field.name}}_error' aria-live="   polite">{{ field.errors }}</span>
+                    <p></p>
+                  </div>
+                </div>
+              {% endfor %}
+              <div class="control-group">
+                <label></label>
+                <div class="controls">
+                  <button type="submit" class="btn btn-primary">
+                    Continuar
+                  </button>
+                </div>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

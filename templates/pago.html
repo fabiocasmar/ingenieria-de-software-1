@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}
+  SAGE - Pago
+{% endblock %}
+
+{% block body%}
+  <body {% if mensaje %} onunload="openlink()" {% endif %}>
+{% endblock %}
+
+{% block menu %}{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-money"></i>
+      Pago de Reserva
+    </h3>
+    <hr>
+    <div class="col-md-4">
+      {% if form %}
+        <form
+          method="post"
+          class="form form-vertical"
+        >
+          {% csrf_token %}
+          <div class="control-group">
+            <div class="controls">
+              <p>
+                {{ form.nombre }}
+                <span
+                  class='error'
+                  id='{{form.nombre.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.nombre.errors }}
+              <p>
+                {{ form.apellido }}
+                <span
+                  class='error'
+                  id='{{form.apellido.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.apellido.errors }}
+              <p>
+                <table><tbody><tr>
+                  <td>
+                    {{ form.cedulaTipo }}
+                  </td>
+                  <td>
+                    {{ form.cedula }}
+                  </td>
+                </tr></tbody></table>
+                <span
+                  class='error'
+                  id='{{form.cedula.name}}_error'
+                  aria-live="polite"
+                ></span>
+                {{ form.cedula.errors }}
+              </p>
+              <table width="300" border="0" cellspacing="0">
+                <tr>
+                  <td><font size="32" color="blue"><i class="fa fa-cc-visa"> </i></font></td>
+                  <td><font size="32" color="red"><i class="fa fa-cc-mastercard"> </i></font></td>
+                  <td><font size="32" color="gray"><i class="fa fa-cc-amex"> </i></font></td>
+                </tr>
+                <tr>
+                  {% for choice in form.tarjetaTipo %}
+                    <td> {{ choice }} </td>
+                  {% endfor %}
+                </tr>
+              </table>
+              {{ form.tarjetaTipo.errors }}
+              <p>
+                {{ form.tarjeta }}
+                <span
+                  class='error'
+                  id='{{form.tarjeta.name}}_error'
+                  aria-live="polite"
+                ></span>
+              </p>
+              {{ form.tarjeta.errors }}
+            </div>
+          </div>
+          <input
+            type="submit"
+            value="Realizar Pago"
+            class="btn btn-primary"
+          >
+          <input
+            type="button"
+            value="Volver"
+            onclick="self.close()"
+            class="btn btn-primary"
+          >
+        </form>
+      {% endif %}
+      {% if pago %}
+        <div class="row">
+          <div class="col-md-7" style="color:{{color}}">
+            {{mensaje}}
+            <hr>
+          </div>
+          <div class="col-md-4">
+            <table class="table table-striped">
+              <tbody>
+                <tr><td><b><i class="fa fa-circle"></i>
+                  Número de Transacción:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.id}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
+                  Fecha de Transacción:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.fechaTransaccion}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
+                  Horario inicio de reserva:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.inicioReserva}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
+                  Horario fin de reserva:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.finalReserva}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-user"></i>
+                  Cédula:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.cedulaTipo}}-{{pago.cedula}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-money"></i>
+                  Tarjeta de Crédito:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.tarjetaTipo}} </td></tr>
+
+                <tr><td><b><i class="fa fa-money"></i>
+                  Monto:
+                </b></td></tr>
+                <tr><td>
+                  BsF. {{pago.monto|floatformat:2|intcomma }}
+                </td></tr>
+              </tbody>
+            </table>
+            <div>
+              <input
+                type="button"
+                value="Volver"
+                onclick="javascript: closepopup();"
+                class="btn btn-primary"
+              >
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  {% include "validator.js.html" %}
+
+  <script type="text/javascript">
+    function popuponclick(){
+      my_window = window.open("",
+       "mywindow","status=1,width=350,height=150");
+
+      my_window.document.write('<h1>The Popup Window</h1>');
+    }
+
+    function closepopup(){
+      window.close();
+    }
+
+    function openlink(){
+      opener.location='/estacionamientos/{{ id }}/reserva';
+    }
+  </script>
+{% endblock %}
