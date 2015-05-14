@@ -36,6 +36,7 @@ from estacionamientos.forms import (
     RecargaForm,
     ConsumirForm,
     SaldoForm,
+    UsuarioForm
 )
 from estacionamientos.models import (
     Estacionamiento,
@@ -553,3 +554,50 @@ def grafica_tasa_de_reservacion(request):
     pyplot.close()
     
     return response
+
+def estacionamiento_usuario(request):
+
+     #usuarios = Usuario.objects.all()
+
+    if request.method == 'GET':
+        form = UsuarioForm()
+
+     # Si es POST, se verifica la información recibida
+    elif request.method == 'POST':
+
+         # Creamos un formulario con los datos que recibimos
+         form = UsuarioForm(request.POST)
+
+         # Si el formulario es valido, entonces creamos un objeto con
+         # el constructor del modelo
+         if form.is_valid():
+             obj = Usuario(
+                 nombre = form.cleaned_data['nombre'],
+                 apellido = form.cleaned_data['apellido'],
+                 cedula = form.cleaned_data['cedula'],
+                 telefono = form.cleaned_data['telefono'],
+                 email = form.cleaned_data['email']
+             )
+
+             obj.save()
+
+             obj2 = Billetera(
+                usuario = obj,
+                saldo = 0,
+                pin = form.cleaned_data['pin']
+            )
+
+             obj2.save()
+
+         return render(
+             request,
+             'creado-usuario.html',
+             { "form" : form  }
+         )
+
+    return render(
+         request,
+         'crear-usuario.html',
+         { "form" : form }
+     )
+

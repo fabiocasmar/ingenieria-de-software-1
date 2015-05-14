@@ -119,7 +119,99 @@ class EstacionamientoForm(forms.Form):
         )
     )
 
+class UsuarioForm(forms.Form):
 
+    id_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'La cédula solo puede contener caracteres numéricos.'
+    )
+
+    phone_validator = RegexValidator(
+        regex   = '^((0212)|(0412)|(0416)|(0414)|(0424)|(0426))-?\d{7}',
+        message = 'Debe introducir un formato válido de teléfono.'
+    )
+    
+    name_validator = RegexValidator(
+        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
+        message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
+    )
+
+    pin_validator = RegexValidator(
+        regex = '^[\s\S]{4,6}$',
+        message = 'El PIN debe contener entre 4 y 6 caracteres'
+        )
+    
+    nombre = forms.CharField(
+        required = True,
+        label    = "Nombre del Usuario",
+        validators = [name_validator],
+        widget   = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Nombre del Usuario'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+
+    apellido = forms.CharField(
+        required = True,
+        label    = "Apeliido del Usuario",
+        validators = [name_validator],
+        widget   = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Apellido del Usuario'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+    
+    cedula = forms.CharField(
+        required   = True,
+        label      = "Cédula",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+
+    telefono = forms.CharField(
+        required   = False,
+        validators = [phone_validator],
+        widget     = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Teléfono del Usuario'
+            , 'pattern'     : phone_validator.regex.pattern
+            , 'message'     : phone_validator.message
+            }
+        )
+    )
+
+    email = forms.EmailField(
+        required = False,
+        widget   = forms.EmailInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'E-mail del Usuario'
+            , 'message'     : 'La entrada debe ser un e-mail válido.'
+            }
+        )
+    )
+
+    pin = forms.CharField(
+        required = True,
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'PIN de la billetera'
+            , 'pattern'     : pin_validator.regex.pattern
+            , 'message'     : pin_validator.message
+            }
+        )
+    )
 
 class PropietarioForm(forms.Form):
 
