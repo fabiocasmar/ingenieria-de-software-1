@@ -2,6 +2,7 @@
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
+from django.shortcuts import render_to_response
 import urllib
 from django.http import HttpResponse, Http404
 from django.utils.dateparse import parse_datetime
@@ -32,6 +33,8 @@ from estacionamientos.forms import (
     RifForm,
     CedulaForm,
     PropietarioForm,
+    RecargaForm,
+    ConsumirForm,
 )
 from estacionamientos.models import (
     Estacionamiento,
@@ -44,6 +47,9 @@ from estacionamientos.models import (
     TarifaHoraPico,
     Propietario,
     Usuario,
+    Billetera,
+    Recarga,
+    Consumo
 )
 
 from estacionamientos.models import Propietario, Usuario
@@ -70,7 +76,7 @@ def estacionamientos_all(request):
                 { 'color'   : 'red'
                 , 'mensaje' : 'No se pueden agregar más estacionamientos'
                 }
-            )
+            ) 
 
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
@@ -385,6 +391,24 @@ def estacionamiento_consulta_reserva(request):
     return render(
         request,
         'consultar-reservas.html',
+        { "form" : form }
+    )
+
+def billetera_recargar(request):
+    if request.method == 'GET':
+        form = RecargaForm()
+    return render(
+        request,
+        'billetera_recargar.html',
+        { "form" : form }
+    )
+
+def billetera_consumir(request):
+    if request.method == 'GET':
+        form = ConsumirForm()
+    return render(
+        request,
+        'billetera_consumir.html',
         { "form" : form }
     )
 
