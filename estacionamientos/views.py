@@ -54,22 +54,18 @@ from estacionamientos.models import (
     Consumo
 )
 
-from estacionamientos.models import Propietario, Usuario
-
 # Usamos esta vista para procesar todos los estacionamientos
 def estacionamientos_all(request):
     estacionamientos = Estacionamiento.objects.all()
-    form1=-1
-    form2=-1
     # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
+        form2=-1
+        cedula=-1
         form1 = CedulaForm()
 
     # Si es POST, se verifica la información recibida
     elif request.method == 'POST':
         # Creamos un formulario con los datos que recibimos
-        form1 = CedulaForm(request.POST)
-
         # Parte de la entrega era limitar la cantidad maxima de
         # estacionamientos a 5
         if len(estacionamientos) >= 5:
@@ -78,27 +74,113 @@ def estacionamientos_all(request):
                 { 'color'   : 'red'
                 , 'mensaje' : 'No se pueden agregar más estacionamientos'
                 }
-            ) 
+            )
 
         # Si el formulario es valido, entonces creamos un objeto con
         # el constructor del modelo
-        if form1.is_valid():
+
+        form = EstacionamientoForm(request.POST)
+        if form.is_valid():
+            obj = Propietario.objects.get(cedula = form.cleaned_data['propietario'])
+            prop = Estacionamiento(
+                    propietario = obj,
+                    nombre = form.cleaned_data['nombre'],
+                    direccion = form.cleaned_data['direccion'],
+                    telefono1 = form.cleaned_data['telefono1'],
+                    telefono2 = form.cleaned_data['telefono2'],
+                    telefono3 = form.cleaned_data['telefono3'],
+                    email1 = form.cleaned_data['email1'], 
+                    email2 = form.cleaned_data['email2'],
+                )
+            prop.save()
+            form2=-1
+            cedula=-1
+            form1 = CedulaForm()
+            estacionamientos = Estacionamiento.objects.all
+            return render(
+                request,
+                'catalogo-estacionamientos.html',
+                { 'form1': form1, 'form2': form2, 'cedula' : cedula
+                , 'estacionamientos': estacionamientos
+                }
+            )
+
+        form = PropietarioForm(request.POST)
+        if form.is_valid():
+            #try:
+            #obj = Propietario.objects.get(cedula = form.cleaned_data['cedula'])
             try:
-                obj = Propietario.objects.get(cedula = form1.cleaned_data['cedula'])
-                form1 = EstacionamientoForm()
-                form2 = PropietarioForm()
+                obj = Propietario.objects.get(cedula = form.cleaned_data['cedula'])
+                obj.nombre = form.cleaned_data['nombre']
+                obj.apellido = form.cleaned_data['apellido']
+                obj.cedula = form.cleaned_data['cedula']
+                obj.telefono = form.cleaned_data['telefono']
+                obj.email = form.cleaned_data['email']
+                obj.save()
             except ObjectDoesNotExist:
-                form1 = EstacionamientoForm()
-                form2 = PropietarioForm()
+                prop = Propietario(
+                        nombre = form.cleaned_data['nombre'],
+                        apellido = form.cleaned_data['apellido'],
+                        cedula = form.cleaned_data['cedula'],
+                        telefono = form.cleaned_data['telefono'],
+                        email = form.cleaned_data['email'],
+                    )
+                prop.save()
+            cedula=form.cleaned_data['cedula']
+            form2=2
+            form_data = {
+                    'propietario':cedula
+                }
+            form1= EstacionamientoForm(data=form_data)
+            return render(
+                request,
+                'catalogo-estacionamientos.html',
+                { 'form1': form1, 'form2': form2, 'cedula' : cedula
+                , 'estacionamientos': estacionamientos
+                }
+            )
+
+
+        form = CedulaForm(request.POST)
+        if form.is_valid():
+           # if form.is_valid():
+            try:
+                obj = Propietario.objects.get(cedula = form.cleaned_data['cedula'])
+                form_data = {
+                    'nombre' : obj.nombre,
+                    'apellido' : obj.apellido,
+                    'cedula' : obj.cedula,
+                    'telefono' : obj.telefono,
+                    'email' : obj.email,
+                }
+                form2 = 0
+                form1 = PropietarioForm(data = form_data)
+                cedula = obj.cedula
+            except ObjectDoesNotExist:
+                cedula = form.cleaned_data['cedula']
+                form2 = -1
+                form1 = PropietarioForm()
             # Recargamos los estacionamientos ya que acabamos de agregar
-            estacionamientos = Estacionamiento.objects.all()
+            estacionamientos = Estacionamiento.objects.all
+
+            return render(
+                request,
+                'catalogo-estacionamientos.html',
+                { 'form1': form1, 'form2': form2, 'cedula' : cedula
+                , 'estacionamientos': estacionamientos
+                }
+            )
+        form2=-1
+        cedula=-1
+        form1 = CedulaForm()
     return render(
         request,
         'catalogo-estacionamientos.html',
-        { 'form1': form1, 'form2': form2
+        { 'form1': form1, 'form2': form2, 'cedula' : cedula
         , 'estacionamientos': estacionamientos
         }
     )
+
 
 def estacionamiento_detail(request, _id):
     _id = int(_id)

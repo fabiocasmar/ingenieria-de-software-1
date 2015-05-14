@@ -112,11 +112,21 @@ def consultar_ingresos(rif):
 
             return listaIngresos, ingresoTotal
 
-def recargar_saldo(ci, fecha, recarga):
-	billetera_electronica = Recarga.objects.filter(ci = usuario.cedula)
-	billetera_electronica.saldo += recarga.saldo
-	billetera_electronica.fechaTransaccion = recarga.fecha
-	return billetera_electronica.saldo
+def recargar_saldo(_ci, fecha, monto):
+	_usuario = Usuario.objects.get(ci=_ci)
+	billetera_electronica = Billetera.objects.get(usuario=_usuario)
+	billetera_electronica.saldo += monto
+	prop = Estacionamiento(
+	        propietario = obj,
+	        nombre = form.cleaned_data['nombre'],
+	        direccion = form.cleaned_data['direccion'],
+	        telefono1 = form.cleaned_data['telefono1'],
+	        telefono2 = form.cleaned_data['telefono2'],
+	        telefono3 = form.cleaned_data['telefono3'],
+	        email1 = form.cleaned_data['email1'], 
+	        email2 = form.cleaned_data['email2'],
+        )
+	prop.save()
 
 def consumir_saldo(ci, pin, rif_estacionamiento, consumos):
 	billetera_electronica = Consumo.objects.filter(ci = usuario.cedula, pin = Billetera.pin, rif_estacionamiento = Estacionamiento.rif)

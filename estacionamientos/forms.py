@@ -25,19 +25,38 @@ class EstacionamientoForm(forms.Form):
         message = 'Introduzca un RIF con un formato válido de la forma X-xxxxxxxxx.'
     )
 
-    # Nombre del dueno del estacionamiento (no se permiten digitos)
+    id_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'La cédula solo puede contener caracteres numéricos.'
+    )
+
     propietario = forms.CharField(
         required   = True,
         label      = "Propietario",
-        validators = [name_validator],
+        validators = [id_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Propietario'
-            , 'pattern'     : name_validator.regex.pattern
-            , 'message'     : name_validator.message
-            }        
+            , 'placeholder' : 'Cédula del Propietario'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
         )
     )
+
+
+    nombre = forms.CharField(
+        required = True,
+        label    = "Nombre del Estacionamiento",
+        validators = [name_validator],
+        widget   = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Nombre del Estacionamiento'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+
 
     direccion = forms.CharField(
         required = True,
@@ -50,7 +69,7 @@ class EstacionamientoForm(forms.Form):
         )
     )
 
-    telefono_1 = forms.CharField(
+    telefono1 = forms.CharField(
         required   = False,
         validators = [phone_validator],
         widget     = forms.TextInput(attrs =
@@ -62,7 +81,7 @@ class EstacionamientoForm(forms.Form):
         )
     )
 
-    telefono_2 = forms.CharField(
+    telefono2 = forms.CharField(
         required   = False,
         validators = [phone_validator],
         widget     = forms.TextInput(attrs =
@@ -74,7 +93,7 @@ class EstacionamientoForm(forms.Form):
         )
     )
 
-    telefono_3 = forms.CharField(
+    telefono3 = forms.CharField(
         required   = False,
         validators = [phone_validator],
         widget     = forms.TextInput(attrs =
@@ -86,7 +105,7 @@ class EstacionamientoForm(forms.Form):
         )
     )
 
-    email_1 = forms.EmailField(
+    email1 = forms.EmailField(
         required = False,
         widget   = forms.EmailInput(attrs =
             { 'class'       : 'form-control'
@@ -96,7 +115,7 @@ class EstacionamientoForm(forms.Form):
         )
     )
 
-    email_2 = forms.EmailField(
+    email2 = forms.EmailField(
         required = False,
         widget   = forms.EmailInput(attrs =
             { 'class'       : 'form-control'
@@ -230,6 +249,19 @@ class PropietarioForm(forms.Form):
         message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
     )
     
+    cedula = forms.CharField(
+        required   = True,
+        label      = "Cédula",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+
     nombre = forms.CharField(
         required = True,
         label    = "Nombre del Dueño de Estacionamiento",
@@ -252,19 +284,6 @@ class PropietarioForm(forms.Form):
             , 'placeholder' : 'Apellido del Dueño de Estacionamiento'
             , 'pattern'     : name_validator.regex.pattern
             , 'message'     : name_validator.message
-            }
-        )
-    )
-    
-    cedula = forms.CharField(
-        required   = True,
-        label      = "Cédula",
-        validators = [id_validator],
-        widget = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Cédula'
-            , 'pattern'     : id_validator.regex.pattern
-            , 'message'     : id_validator.message
             }
         )
     )

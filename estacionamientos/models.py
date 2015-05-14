@@ -14,10 +14,16 @@ class Usuario(models.Model):
 	telefono     = models.CharField(blank = True, null = True, max_length = 30)
 	email        = models.EmailField(blank = True, null = True)
 
+	def __str__(self):
+		return self.cedula+' '+str(self.id)
+
 class Billetera(models.Model):
 	usuario = models.ForeignKey(Usuario)
 	saldo 	= models.CharField(max_length = 100, null = False)
 	pin 	= models.CharField(max_length = 4, null = False)
+	
+	def __str__(self):
+		return self.usuario+' '+str(self.saldo)
 
 class Propietario(models.Model):
 	nombre       = models.CharField(max_length = 50, null = False)
@@ -25,6 +31,9 @@ class Propietario(models.Model):
 	cedula       = models.CharField(max_length = 10, null = False)
 	telefono     = models.CharField(blank = True, null = True, max_length = 30)
 	email        = models.EmailField(blank = True, null = True)
+
+	def __str__(self):
+		return self.cedula+' '+str(self.id)
 
 class Estacionamiento(models.Model):
 	propietario = models.ForeignKey(Propietario)
