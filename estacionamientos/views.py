@@ -420,6 +420,18 @@ def billetera_recargar(request):
 def billetera_consumir(request):
     if request.method == 'GET':
         form = ConsumirForm()
+    elif request.method == 'POST':
+        form = ConsumirForm(request.POST)
+        if form.is_valid():
+            success = "Datos validos!"
+            return render(
+                request,
+                'billetera_consumorealizado.html',
+                {"form"          : form
+                }
+            )
+    else:
+        error = "There was an error!"
     return render(
         request,
         'billetera_consumir.html',

@@ -530,7 +530,7 @@ class ConsumirForm(forms.Form):
     )
 
     validar_pin = RegexValidator(
-        regex = '^\s\S]{4,6}$',
+        regex = '^[\s\S]{4,6}$',
         message = 'El PIN debe contener entre 4 y 6 caracteres'
         )
 
@@ -586,7 +586,7 @@ class SaldoForm(forms.Form):
     )
 
     validar_pin = RegexValidator(
-        regex = '^\s\S]{4,6}$',
+        regex = '^[\s\S]{4,6}$',
         message = 'El PIN debe contener entre 4 y 6 caracteres'
         )
 

@@ -111,3 +111,19 @@ def consultar_ingresos(rif):
                 ingresoTotal  += ingreso[1]
 
             return listaIngresos, ingresoTotal
+
+def recargar_saldo(ci, fecha, recarga):
+	billetera_electronica = Recarga.objects.filter(ci = usuario.cedula)
+	billetera_electronica.saldo += recarga.saldo
+	billetera_electronica.fechaTransaccion = recarga.fecha
+	return billetera_electronica.saldo
+
+def consumir_saldo(ci, pin, rif_estacionamiento, consumos):
+	billetera_electronica = Consumo.objects.filter(ci = usuario.cedula, pin = Billetera.pin, rif_estacionamiento = Estacionamiento.rif)
+	billetera_electronica.saldo -= consumos.saldo
+	billetera_electronica.fechaTransaccion = consumos.fecha
+	return billetera_electronica.saldo
+
+def mostrar_saldo(ci, pin):
+	billetera_electronica = Billetera.objects.filter(ci = Usuario.cedula, pin = Billetera.pin)
+	return billetera_electronica.saldo
