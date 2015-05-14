@@ -2,6 +2,8 @@
 
 from django.test import TestCase
 
+from estacionamientos.models import Propietario
+
 from estacionamientos.forms import EstacionamientoForm
 
 ###################################################################
@@ -46,7 +48,7 @@ class EstacionamientoAllFormTestCase(TestCase):
     # caso borde
     def test_todos_los_campos_necesarios(self):
         form_data = {
-            'propietario': 'Pedro',
+            'propietario': '1234356',
             'nombre': 'Orinoco',
             'direccion': 'Caracas',
             'rif': 'V-123456789'
@@ -101,7 +103,7 @@ class EstacionamientoAllFormTestCase(TestCase):
     # malicia
     def test_agregar_telefonos(self):
         form_data = {
-            'propietario': 'Pedro',
+            'propietario': '1234546',
             'nombre': 'Orinoco',
             'direccion': 'Caracas',
             'rif': 'V-123456789',
@@ -139,7 +141,7 @@ class EstacionamientoAllFormTestCase(TestCase):
     # malicia
     def test_agregar_correos_electronicos(self):
         form_data = {
-            'propietario': 'Pedro',
+            'propietario': '123456',
             'nombre': 'Orinoco',
             'direccion': 'Caracas',
             'rif': 'V-123456789',

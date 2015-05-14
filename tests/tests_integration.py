@@ -3,9 +3,13 @@
 from django.test import Client
 from django.test import TestCase
 
-from datetime import time
+from datetime import (
+    datetime,
+    time,
+    timedelta,
+)
 
-from estacionamientos.models import Estacionamiento
+from estacionamientos.models import (Estacionamiento, Propietario)
 
 ###################################################################
 #                    ESTACIONAMIENTO VISTA DISPONIBLE
@@ -16,11 +20,28 @@ class IntegrationTest(TestCase):
     def setUp(self):
         self.client = Client()
         
+    def crear_propietario(self):
+        prop = Propietario(
+            nombre = "nom",
+            apellido = "apell",
+            cedula = "041414141111",
+            telefono = "041414141112",
+            email = "hola@gmail.com",
+            )
+        prop.save()
+        return prop
+
     def crear_estacionamiento(self, puestos,hora_apertura=time(0,0),hora_cierre=time(23,59)):
+        
         e = Estacionamiento(
-            propietario = "prop",
+            propietario = self.crear_propietario(),
             nombre = "nom",
             direccion = "dir",
+            telefono1 = "041414141111",
+            telefono2 = "041414141112",
+            telefono3 = "04141414111",
+            email1 = "hola@gmail.com",
+            email2 = "hola@gmail.com",
             rif = "rif",
             #capacidad = puestos,
             #apertura       = hora_apertura,
@@ -55,7 +76,7 @@ class IntegrationTest(TestCase):
     # integracion TDD
     def test_llamada_a_reserva(self):
         e = Estacionamiento(
-            propietario = "prop",
+            propietario = self.crear_propietario(),
             nombre = "nom",
             direccion = "dir",
             rif = "rif",
@@ -137,7 +158,7 @@ class IntegrationTest(TestCase):
     # integracion TDD
     def test_llamada_a_pago_get(self):
         e = Estacionamiento(
-            propietario = "prop",
+            propietario = self.crear_propietario(),
             nombre = "nom",
             direccion = "dir",
             rif = "rif",
@@ -153,7 +174,7 @@ class IntegrationTest(TestCase):
     # integracion TDD  
     def test_llamada_a_pago_post(self):
         e = Estacionamiento(
-            propietario = "prop",
+            propietario = self.crear_propietario(),
             nombre = "nom",
             direccion = "dir",
             rif = "rif",
