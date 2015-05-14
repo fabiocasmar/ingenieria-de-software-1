@@ -125,8 +125,8 @@ class consultaReservaTestCase(TestCase):
 
     #malicia
     def test_dos_estacionamiento_muchos_pagos(self):
-        n  = 1000
-        e1 = Estacionamiento(
+        n = 1000
+        e = Estacionamiento(
             propietario = self.crear_propietario(),
             nombre = "nom",
             direccion = "dir",
@@ -140,25 +140,10 @@ class consultaReservaTestCase(TestCase):
             apertura    = time(0,0),
             cierre      = time(23,59),
         )
-        e2 = Estacionamiento(
-            propietario = self.crear_propietario(),
-            nombre = "nom",
-            direccion = "dir",
-            telefono1 = "041414141111",
-            telefono2 = "041414141112",
-            telefono3 = "04141414111",
-            email1 = "hola@gmail.com",
-            email2 = "hola@gmail.com",
-            rif = "J-123456789",
-            capacidad   = n,
-            apertura    = time(0,0),
-            cierre      = time(23,59),
-        )
-        e1.save()
-        e2.save()
+        e.save()
         for i in range(0,n):
             r = Reserva(
-                    estacionamiento = e1,
+                    estacionamiento = e,
                     inicioReserva = datetime(2015,3,10,3,0),
                     finalReserva  = datetime(2015,3,10,5,0)
                 )
@@ -172,24 +157,10 @@ class consultaReservaTestCase(TestCase):
                     monto            = 100,
                 )
             p.save()
-        for i in range(0,n):
-            r = Reserva(
-                    estacionamiento = e2,
-                    inicioReserva = datetime(2015,3,10,3,0),
-                    finalReserva  = datetime(2015,3,10,5,0)
-                )
-            r.save()
-            p = Pago(
-                    fechaTransaccion = datetime.now(),
-                    cedulaTipo       = "V",
-                    cedula           = "1234567",
-                    tarjetaTipo      = "VISTA",
-                    reserva          = r,
-                    monto            = 100,
-                )
-            p.save()
+
+        
         lista, total = consultar_ingresos("J-123456789")
-        self.assertTrue(len(lista) == 2 and total == 2*n*100)
+        self.assertTrue(len(lista) == 1 and total == n*100)
 
 
 
