@@ -56,33 +56,34 @@
         <div class="panel-body">
           <form action="." method="post" class="form form-vertical">
             {% csrf_token %}
+            {% if form1 != -1 %}
               {% for field in form1 %}
-<p>
-              {% if form2 == 2 %}
+
+                <div class="control-group">
+                  <div class="controls">
                     {{ field }}
-                    <p>
-            
-              {% else %}
-              {{ field }}
-                      <span class='error' id='{{field.name}}_error' aria-live="polite" value='{{ field.value }}'>
+                    <span class='error' id='{{field.name}}_error' aria-live="polite">
                       {{ field.errors }}
                     </span>
                     <p>
-              {% endif %}
+                  </div>
+                </div>
               {% endfor %}
+            {% endif %}
             <div class="control-group">
               <label></label>
               <div class="controls">
                 <button type="submit" class="btn btn-primary">
                 {% if form2 == -1 %}
-                  Buscar Dueño en el Sistema
+                  Agregar Dueño
                 {% elif form2 == 0 %}
                   Modificar Dueño
                 {% elif form2 == 2 %}
                   Agregar Estacionamiento
                 {% else %}
-                  Agregar Dueño
+                  Buscar Dueño
                 {% endif %}
+                {{ form2 }}
                 </button>
               </div>
             </div>
