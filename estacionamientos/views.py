@@ -35,6 +35,7 @@ from estacionamientos.forms import (
     PropietarioForm,
     RecargaForm,
     ConsumirForm,
+    SaldoForm,
 )
 from estacionamientos.models import (
     Estacionamiento,
@@ -397,10 +398,23 @@ def estacionamiento_consulta_reserva(request):
 def billetera_recargar(request):
     if request.method == 'GET':
         form = RecargaForm()
+    elif request.method == 'POST':
+        form = RecargaForm(request.POST)
+        if form.is_valid():
+            success = "Datos validos!"
+            return render(
+                request,
+                'billetera_recargada.html',
+                {"form"          : form
+                }
+            )
+        else:
+            error = "There was an error!"
     return render(
         request,
         'billetera_recargar.html',
         { "form" : form }
+
     )
 
 def billetera_consumir(request):
@@ -409,6 +423,15 @@ def billetera_consumir(request):
     return render(
         request,
         'billetera_consumir.html',
+        { "form" : form }
+    )
+
+def billetera_saldo(request):
+    if request.method == 'GET':
+        form = SaldoForm()
+    return render(
+        request,
+        'billetera_saldo.html',
         { "form" : form }
     )
 

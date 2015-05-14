@@ -13,7 +13,7 @@
     <hr>
     <div class="col-md-8">
       <table class="table table-striped">
-          <h3>Introduzca su Cédula, PIN y monto a pagar</h3>
+          <h3>Recarga satisfactoria</h3>
       </table>
       <hr>
     </div>
@@ -22,27 +22,7 @@
         <div class="panel-heading">
           <div class="panel-title">
             <i class="glyphicon glyphicon-wrench pull-right"></i>
-            <h4>
-              Realizar pago
-            </h4>
-          </div>
-        </div>
-        <div class="panel-body">
-          <form
-            action="/estacionamientos/billetera_recargar"
-            method="post"
-            class="form form-vertical"
-          >
-            {% csrf_token %}
-              {% for field in form %}
-                <div class="control-group">
-                  <div class="controls">
-                    {{ field }}
-                    <span class='error' id='{{field.name}}_error' aria-live="   polite">{{ field.errors }}</span>
-                    <p></p>
-                  </div>
-                </div>
-              {% endfor %}
+            
               <div class="control-group">
                 <label></label>
                 <div class="controls">
