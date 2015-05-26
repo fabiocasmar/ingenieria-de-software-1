@@ -1,5 +1,5 @@
 # Archivo con funciones de control para SAGE
-from estacionamientos.models import Estacionamiento, Reserva, Pago
+from estacionamientos.models import Estacionamiento, Reserva, Pago, Billetera
 from datetime import datetime, timedelta, time
 from decimal import Decimal
 from collections import OrderedDict
@@ -134,6 +134,9 @@ def consumir_saldo(ci, pin, rif_estacionamiento, consumos):
 	billetera_electronica.fechaTransaccion = consumos.fecha
 	return billetera_electronica.saldo
 
-def mostrar_saldo(ci, pin):
-	billetera_electronica = Billetera.objects.filter(ci = Usuario.cedula, pin = Billetera.pin)
-	return billetera_electronica.saldo
+def mostrar_saldo(_id,_pin):
+	billetera_electronica = Billetera.objects.get(id=_id)
+	if _pin == billetera_electronica.pin:
+		return True
+	else:
+		return False

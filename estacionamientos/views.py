@@ -23,6 +23,7 @@ from estacionamientos.controller import (
     tasa_reservaciones,
     calcular_porcentaje_de_tasa,
     consultar_ingresos,
+    mostrar_saldo,
 )
 
 from estacionamientos.forms import (
@@ -524,11 +525,72 @@ def billetera_consumir(request):
 def billetera_saldo(request):
     if request.method == 'GET':
         form = SaldoForm()
+    if request.method == 'POST':
+        form = SaldoForm(request.POST)
+        if form.is_valid():
+            billetera_id = form.cleaned_data['billetera_id']
+            pin = form.cleaned_data['pin']
+            check = mostrar_saldo(billetera_id,pin)
+            billetera = Billetera.objects.get(id = billetera_id)
+            saldo = billetera.saldo
+            if check:
+                mensaje = "Su saldo actual es : "
+
+                return render(
+                    request,
+                    'mostrar-saldo.html',
+                    {
+                        "mensaje" : mensaje,
+                        "saldo"   : saldo
+                    }
+                )
+            else:
+                return render(
+                    request,
+                    'datos_invalidos.html',
+                    {'color'   : 'red'
+                    , 'mensaje' : 'Los datos ingresados son inválidos'
+                    }
+                )
+
+
     return render(
         request,
         'billetera_saldo.html',
         { "form" : form }
     )
+
+
+
+def estacionamiento_ingreso(request):
+    form = RifForm()
+    if request.method == 'POST':
+        form = RifForm(request.POST)
+        if form.is_valid():
+
+            rif = form.cleaned_data['rif']
+            listaIngresos, ingresoTotal = consultar_ingresos(rif)
+
+            return render(
+                request,
+                'consultar-ingreso.html',
+                { "ingresoTotal"  : ingresoTotal
+                , "listaIngresos" : listaIngresos
+                , "form"          : form
+                }
+            )
+
+    return render(
+        request,
+        'consultar-ingreso.html',
+        { "form" : form }
+    )
+
+
+
+
+
+
 
 def receive_sms(request):
     ip = get_client_ip(request) # Busca el IP del telefono donde esta montado el SMS Gateway
@@ -647,7 +709,7 @@ def menu_billetera(request):
          request,
          'menu_billetera.html'
      )
-        
+
 
 def crear_billetera(request):
 
