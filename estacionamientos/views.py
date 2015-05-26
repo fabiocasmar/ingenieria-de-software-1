@@ -36,7 +36,7 @@ from estacionamientos.forms import (
     RecargaForm,
     ConsumirForm,
     SaldoForm,
-    UsuarioForm
+    CrearBilleteraForm
 )
 from estacionamientos.models import (
     Estacionamiento,
@@ -637,18 +637,30 @@ def grafica_tasa_de_reservacion(request):
     
     return response
 
-def estacionamiento_usuario(request):
+def menu_billetera(request):
+    if request.method == 'GET':
+        return render(
+         request,
+         'menu_billetera.html'
+     )
+    return render(
+         request,
+         'menu_billetera.html'
+     )
+        
+
+def crear_billetera(request):
 
      #usuarios = Usuario.objects.all()
 
     if request.method == 'GET':
-        form = UsuarioForm()
+        form = CrearBilleteraForm()
 
      # Si es POST, se verifica la información recibida
     elif request.method == 'POST':
 
          # Creamos un formulario con los datos que recibimos
-         form = UsuarioForm(request.POST)
+         form = CrearBilleteraForm(request.POST)
 
          # Si el formulario es valido, entonces creamos un objeto con
          # el constructor del modelo
@@ -657,9 +669,7 @@ def estacionamiento_usuario(request):
                  nombre = form.cleaned_data['nombre'],
                  apellido = form.cleaned_data['apellido'],
                  cedula = form.cleaned_data['cedula'],
-                 telefono = form.cleaned_data['telefono'],
-                 email = form.cleaned_data['email']
-             )
+            )
 
              obj.save()
 
@@ -670,16 +680,20 @@ def estacionamiento_usuario(request):
             )
 
              obj2.save()
+             id_billetera = obj2.id
+             mensaje = 'El id correspondiente a la billetera es : '
 
          return render(
              request,
-             'creado-usuario.html',
-             { "form" : form  }
+             'creada-billetera.html',
+             { "form" : form,
+               "id_billetera" : id_billetera,
+               "mensaje" : mensaje  }
          )
 
     return render(
          request,
-         'crear-usuario.html',
+         'crear-billetera.html',
          { "form" : form }
      )
 
