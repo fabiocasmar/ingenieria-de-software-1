@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#-*- coding: utf-8 -*-
 from django import forms
 from django.core.validators import RegexValidator
 from django.forms.widgets import SplitDateTimeWidget
@@ -134,6 +134,74 @@ class EstacionamientoForm(forms.Form):
             , 'placeholder' : 'RIF: X-xxxxxxxxx'
             , 'pattern'     : rif_validator.regex.pattern
             , 'message'     : rif_validator.message
+            }
+        )
+    )
+
+# class PropietarioForm(forms.Form):
+class CrearBilleteraForm(forms.Form):
+
+    id_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'La cédula solo puede contener caracteres numéricos.'
+    )
+
+    name_validator = RegexValidator(
+        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
+        message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
+    )
+
+    pin_validator = RegexValidator(
+        regex = '^[\s\S]{4,6}$',
+        message = 'El PIN debe contener entre 4 y 6 caracteres'
+        )
+    
+    cedula = forms.CharField(
+        required   = True,
+        label      = "Cédula",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+
+    nombre = forms.CharField(
+        required = True,
+        label    = "Nombre del Usuario",
+        validators = [name_validator],
+        widget   = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Nombre del Usuario'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+
+    apellido = forms.CharField(
+        required = True,
+        label    = "Apeliido del Usuario",
+        validators = [name_validator],
+        widget   = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Apellido del Usuario'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+
+    pin = forms.CharField(
+        required = True,
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'PIN de la billetera'
+            , 'pattern'     : pin_validator.regex.pattern
+            , 'message'     : pin_validator.message
             }
         )
     )
@@ -485,5 +553,137 @@ class CedulaForm(forms.Form):
             , 'pattern'     : id_validator.regex.pattern
             , 'message'     : id_validator.message
             }
+        )
+    )
+
+class RecargaForm(forms.Form):
+
+    id_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'La cédula solo puede contener caracteres numéricos.'
+    )
+    
+    cedula = forms.CharField(
+        required   = True,
+        label      = "Cédula",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+
+    validar_monto = RegexValidator(
+        regex = '^[0-9]+$',
+        message = 'El monto debe ser un número positivo'
+    )
+
+    monto = forms.CharField(
+        required = True,
+        label = "Monto",
+        validators = [validar_monto],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Monto'
+            , 'pattern'     : validar_monto.regex.pattern
+            , 'message'     : validar_monto.message
+            }
+        )
+    )
+
+class ConsumirForm(forms.Form):
+
+    id_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'La cédula solo puede contener caracteres numéricos.'
+    )
+    
+    cedula = forms.CharField(
+        required   = True,
+        label      = "Cédula",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+
+    validar_pin = RegexValidator(
+        regex = '^[\s\S]{4,6}$',
+        message = 'El PIN debe contener entre 4 y 6 caracteres'
+        )
+
+    pin = forms.CharField(
+        required = True,
+        label = "PIN",
+        validators = [validar_pin],
+        widget = forms.TextInput(attrs =
+                { 'class'       : 'form-control'
+                , 'placeholder' : 'PIN'
+                , 'pattern'     : validar_pin.regex.pattern
+                , 'message'     : validar_pin.message
+                }
+        )
+    )
+
+    validar_monto = RegexValidator(
+        regex = '^[0-9]+$',
+        message = 'El monto debe ser un número positivo'
+    )
+
+    monto = forms.CharField(
+        required = True,
+        label = "Monto",
+        validators = [validar_monto],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Monto'
+            , 'pattern'     : validar_monto.regex.pattern
+            , 'message'     : validar_monto.message
+            }
+        )
+    )
+
+class SaldoForm(forms.Form):
+
+    id_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'El ID solo puede contener caracteres numéricos.'
+    )
+    
+    billetera_id = forms.CharField(
+        required   = True,
+        label      = "ID",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'ID'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+
+    validar_pin = RegexValidator(
+        regex = '^[\s\S]{4,6}$',
+        message = 'El PIN debe contener entre 4 y 6 caracteres'
+        )
+
+    pin = forms.CharField(
+        required = True,
+        label = "PIN",
+        validators = [validar_pin],
+        widget = forms.TextInput(attrs =
+                { 'class'       : 'form-control'
+                , 'placeholder' : 'PIN'
+                , 'pattern'     : validar_pin.regex.pattern
+                , 'message'     : validar_pin.message
+                }
         )
     )

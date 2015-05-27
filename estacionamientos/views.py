@@ -2,6 +2,7 @@
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
+from django.shortcuts import render_to_response
 import urllib
 from django.http import HttpResponse, Http404
 from django.utils.dateparse import parse_datetime
@@ -22,6 +23,7 @@ from estacionamientos.controller import (
     tasa_reservaciones,
     calcular_porcentaje_de_tasa,
     consultar_ingresos,
+    mostrar_saldo,
 )
 
 from estacionamientos.forms import (
@@ -32,6 +34,10 @@ from estacionamientos.forms import (
     RifForm,
     CedulaForm,
     PropietarioForm,
+    RecargaForm,
+    ConsumirForm,
+    SaldoForm,
+    CrearBilleteraForm
 )
 from estacionamientos.models import (
     Estacionamiento,
@@ -44,6 +50,9 @@ from estacionamientos.models import (
     TarifaHoraPico,
     Propietario,
     Usuario,
+    Billetera,
+    Recarga,
+    Consumo
 )
 
 # Usamos esta vista para procesar todos los estacionamientos
@@ -470,6 +479,119 @@ def estacionamiento_consulta_reserva(request):
         { "form" : form }
     )
 
+def billetera_recargar(request):
+    if request.method == 'GET':
+        form = RecargaForm()
+    elif request.method == 'POST':
+        form = RecargaForm(request.POST)
+        if form.is_valid():
+            success = "Datos validos!"
+            return render(
+                request,
+                'billetera_recargada.html',
+                {"form"          : form
+                }
+            )
+        else:
+            error = "There was an error!"
+    return render(
+        request,
+        'billetera_recargar.html',
+        { "form" : form }
+
+    )
+
+def billetera_consumir(request):
+    if request.method == 'GET':
+        form = ConsumirForm()
+    elif request.method == 'POST':
+        form = ConsumirForm(request.POST)
+        if form.is_valid():
+            success = "Datos validos!"
+            return render(
+                request,
+                'billetera_consumorealizado.html',
+                {"form"          : form
+                }
+            )
+    else:
+        error = "There was an error!"
+    return render(
+        request,
+        'billetera_consumir.html',
+        { "form" : form }
+    )
+
+def billetera_saldo(request):
+    if request.method == 'GET':
+        form = SaldoForm()
+    if request.method == 'POST':
+        form = SaldoForm(request.POST)
+        if form.is_valid():
+            billetera_id = form.cleaned_data['billetera_id']
+            pin = form.cleaned_data['pin']
+            check = mostrar_saldo(billetera_id,pin)
+            billetera = Billetera.objects.get(id = billetera_id)
+            saldo = billetera.saldo
+            if check:
+                mensaje = "Su saldo actual es : "
+
+                return render(
+                    request,
+                    'mostrar-saldo.html',
+                    {
+                        "mensaje" : mensaje,
+                        "saldo"   : saldo
+                    }
+                )
+            else:
+                return render(
+                    request,
+                    'datos_invalidos.html',
+                    {'color'   : 'red'
+                    , 'mensaje' : 'Los datos ingresados son inválidos'
+                    }
+                )
+
+
+    return render(
+        request,
+        'billetera_saldo.html',
+        { "form" : form }
+    )
+
+
+
+def estacionamiento_ingreso(request):
+    form = RifForm()
+    if request.method == 'POST':
+        form = RifForm(request.POST)
+        if form.is_valid():
+
+            rif = form.cleaned_data['rif']
+            listaIngresos, ingresoTotal = consultar_ingresos(rif)
+
+            return render(
+                request,
+                'consultar-ingreso.html',
+                { "ingresoTotal"  : ingresoTotal
+                , "listaIngresos" : listaIngresos
+                , "form"          : form
+                }
+            )
+
+    return render(
+        request,
+        'consultar-ingreso.html',
+        { "form" : form }
+    )
+
+
+
+
+
+
+
 def receive_sms(request):
     ip = get_client_ip(request) # Busca el IP del telefono donde esta montado el SMS Gateway
     port = '8000' # Puerto del telefono donde esta montado el SMS Gateway
@@ -576,3 +698,64 @@ def grafica_tasa_de_reservacion(request):
     pyplot.close()
     
     return response
+
+def menu_billetera(request):
+    if request.method == 'GET':
+        return render(
+         request,
+         'menu_billetera.html'
+     )
+    return render(
+         request,
+         'menu_billetera.html'
+     )
+
+
+def crear_billetera(request):
+
+     #usuarios = Usuario.objects.all()
+
+    if request.method == 'GET':
+        form = CrearBilleteraForm()
+
+     # Si es POST, se verifica la información recibida
+    elif request.method == 'POST':
+
+         # Creamos un formulario con los datos que recibimos
+         form = CrearBilleteraForm(request.POST)
+
+         # Si el formulario es valido, entonces creamos un objeto con
+         # el constructor del modelo
+         if form.is_valid():
+             obj = Usuario(
+                 nombre = form.cleaned_data['nombre'],
+                 apellido = form.cleaned_data['apellido'],
+                 cedula = form.cleaned_data['cedula'],
+            )
+
+             obj.save()
+
+             obj2 = Billetera(
+                usuario = obj,
+                saldo = 0,
+                pin = form.cleaned_data['pin']
+            )
+
+             obj2.save()
+             id_billetera = obj2.id
+             mensaje = 'El id correspondiente a la billetera es : '
+
+         return render(
+             request,
+             'creada-billetera.html',
+             { "form" : form,
+               "id_billetera" : id_billetera,
+               "mensaje" : mensaje  }
+         )
+
+    return render(
+         request,
+         'crear-billetera.html',
+         { "form" : form }
+     )
+
