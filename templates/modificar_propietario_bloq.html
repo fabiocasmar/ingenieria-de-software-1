@@ -11,7 +11,7 @@
     </h3>
     <hr>
     <div class="col-md-8">
-      <h3>Introduzca los datos del nuevo propietario</h3>
+      <h3>Introduzca la cédula del Propietario</h3>
     <hr>
     </div>
     <div class="col-md-4">
@@ -20,18 +20,19 @@
           <div class="panel-title">
             <i class="glyphicon glyphicon-wrench pull-right"></i>
             <h4>
-              Crear Propietario
+              Modificar Propietario
             </h4>
           </div>
         </div>
         <div class="panel-body">
           <form 
-            action="/estacionamientos/propietario" 
+            action="/estacionamientos/buscar_propietario" 
             method="post" 
             class="form form-vertical">
 
             {% csrf_token %}
             {% for field in form %}
+            {% if field.name != "cedula"%}
 
               <div class="control-group">
                 <div class="controls">
@@ -42,8 +43,16 @@
                   <p>
                 </div>
               </div>
+            
+            {% else %}
+            <input class="form-control dirty" id="id_cedula" message="La cédula solo puede contener caracteres numéricos." name="cedula" pattern="^[0-9]+$" placeholder="Cédula" type="text" value="{{field.value}}" readonly>
+             <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                   <p>
+            {% endif %}
             {% endfor %}
-{{error}}
+
             <div class="control-group">
               <label></label>
               <div class="controls">

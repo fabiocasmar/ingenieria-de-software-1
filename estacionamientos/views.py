@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.shortcuts import redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.shortcuts import render_to_response
@@ -37,7 +38,8 @@ from estacionamientos.forms import (
     RecargaForm,
     ConsumirForm,
     SaldoForm,
-    CrearBilleteraForm
+    CrearBilleteraForm,
+    ModificarPropietarioForm
 )
 from estacionamientos.models import (
     Estacionamiento,
@@ -753,34 +755,103 @@ def crear_billetera(request):
          { "form" : form }
      )
 
+def menu_propietario(request):
+
+    return render(
+         request,
+         'menu_propietario.html'
+    )
+
 def crear_propietario(request):
-	
-	# Si es un GET, mandamos un formulario vacio
+    error = ""
+    # Si es un GET, mandamos un formulario vacio
     if request.method == 'GET':
         form = PropietarioForm()
 
 	# Si es POST, se verifica la información recibida
     elif request.method == 'POST':
+        form = PropietarioForm(request.POST)
+        if form.is_valid():
+            # Creamos un formulario con los datos que recibimos
+            try:
+                cedula = form.cleaned_data['cedula']
+                propietario = Propietario.objects.get(cedula = cedula)
+                error = "Usuario ya existe"
+                return render(request,
+                    'crear_propietario.html',
+                     { "form" : form , "error":error}
+                )
+                
+            except ObjectDoesNotExist:
+                # Si el formulario es válido, entonces creamos un objeto con
+                # el constructor del modelo
+                if form.is_valid():
+                    obj = Propietario(
+                        nombre   = form.cleaned_data['nombre'],
+                        apellido = form.cleaned_data['apellido'],
+                        cedula   = form.cleaned_data['cedula'],
+                        telefono = form.cleaned_data['telefono'],
+                        email    = form.cleaned_data['email'],
+                    )
+
+                    obj.save()
+
+                    return render(
+                        request,
+                        'propietario_creado.html',
+                        { "form" : form }
+                    )
+        # Si el formulario no está completo resalta los campos obligatorios.
+        else:
+            error = "There was an error!"
+
+    return render(
+        request,
+        'crear_propietario.html',
+        { "form" : form , "error":error}
+    )
+
+# Verifica si el propietario a modificar existe.
+def  modificar_propietario(request):
+
+    # Si es un GET, mandamos un formulario vacio
+    if request.method == 'GET':
+        form = ModificarPropietarioForm()
+
+    # Si es POST, se verifica la información recibida
+    elif request.method == 'POST':
 
         # Creamos un formulario con los datos que recibimos
-        form = PropietarioForm(request.POST)
+        form = ModificarPropietarioForm(request.POST)
 
-        # Si el formulario es válido, entonces creamos un objeto con
-        # el constructor del modelo
+        # Si el formulario es válido, entonces verifica si el propietario
+        # existe.
         if form.is_valid():
-            obj = Propietario(
-                nombre   = form.cleaned_data['nombre'],
-                apellido = form.cleaned_data['apellido'],
-                cedula   = form.cleaned_data['cedula'],
-                telefono = form.cleaned_data['telefono'],
-                email    = form.cleaned_data['email'],
-            )
 
-            obj.save()
+            cedula = form.cleaned_data['cedula']          
+            try:
+                obj = Propietario.objects.get(cedula = cedula)
+                form_data = {
+                    'nombre'   : obj.nombre,
+                    'apellido' : obj.apellido,
+                    'cedula'   : obj.cedula,
+                    'telefono' : obj.telefono,
+                    'email'    : obj.email
+                }
 
-            return render(
+                form = PropietarioForm(data = form_data)
+                return render(
+                    request,
+                    'modificar_propietario_bloq.html',
+                    { "form" : form }
+                )
+
+            except ObjectDoesNotExist:
+                
+                form = ModificarPropietarioForm()
+                return render(
                 request,
-                'propietario_creado.html',
+                'modificar_propietario.html',
                 { "form" : form }
             )
 
@@ -790,6 +861,19 @@ def crear_propietario(request):
 
     return render(
         request,
-        'crear_propietario.html',
+        'modificar_propietario.html',
         { "form" : form }
     )
+
+def buscar_propietario(request):
+    estacionamientos = Estacionamiento.objects.all()
+    form = PropietarioForm(request.POST)
+    if(form.is_valid()):
+        cedula = form.cleaned_data['cedula']
+        obj = Propietario.objects.get(cedula = cedula)
+        obj.nombre = form.cleaned_data['nombre']
+        obj.apellido = form.cleaned_data['apellido']
+        obj.telefono = form.cleaned_data['telefono']
+        obj.email = form.cleaned_data['email']
+        obj.save()
+    return redirect('estacionamientos_all')

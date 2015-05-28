@@ -11,7 +11,7 @@
     </h3>
     <hr>
     <div class="col-md-8">
-      <h3>Introduzca los datos del nuevo propietario</h3>
+      <h3>Introduzca la cédula del Propietario</h3>
     <hr>
     </div>
     <div class="col-md-4">
@@ -20,19 +20,18 @@
           <div class="panel-title">
             <i class="glyphicon glyphicon-wrench pull-right"></i>
             <h4>
-              Crear Propietario
+              Modificar Propietario
             </h4>
           </div>
         </div>
         <div class="panel-body">
           <form 
-            action="/estacionamientos/propietario" 
+            action="/estacionamientos/modificar_propietario" 
             method="post" 
             class="form form-vertical">
 
             {% csrf_token %}
             {% for field in form %}
-
               <div class="control-group">
                 <div class="controls">
                   {{ field }}
@@ -43,7 +42,7 @@
                 </div>
               </div>
             {% endfor %}
-{{error}}
+
             <div class="control-group">
               <label></label>
               <div class="controls">
