@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}
+	SAGE
+{% endblock %}
+
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Estacionamientos
+    </h3>
+    <hr>
+    <div class="col-md-8">
+      <h3>Introduzca la cédula del Propietario</h3>
+    <hr>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <i class="glyphicon glyphicon-wrench pull-right"></i>
+            <h4>
+              Modificar Propietario
+            </h4>
+          </div>
+        </div>
+        <div class="panel-body">
+          <form 
+            action="/estacionamientos/buscar_propietario" 
+            method="post" 
+            class="form form-vertical">
+
+            {% csrf_token %}
+            {% for field in form %}
+            {% if field.name != "cedula"%}
+
+              <div class="control-group">
+                <div class="controls">
+                  {{ field }}
+                  <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                  <p>
+                </div>
+              </div>
+            
+            {% else %}
+            <input class="form-control dirty" id="id_cedula" message="La cédula solo puede contener caracteres numéricos." name="cedula" pattern="^[0-9]+$" placeholder="Cédula" type="text" value="{{field.value}}" readonly>
+             <span class='error' id='{{field.name}}_error' aria-live="polite">
+                    {{ field.errors }}
+                  </span>
+                   <p>
+            {% endif %}
+            {% endfor %}
+
+            <div class="control-group">
+              <label></label>
+              <div class="controls">
+                <button type="submit" class="btn btn-primary">
+                  Continuar
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% include "validator.js.html" %}
+{% endblock %}

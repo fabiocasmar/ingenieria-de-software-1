@@ -137,7 +137,6 @@ class EstacionamientoForm(forms.Form):
         )
     )
 
-# class PropietarioForm(forms.Form):
 class CrearBilleteraForm(forms.Form):
 
     id_validator = RegexValidator(
@@ -282,8 +281,6 @@ class PropietarioForm(forms.Form):
             }
         )
     )
-
-
 
 class EstacionamientoExtendedForm(forms.Form):
     
@@ -684,5 +681,25 @@ class SaldoForm(forms.Form):
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message
                 }
+        )
+    )
+
+class ModificarPropietarioForm(forms.Form):
+
+    id_validator = RegexValidator(
+        regex   = '^[0-9]+$',
+        message = 'La cédula solo puede contener caracteres numéricos.'
+    )
+    
+    cedula = forms.CharField(
+        required   = True,
+        label      = "Cédula",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
         )
     )
