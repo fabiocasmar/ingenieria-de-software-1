@@ -16,7 +16,7 @@ class EstacionamientoForm(forms.Form):
     )
     
     name_validator = RegexValidator(
-        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
+        regex   = '^[a-zA-ZÁáÀàÉéÈèÍíÌìÓóÒòÚúÙùÑñüÜ\-\'0-9! ]+$',
         message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
     )
     
@@ -42,7 +42,6 @@ class EstacionamientoForm(forms.Form):
             }
         )
     )
-
 
     nombre = forms.CharField(
         required = True,
@@ -147,7 +146,7 @@ class CrearBilleteraForm(forms.Form):
     )
 
     name_validator = RegexValidator(
-        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
+        regex   = '^[a-zA-ZÁáÀàÉéÈèÍíÌìÓóÒòÚúÙùÑñüÜ\-\' ]+$',
         message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
     )
 
@@ -219,7 +218,7 @@ class PropietarioForm(forms.Form):
     )
     
     name_validator = RegexValidator(
-        regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
+        regex   = '^[a-zA-ZÁáÀàÉéÈèÍíÌìÓóÒòÚúÙùÑñüÜ\-\' ]+$',
         message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
     )
     
@@ -422,12 +421,12 @@ class ReservaForm(forms.Form):
 class PagoForm(forms.Form):
     
     card_name_validator = RegexValidator(
-        regex   = '^[a-zA-ZáéíóúñÑÁÉÍÓÚ][a-zA-ZáéíóúñÑÁÉÍÓÚ ]*$',
+        regex   = '^[a-zA-ZÁáÀàÉéÈèÍíÌìÓóÒòÚúÙùÑñüÜ\-\' ]+$',
         message = 'El nombre no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
     )
     
     card_surname_validator = RegexValidator(
-        regex   = '^[a-zA-ZáéíóúñÑÁÉÍÓÚ][a-zA-ZáéíóúñÑÁÉÍÓÚ ]*$',
+        regex   = '^[a-zA-ZÁáÀàÉéÈèÍíÌìÓóÒòÚúÙùÑñüÜ\-\' ]+$',
         message = 'El apellido no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
     )
     

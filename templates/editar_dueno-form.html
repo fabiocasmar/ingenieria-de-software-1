@@ -1,0 +1,36 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <div class="panel-title">
+      <i class="glyphicon glyphicon-wrench pull-right"></i>
+      <h4>
+        Cambiar Dueño
+      </h4>
+    </div>
+  </div>
+  <div class="panel-body">
+    <form action="./editar_dueno" method="post" class="form form-vertical">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="control-group">
+          <div class="controls">
+            {{ field }}
+            <span class='error' id='{{field.name}}_error' aria-live="polite">
+              {{ field.errors }}
+            </span>
+            <p>
+          </div>
+        </div>
+      {% endfor %}
+      <div class="control-group">
+        <label></label>
+        <div class="controls">
+          <button type="submit" class="btn btn-primary">
+            Cambiar Dueño
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% include "validator.js.html" %}
+</script>
