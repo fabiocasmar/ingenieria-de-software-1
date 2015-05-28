@@ -561,7 +561,6 @@ def billetera_saldo(request):
     )
 
 
-
 def estacionamiento_ingreso(request):
     form = RifForm()
     if request.method == 'POST':
@@ -585,11 +584,6 @@ def estacionamiento_ingreso(request):
         'consultar-ingreso.html',
         { "form" : form }
     )
-
-
-
-
-
 
 
 def receive_sms(request):
@@ -784,15 +778,18 @@ def crear_propietario(request):
 
             obj.save()
 
-        return render(
-            request,
-            'propietario_creado.html',
-            { "form" : form }
-        )
+            return render(
+                request,
+                'propietario_creado.html',
+                { "form" : form }
+            )
+
+        # Si el formulario no está completo resalta los campos obligatorios.
+        else:
+            error = "There was an error!"
 
     return render(
         request,
         'crear_propietario.html',
         { "form" : form }
     )
-
