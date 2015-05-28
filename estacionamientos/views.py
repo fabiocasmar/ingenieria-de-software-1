@@ -722,36 +722,46 @@ def crear_billetera(request):
     elif request.method == 'POST':
 
          # Creamos un formulario con los datos que recibimos
-         form = CrearBilleteraForm(request.POST)
+        form = CrearBilleteraForm(request.POST)
 
          # Si el formulario es valido, entonces creamos un objeto con
          # el constructor del modelo
-         if form.is_valid():
-             obj = Usuario(
-                 nombre = form.cleaned_data['nombre'],
-                 apellido = form.cleaned_data['apellido'],
-                 cedula = form.cleaned_data['cedula'],
+        if form.is_valid():
+            obj = Usuario(
+                nombre = form.cleaned_data['nombre'],
+                apellido = form.cleaned_data['apellido'],
+                cedula = form.cleaned_data['cedula'],
             )
 
-             obj.save()
+            obj.save()
 
-             obj2 = Billetera(
+            obj2 = Billetera(
                 usuario = obj,
                 saldo = 0,
                 pin = form.cleaned_data['pin']
             )
 
-             obj2.save()
-             id_billetera = obj2.id
-             mensaje = 'El id correspondiente a la billetera es : '
+            obj2.save()
+            id_billetera = obj2.id
+            mensaje = 'El id correspondiente a la billetera es : '
 
-         return render(
-             request,
-             'creada-billetera.html',
-             { "form" : form,
-               "id_billetera" : id_billetera,
-               "mensaje" : mensaje  }
-         )
+            return render(
+                            request,
+                            'creada-billetera.html',
+                            { "form" : form,
+                              "id_billetera" : id_billetera,
+                              "mensaje" : mensaje  }
+                        )
+
+        else :
+            return render(
+                            request,
+                            'datos_invalidos_billetera.html',
+                            {"color" : 'red',
+                             "mensaje" : 'Hay campos en blanco'
+                             }
+                )
+
 
     return render(
          request,

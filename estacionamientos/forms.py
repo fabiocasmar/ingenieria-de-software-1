@@ -148,7 +148,7 @@ class CrearBilleteraForm(forms.Form):
 
     name_validator = RegexValidator(
         regex   = '^[A-Za-záéíóúñÑÁÉÍÓÚ ]+$',
-        message = 'La entrada debe ser un nombre en Español sin símbolos especiales.'
+        message = 'La entrada debe ser un nombre en español sin símbolos especiales.'
     )
 
     pin_validator = RegexValidator(
