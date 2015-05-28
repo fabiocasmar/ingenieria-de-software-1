@@ -22,5 +22,7 @@ urlpatterns = patterns('',
     url(r'^sms$', views.receive_sms, name='receive_sms'),
     url(r'^(?P<_id>\d+)/tasa$', views.tasa_de_reservacion, name = 'tasa_de_reservacion'),
     url(r'^(?P<_id>\d+)/editar_dueno$', views.editar_dueno, name = 'editar_dueno'),
+    url(r'^(?P<_id>\d+)/propietario_crear_editar$', views.propietario_crear_editar, name = 'propietario_crear_editar'),
+    url(r'^(?P<_id>\d+)/crear_estacionamiento$', views.crear_estacionamiento, name = 'crear_estacionamiento'),
     url(r'^grafica/.*$', views.grafica_tasa_de_reservacion, name = 'grafica_tasa_de_reservacion')
 )
