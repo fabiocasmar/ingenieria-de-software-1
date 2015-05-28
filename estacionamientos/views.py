@@ -754,12 +754,11 @@ def crear_billetera(request):
                         )
 
         else :
+            error = "There was an error!"
             return render(
                             request,
-                            'datos_invalidos_billetera.html',
-                            {"color" : 'red',
-                             "mensaje" : 'Hay campos en blanco'
-                             }
+                            'crear-billetera.html',
+                            {"form" : form   }
                 )
 
 

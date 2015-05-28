@@ -156,19 +156,7 @@ class CrearBilleteraForm(forms.Form):
         message = 'El PIN debe contener entre 4 y 6 caracteres'
         )
     
-    cedula = forms.CharField(
-        required   = True,
-        label      = "Cédula",
-        validators = [id_validator],
-        widget = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Cédula'
-            , 'pattern'     : id_validator.regex.pattern
-            , 'message'     : id_validator.message
-            }
-        )
-    )
-
+    
     nombre = forms.CharField(
         required = True,
         label    = "Nombre del Usuario",
@@ -191,6 +179,19 @@ class CrearBilleteraForm(forms.Form):
             , 'placeholder' : 'Apellido del Usuario'
             , 'pattern'     : name_validator.regex.pattern
             , 'message'     : name_validator.message
+            }
+        )
+    )
+
+    cedula = forms.CharField(
+        required   = True,
+        label      = "Cédula",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
             }
         )
     )
