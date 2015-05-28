@@ -138,7 +138,6 @@ class EstacionamientoForm(forms.Form):
         )
     )
 
-# class PropietarioForm(forms.Form):
 class CrearBilleteraForm(forms.Form):
 
     id_validator = RegexValidator(
@@ -283,8 +282,6 @@ class PropietarioForm(forms.Form):
             }
         )
     )
-
-
 
 class EstacionamientoExtendedForm(forms.Form):
     

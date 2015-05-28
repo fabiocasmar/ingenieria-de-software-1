@@ -759,3 +759,40 @@ def crear_billetera(request):
          { "form" : form }
      )
 
+def crear_propietario(request):
+	
+	# Si es un GET, mandamos un formulario vacio
+    if request.method == 'GET':
+        form = PropietarioForm()
+
+	# Si es POST, se verifica la información recibida
+    elif request.method == 'POST':
+
+        # Creamos un formulario con los datos que recibimos
+        form = PropietarioForm(request.POST)
+
+        # Si el formulario es válido, entonces creamos un objeto con
+        # el constructor del modelo
+        if form.is_valid():
+            obj = Propietario(
+                nombre   = form.cleaned_data['nombre'],
+                apellido = form.cleaned_data['apellido'],
+                cedula   = form.cleaned_data['cedula'],
+                telefono = form.cleaned_data['telefono'],
+                email    = form.cleaned_data['email'],
+            )
+
+            obj.save()
+
+        return render(
+            request,
+            'propietario_creado.html',
+            { "form" : form }
+        )
+
+    return render(
+        request,
+        'crear_propietario.html',
+        { "form" : form }
+    )
+
