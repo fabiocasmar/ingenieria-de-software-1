@@ -15,7 +15,7 @@
         <hr>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
       <table class="table table-striped">
         <thead></thead>
         <tbody>
@@ -50,7 +50,12 @@
           <tr><td>
             <a href="pago" onClick="return popup(this, 'Pago de Reserva')">
               <button class="btn btn-primary">
-                Pagar Reserva
+                Pagar con tarjeta
+              </button>
+            </a>
+            <a href="pago_billetera/{{monto}}" onClick="return popup(this, 'Pago de Reserva')">
+              <button class="btn btn-primary">
+                Pagar con billetera
               </button>
             </a>
             <a href="/estacionamientos/{{ id }}/reserva">

@@ -1,4 +1,4 @@
-'''import datetime
+import datetime
 from decimal import Decimal
 from calcularPrecio import calcularPrecio, Tarifa
 import unittest
@@ -69,5 +69,4 @@ class PruebasTarifa(unittest.TestCase):
 		nuevaBilletera = Billetera(0,"oscar","guillen",'V',21444449,1234)
 		Recargar(nuevaBilletera,0,1000,datetime.datetime.now(),0)
 		self.assertRaises(Exception,Consumir,7,10,datetime.now(),20000,1234)
-		'''
-		
+		self.assertRaises(Exception,Consumir,7,10,datetime.now(),20000,1234)
