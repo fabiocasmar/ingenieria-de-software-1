@@ -2,10 +2,13 @@
 
 from django.test import TestCase
 
-from estacionamientos.forms import PropietarioForm
+from estacionamientos.forms import (
+        PropietarioForm,
+        ModificarPropietarioForm
+)
 
 ###################################################################
-#                    Propietario FORM
+#                          Propietario FORM 
 ###################################################################
 
 class PropietarioAllFormTestCase(TestCase):
@@ -245,3 +248,33 @@ class PropietarioAllFormTestCase(TestCase):
         }
         form = PropietarioForm(data = form_data)
         self.assertFalse(form.is_valid())
+
+###################################################################
+#                   Modificar Propietario FORM
+###################################################################
+
+class ModificarPropietarioFormTestCase(TestCase):
+
+    # malicia
+    def test_ModificarPropietarioForm_CamposVacios(self):
+        form_data = {}
+        form = ModificarPropietarioForm(data = form_data)
+        self.assertFalse(form.is_valid())
+
+    # borde
+    def test_ModificarPropietarioForm_UnCampoNecesario(self):
+        form_data = {
+            'cedula': '12345678',
+        }
+        form = ModificarPropietarioForm(data = form_data)
+        self.assertTrue(form.is_valid())
+
+    #malicia
+    def test_ModificarPropietarioForm_cedula_invalida(self):
+        form_data = {
+            'cedula': 'abc8',
+        }
+        form = ModificarPropietarioForm(data = form_data)
+        self.assertFalse(form.is_valid())
+
+ 
