@@ -17,7 +17,7 @@ class Usuario(models.Model):
 
 class Billetera(models.Model):
 	usuario = models.ForeignKey(Usuario)
-	saldo 	= models.IntegerField(blank = True, null = True)
+	saldo 	= models.CharField(max_length = 50, null = False)
 	pin 	= models.CharField(max_length = 4, blank = True, null = True)
 	
 	def __str__(self):

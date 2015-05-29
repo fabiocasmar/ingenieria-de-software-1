@@ -8,7 +8,7 @@ from django.http import HttpResponse, Http404
 from django.utils.dateparse import parse_datetime
 from urllib.parse import urlencode
 from matplotlib import pyplot
-from decimal import Decimal
+from decimal import *
 from collections import OrderedDict
 
 from datetime import (
@@ -315,7 +315,7 @@ def estacionamiento_reserva(request, _id):
                     )
                 )
 
-                request.session['monto'] = float(
+                request.session['monto'] = Decimal(
                     estacionamiento.tarifa.calcularPrecio(
                         inicioReserva,
                         finalReserva
@@ -473,7 +473,7 @@ def estacionamiento_pago(request,_id):
             # Se guarda la reserva en la base de datos
             reservaFinal.save()
 
-            monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+            monto = Decimal(request.session['monto']).quantize(Decimal(10) ** -2)
             pago = Pago(
                 fechaTransaccion = datetime.now(),
                 cedula           = form.cleaned_data['cedula'],
@@ -611,9 +611,13 @@ def billetera_saldo(request):
             pin = form.cleaned_data['pin']
             check = mostrar_saldo(billetera_id,pin)
             billetera = Billetera.objects.get(id = billetera_id)
-            saldo = billetera.saldo
+            getcontext().prec = 2
+            saldo = Decimal(billetera.saldo).quantize(Decimal(10) ** -2)
             if check:
-                mensaje = "Su saldo actual es : "
+                if saldo==0.00:
+                    mensaje = "Se recomienda recargar. Su saldo actual es : "
+                else:
+                    mensaje = "Su saldo actual es : "
 
                 return render(
                     request,
@@ -813,10 +817,10 @@ def crear_billetera(request):
             )
 
              obj.save()
-
+             getcontext().prec = 2
              obj2 = Billetera(
                 usuario = obj,
-                saldo = 0,
+                saldo = Decimal(0.00),
                 pin = form.cleaned_data['pin']
             )
 
