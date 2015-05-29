@@ -145,17 +145,19 @@ def propietario_crear_editar(request, _id):
             , 'estacionamientos': estacionamientos
             }
         )
-    return render(
-        request,
-        'crear_estacionamiento.html',
-        { 'form': form,'cedula' : cedula
-        , 'estacionamientos': estacionamientos
-        }
+    else: 
+        return render(
+            request,
+            'propietario_crear_catalogo_2.html',
+            { 'form': form,'cedula' : form.cleaned_data['cedula']
+            , 'estacionamientos': estacionamientos
+            }
     )
 
 
 # Usamos esta vista para procesar todos los estacionamientos
 def crear_estacionamiento(request, _id):
+    estacionamientos = Estacionamiento.objects.all()
     form = EstacionamientoForm(request.POST)
     if form.is_valid():
         obj = Propietario.objects.get(cedula = _id)
@@ -174,6 +176,14 @@ def crear_estacionamiento(request, _id):
         form = CedulaForm()
         estacionamientos = Estacionamiento.objects.all
         return redirect('estacionamientos_all')
+    else:
+        return render(
+            request,
+            'crear_estacionamiento.html',
+            { 'form': form,'cedula' : _id
+            , 'estacionamientos': estacionamientos
+            }
+        )
 
 def estacionamiento_detail(request, _id):
     _id = int(_id)
