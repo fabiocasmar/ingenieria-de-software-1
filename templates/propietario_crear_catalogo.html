@@ -25,7 +25,7 @@
           {% for obj in estacionamientos %}
             <tr>
               <td>{{forloop.counter}}</td>
-              <td>{{obj.propietario}}</td>
+              <td>{{obj.propietario.nombre}}</td>
               <td>{{obj.nombre}}</td>
               <td>{{obj.rif}}</td>
               <td><a href="./{{obj.id}}">
@@ -33,6 +33,9 @@
               </a></td>
               <td><a href="./{{obj.id}}/tasa">
                   <i class="fa fa-bar-chart"></i>
+              </a></td>
+              <td><a href="./{{obj.id}}/editar_dueno">
+                  <i class="fa fa-pencil fa-fw"></i>
               </a></td>
             </tr>
           {% endfor %}
@@ -54,36 +57,27 @@
           </div>
         </div>
         <div class="panel-body">
-          <form action="." method="post" class="form form-vertical">
+          <form action="./{{cedula}}/propietario_crear_editar" method="post" class="form form-vertical">
             {% csrf_token %}
-            {% if form1 != -1 %}
-              {% for field in form1 %}
-
-                <div class="control-group">
-                  <div class="controls">
-                    {{ field }}
-                    <span class='error' id='{{field.name}}_error' aria-live="polite">
-                      {{ field.errors }}
-                    </span>
-                    <p>
-                  </div>
-                </div>
-              {% endfor %}
-            {% endif %}
+              {% for field in form %}
+  <p>           {% if field.name != "cedula" %}
+                  {{ field }}
+                        <span class='error' id='{{field.name}}_error' aria-live="polite" value='{{ field.value }}'>
+                        {{ field.errors }}
+                      </span>
+                      <p>
+               {% else %}
+         
+                     <p>
+                     <input class="form-control dirty" id="id_cedula" message="La cédula solo puede contener caracteres numéricos." name="cedula" pattern="^[0-9]+$" placeholder="Cédula" type="text" value={{cedula}} readonly>
+                       <span class='error' id='{{field.name}}_error' aria-live="polite" value='{{ field.value }}'>
+                {% endif %}
+            {% endfor %}
             <div class="control-group">
               <label></label>
               <div class="controls">
                 <button type="submit" class="btn btn-primary">
-                {% if form2 == -1 %}
-                  Agregar Dueño
-                {% elif form2 == 0 %}
-                  Modificar Dueño
-                {% elif form2 == 2 %}
-                  Agregar Estacionamiento
-                {% else %}
-                  Buscar Dueño
-                {% endif %}
-                {{ form2 }}
+                  Crear Dueño
                 </button>
               </div>
             </div>

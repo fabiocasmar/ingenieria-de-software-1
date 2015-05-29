@@ -5,6 +5,7 @@
 {% block title %}
   SAGE - Estacionamiento {{estacionamiento.nombre}}
 {% endblock %}
+
 {% block innerContents%}
   <div class="col-sm-10">
     <h3><i class="fa fa-bus"></i>
@@ -13,17 +14,14 @@
     <hr>
     <div class="col-md-8">
       <table class="table table-striped">
-          <h3>Billetera Electrónica</h3>
+          <h3>Propietario</h3>
           <hr>
       <div class="col-md-8" >
-          <li><a href="/estacionamientos/billetera"><i class="fa fa-pencil-square"></i>
-            Crear Billetera
+          <li><a href="/estacionamientos/propietario"><i class="fa fa-user"></i>
+            Crear Propietario
           </a></li>
-          <li><a href="/estacionamientos/billetera_recargar"><i class="fa fa-credit-card"></i>
-            Recargar Billetera
-          </a></li>
-          <li><a href="/estacionamientos/billetera_saldo"><i class="fa fa-usd"></i>
-            Consultar saldo
+          <li><a href="/estacionamientos/modificar_propietario"><i class="fa fa-pencil-square"></i>
+            Modificar Propietario
           </a></li>
         <hr>
       </table>

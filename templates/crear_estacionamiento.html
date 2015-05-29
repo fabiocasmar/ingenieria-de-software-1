@@ -57,20 +57,28 @@
           </div>
         </div>
         <div class="panel-body">
-          <form action="" method="post" class="form form-vertical">
+          <form action="./crear_estacionamiento" method="post" class="form form-vertical">
             {% csrf_token %}
               {% for field in form %}
-              {{ field }}
-                      <span class='error' id='{{field.name}}_error' aria-live="polite" value='{{ field.value }}'>
-                      {{ field.errors }}
-                    </span>
-                    <p>
-              {% endfor %}
+  <p>           {% if field.name != "propietario" %}
+                  {{ field }}
+                        <span class='error' id='{{field.name}}_error' aria-live="polite" value='{{ field.value }}'>
+                        {{ field.errors }}
+                      </span>
+                      <p>
+                {% else %}
+
+                     <p>
+                     <input class="form-control dirty" id="id_propietario" message="La cédula solo puede contener caracteres numéricos." name="propietario" pattern="^[0-9]+$" placeholder="Cédula del Propietario" type="text" value={{cedula}} readonly>
+                     <span class='error' id='{{field.name}}_error' aria-live="polite" value='{{ field.value }}'>
+                {% endif %}
+
+            {% endfor %}
             <div class="control-group">
               <label></label>
               <div class="controls">
                 <button type="submit" class="btn btn-primary">
-                  Buscar Dueño en el Sistema
+                  Agregar Estacionamiento
                 </button>
               </div>
             </div>

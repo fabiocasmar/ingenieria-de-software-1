@@ -115,7 +115,7 @@ class PagoTarjetaDeCreditoFormTestCase(TestCase):
             'tarjeta': '1234567890123456',
         }
         form = PagoForm(data = form_data)
-        self.assertFalse(form.is_valid())
+        self.assertTrue(form.is_valid())
 
     #borde
     def test_PagoTarjetaForm_ApellidoInvalidoDigitos(self):
@@ -155,7 +155,7 @@ class PagoTarjetaDeCreditoFormTestCase(TestCase):
             'tarjeta': '1234567890123456',
         }
         form = PagoForm(data = form_data)
-        self.assertFalse(form.is_valid())
+        self.assertTrue(form.is_valid())
 
     #borde
     def test_PagoTarjetaForm_CedulaTipoInvalido(self):
