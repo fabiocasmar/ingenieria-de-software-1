@@ -19,8 +19,6 @@ class mostrarSaldoTestCase(TestCase):
 			nombre = "nom",
 			apellido = "apell",
 			cedula = "2345678",
-			telefono = "041414141112",
-			email = "holakase@gmail.com",
 			)
 		usu.save()
 		return usu
@@ -29,7 +27,7 @@ class mostrarSaldoTestCase(TestCase):
 	def test_billetera_nueva(self):
 		b = Billetera(
 			usuario = self.crear_usuario(),
-			saldo = 0,
+			saldo = 0.00,
 			pin = 1234
 		)
 		b.save()
@@ -40,7 +38,7 @@ class mostrarSaldoTestCase(TestCase):
 	def test_Pin_distinto(self):
 		b = Billetera(
 			usuario = self.crear_usuario(),
-			saldo = 0,
+			saldo = 0.00,
 			pin = 1234
 		)
 		b.save()
@@ -51,13 +49,13 @@ class mostrarSaldoTestCase(TestCase):
 	def test_2billetera_1usuario(self):
 		b = Billetera(
 			usuario = self.crear_usuario(),
-			saldo = 23,
+			saldo = 23.00,
 			pin = 1234
 		)
 		b.save()
 		b2 = Billetera(
 			usuario = self.crear_usuario(),
-			saldo = 25,
+			saldo = 25.00,
 			pin = '1234l'
 		)
 		b2.save()
@@ -72,15 +70,13 @@ class mostrarSaldoTestCase(TestCase):
 		nombre = "nombre",
 		apellido = "apell",
 		cedula = "2345678",
-		telefono = "041414141112",
-		email = "holakase@gmail.com",
 		)
 
 		usu.save()
 
 		b = Billetera(
 			usuario = self.crear_usuario(),
-			saldo = 23,
+			saldo = 23.00,
 			pin = 1234
 		)
 
@@ -88,15 +84,13 @@ class mostrarSaldoTestCase(TestCase):
 		nombre = "nom",
 		apellido = "apell",
 		cedula = "2345678",
-		telefono = "041414141112",
-		email = "holakase@gmail.com",
 		)
         
 		usua.save()
 
 		b2 = Billetera(
 			usuario = self.crear_usuario(),
-			saldo = 25,
+			saldo = 25.00,
 			pin = 1234
 		)
 
