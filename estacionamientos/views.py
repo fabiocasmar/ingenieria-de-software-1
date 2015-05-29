@@ -838,7 +838,7 @@ def crear_billetera(request):
 
             obj2 = Billetera(
                 usuario = obj,
-                saldo = 0,
+                saldo = Decimal(0.00),
                 pin = form.cleaned_data['pin']
             )
 
