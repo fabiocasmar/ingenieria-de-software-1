@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+  SAGE - Estacionamiento {{estacionamiento.nombre}}
+{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Estacionamiento {{estacionamiento.nombre}}
+    </h3>
+    <hr>
+
+    <div class="col-md-4">
+      {% include "datos.html" %}
+
+    </div>
+    <div class="col-md-4">
+      {% include "parametros.html" %}
+    </div>
+    <div class="col-md-4">
+      {% include "editar_dueno-form.html" %}
+      {{ msg }}
+    </div>
+  </div>
+{% endblock %}

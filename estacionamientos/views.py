@@ -92,6 +92,7 @@ def estacionamientos_all(request):
                     telefono3 = form.cleaned_data['telefono3'],
                     email1 = form.cleaned_data['email1'], 
                     email2 = form.cleaned_data['email2'],
+                    rif = form.cleaned_data['rif'],
                 )
             prop.save()
             form2=-1
@@ -672,6 +673,39 @@ def tasa_de_reservacion(request, _id):
         }
     )
 
+def editar_dueno(request, _id):
+    _id = int(_id)
+    msg = ""
+    # Verificamos que el objeto exista antes de continuar
+    try:
+        estacionamiento = Estacionamiento.objects.get(id = _id)
+    except ObjectDoesNotExist:
+        raise Http404
+
+    if request.method == 'GET':
+            form = CedulaForm()
+
+    elif request.method == 'POST':
+        # Leemos el formulario
+        try: 
+            form = CedulaForm(request.POST)        
+            # Si el formulario
+            if form.is_valid():
+                nuevo_propietario = Propietario.objects.get(cedula = form.cleaned_data['cedula'])
+                estacionamiento.propietario = nuevo_propietario
+                estacionamiento.save()
+                msg = "¡Cambiado dueño con Éxito!"
+        except ObjectDoesNotExist:
+            form = CedulaForm()
+            msg = "Propietario no existe"
+
+    return render(
+        request,
+        'editar_dueno.html',
+        { 'form': form
+        , 'estacionamiento': estacionamiento, 'msg': msg,
+        }
+    )
 def grafica_tasa_de_reservacion(request):
     
     # Recuperacion del diccionario para crear el grafico
