@@ -115,9 +115,9 @@ def consultar_ingresos(rif):
 def recargar_saldo(_id,_pin,monto):
 	billetera_electronica = Billetera.objects.get(id=_id)
 	if _pin == billetera_electronica.pin:
-		billetera_electronica.saldo += float(monto)
+		billetera_electronica.saldo =  Decimal(billetera_electronica.saldo).quantize(Decimal(10) ** -2)  + Decimal(monto).quantize(Decimal(10) ** -2)
 		billetera_electronica.save()
-		return float(billetera_electronica.saldo)
+		return Decimal(billetera_electronica.saldo).quantize(Decimal(10) ** -2)
 	else:
 		return False
 	
