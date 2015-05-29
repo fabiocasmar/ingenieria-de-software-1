@@ -6,22 +6,22 @@ from django.contrib.contenttypes.models import ContentType
 from decimal import Decimal
 from datetime import timedelta
 
+
 class Usuario(models.Model):
 	nombre       = models.CharField(max_length = 50, blank = True, null = True)
 	apellido     = models.CharField(max_length = 50, blank = True, null = True)
-	cedula       = models.CharField(max_length = 10,blank = True,  null = True)
-	telefono     = models.CharField(blank = True, null = True, max_length = 30)
-	email        = models.EmailField(blank = True, null = True)
+	cedula       = models.CharField(max_length = 10, null = False)
 
 	def __str__(self):
 		return self.cedula+' '+str(self.id)
 
 class Billetera(models.Model):
 	usuario = models.ForeignKey(Usuario)
-	saldo 	= models.CharField(max_length = 100, blank = True, null = True)
+	saldo 	= models.CharField(max_length = 50, null = False)
 	pin 	= models.CharField(max_length = 4, blank = True, null = True)
+	
 	def __str__(self):
-		return self.usuario.nombre+' '+str(self.saldo)
+		return self.usuario+' '+str(self.saldo)
 
 class Propietario(models.Model):
 	nombre       = models.CharField(max_length = 50, null = False)

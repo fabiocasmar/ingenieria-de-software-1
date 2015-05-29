@@ -25,7 +25,7 @@
           {% for obj in estacionamientos %}
             <tr>
               <td>{{forloop.counter}}</td>
-              <td>{{obj.propietario.nombre}}</td>
+              <td>{{obj.propietario}}</td>
               <td>{{obj.nombre}}</td>
               <td>{{obj.rif}}</td>
               <td><a href="./{{obj.id}}">
@@ -57,20 +57,23 @@
           </div>
         </div>
         <div class="panel-body">
-          <form action="" method="post" class="form form-vertical">
+          <form action=".{{ci}}/crear_estacionamiento" method="post" class="form form-vertical">
             {% csrf_token %}
-              {% for field in form %}
-              {{ field }}
-                      <span class='error' id='{{field.name}}_error' aria-live="polite" value='{{ field.value }}'>
-                      {{ field.errors }}
-                    </span>
-                    <p>
-              {% endfor %}
+              {% for field in form1 %}
+  <p>
+                {{ field }}
+                        <span class='error' id='{{field.name}}_error' aria-live="polite" value='{{ field.value }}'>
+                        {{ field.errors }}
+                      </span>
+                      <p>
+                {% endif %}
+            {% endfor %}
             <div class="control-group">
               <label></label>
               <div class="controls">
                 <button type="submit" class="btn btn-primary">
-                  Buscar Dueño en el Sistema
+                  Modificar Dueño
+                {% endif %}
                 </button>
               </div>
             </div>

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}
+  SAGE - Pago
+{% endblock %}
+
+{% block body%}
+  <body {% if mensaje %} onunload="openlink()" {% endif %}>
+{% endblock %}
+
+{% block menu %}{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-money"></i>
+      Pago con Billetera
+    </h3>
+    <hr>
+    <div class="col-md-4">
+
+{{msg}}
+<p>
+<p>
+<p>
+<p><br>
+ <br> <div class="controls">
+                    <input
+            type="button"
+            value="Cerrar"
+            onclick="self.close()"
+            class="btn btn-primary"
+          >
+                </div>
+    </div>
+
+  </div>
+
+
+{% endblock %}
+{% block scripts %}
+  {% include "validator.js.html" %}
+
+{% endblock %}
