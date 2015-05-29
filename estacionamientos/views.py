@@ -145,17 +145,19 @@ def propietario_crear_editar(request, _id):
             , 'estacionamientos': estacionamientos
             }
         )
-    return render(
-        request,
-        'crear_estacionamiento.html',
-        { 'form': form,'cedula' : cedula
-        , 'estacionamientos': estacionamientos
-        }
+    else: 
+        return render(
+            request,
+            'propietario_crear_catalogo_2.html',
+            { 'form': form,'cedula' : form.cleaned_data['cedula']
+            , 'estacionamientos': estacionamientos
+            }
     )
 
 
 # Usamos esta vista para procesar todos los estacionamientos
 def crear_estacionamiento(request, _id):
+    estacionamientos = Estacionamiento.objects.all()
     form = EstacionamientoForm(request.POST)
     if form.is_valid():
         obj = Propietario.objects.get(cedula = _id)
@@ -174,6 +176,14 @@ def crear_estacionamiento(request, _id):
         form = CedulaForm()
         estacionamientos = Estacionamiento.objects.all
         return redirect('estacionamientos_all')
+    else:
+        return render(
+            request,
+            'crear_estacionamiento.html',
+            { 'form': form,'cedula' : _id
+            , 'estacionamientos': estacionamientos
+            }
+        )
 
 def estacionamiento_detail(request, _id):
     _id = int(_id)
@@ -823,36 +833,45 @@ def crear_billetera(request):
     elif request.method == 'POST':
 
          # Creamos un formulario con los datos que recibimos
-         form = CrearBilleteraForm(request.POST)
+        form = CrearBilleteraForm(request.POST)
 
          # Si el formulario es valido, entonces creamos un objeto con
          # el constructor del modelo
-         if form.is_valid():
-             obj = Usuario(
-                 nombre = form.cleaned_data['nombre'],
-                 apellido = form.cleaned_data['apellido'],
-                 cedula = form.cleaned_data['cedula'],
+        if form.is_valid():
+            obj = Usuario(
+                nombre = form.cleaned_data['nombre'],
+                apellido = form.cleaned_data['apellido'],
+                cedula = form.cleaned_data['cedula'],
             )
 
-             obj.save()
-             getcontext().prec = 2
-             obj2 = Billetera(
+            obj.save()
+
+            obj2 = Billetera(
                 usuario = obj,
                 saldo = Decimal(0.00),
                 pin = form.cleaned_data['pin']
             )
 
-             obj2.save()
-             id_billetera = obj2.id
-             mensaje = 'El id correspondiente a la billetera es : '
+            obj2.save()
+            id_billetera = obj2.id
+            mensaje = 'El id correspondiente a la billetera es : '
 
-         return render(
-             request,
-             'creada-billetera.html',
-             { "form" : form,
-               "id_billetera" : id_billetera,
-               "mensaje" : mensaje  }
-         )
+            return render(
+                            request,
+                            'creada-billetera.html',
+                            { "form" : form,
+                              "id_billetera" : id_billetera,
+                              "mensaje" : mensaje  }
+                        )
+
+        else :
+            error = "There was an error!"
+            return render(
+                            request,
+                            'crear-billetera.html',
+                            {"form" : form   }
+                )
+
 
     return render(
          request,

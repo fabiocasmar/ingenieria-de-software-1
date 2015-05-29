@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}
+  SAGE
+{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Estacionamientos
+    </h3>
+    <hr>
+    <div class="col-md-8">
+      <table class="table table-striped">
+        {% if estacionamientos %}
+        <thead>
+          <tr>
+            <th></th>
+            <th>Dueño</th>
+            <th>Nombre</th>
+            <th>RIF</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in estacionamientos %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td>{{obj.propietario.nombre}}</td>
+              <td>{{obj.nombre}}</td>
+              <td>{{obj.rif}}</td>
+              <td><a href="./{{obj.id}}">
+                  <i class="fa fa-search"></i>
+              </a></td>
+              <td><a href="./{{obj.id}}/tasa">
+                  <i class="fa fa-bar-chart"></i>
+              </a></td>
+              <td><a href="./{{obj.id}}/editar_dueno">
+                  <i class="fa fa-pencil fa-fw"></i>
+              </a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        {% else %}
+          <h3>No hay estacionamientos</h3>
+        {% endif %}
+      </table>
+      <hr>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <i class="glyphicon glyphicon-wrench pull-right"></i>
+            <h4>
+              Crear estacionamiento
+            </h4>
+          </div>
+        </div>
+        <div class="panel-body">
+          <form action="./propietario_crear_editar" method="post" class="form form-vertical">
+            {% csrf_token %}
+              {% for field in form %}
+  <p>           {% if field.name != "cedula" %}
+                  {{ field }}
+                        <span class='error' id='{{field.name}}_error' aria-live="polite" value='{{ field.value }}'>
+                        {{ field.errors }}
+                      </span>
+                      <p>
+               {% else %}
+         
+                     <p>
+                     <input class="form-control dirty" id="id_cedula" message="La cédula solo puede contener caracteres numéricos." name="cedula" pattern="^[0-9]+$" placeholder="Cédula" type="text" value={{cedula}} readonly>
+                       <span class='error' id='{{field.name}}_error' aria-live="polite" value='{{ field.value }}'>
+                {% endif %}
+            {% endfor %}
+            <div class="control-group">
+              <label></label>
+              <div class="controls">
+                <button type="submit" class="btn btn-primary">
+                  Crear Dueño
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  {% include "validator.js.html" %}
+{% endblock %}
