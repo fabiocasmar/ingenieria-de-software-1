@@ -8,7 +8,7 @@ from django.http import HttpResponse, Http404
 from django.utils.dateparse import parse_datetime
 from urllib.parse import urlencode
 from matplotlib import pyplot
-from decimal import Decimal
+from decimal import *
 from collections import OrderedDict
 
 from datetime import (
@@ -24,6 +24,7 @@ from estacionamientos.controller import (
     calcular_porcentaje_de_tasa,
     consultar_ingresos,
     mostrar_saldo,
+    recargar_saldo
 )
 
 from estacionamientos.forms import (
@@ -314,7 +315,7 @@ def estacionamiento_reserva(request, _id):
                     )
                 )
 
-                request.session['monto'] = float(
+                request.session['monto'] = Decimal(
                     estacionamiento.tarifa.calcularPrecio(
                         inicioReserva,
                         finalReserva
@@ -358,6 +359,80 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
+def estacionamiento_pago_billetera(request,_id,_monto):
+    form = ConsumirForm()
+    
+    try:
+        estacionamiento = Estacionamiento.objects.get(id = _id)
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    if (estacionamiento.apertura is None):
+        return HttpResponse(status = 403) # No esta permitido acceder a esta vista aun
+    
+    if request.method == 'POST':
+        form = ConsumirForm(request.POST)
+        if form.is_valid():
+            
+            inicioReserva = datetime(
+                year   = request.session['anioinicial'],
+                month  = request.session['mesinicial'],
+                day    = request.session['diainicial'],
+                hour   = request.session['inicioReservaHora'],
+                minute = request.session['inicioReservaMinuto']
+            )
+
+            finalReserva  = datetime(
+                year   = request.session['aniofinal'],
+                month  = request.session['mesfinal'],
+                day    = request.session['diafinal'],
+                hour   = request.session['finalReservaHora'],
+                minute = request.session['finalReservaMinuto']
+            )
+
+            reservaFinal = Reserva(
+                estacionamiento = estacionamiento,
+                inicioReserva   = inicioReserva,
+                finalReserva    = finalReserva,
+            )
+
+            # Se guarda la reserva en la base de datos
+            reservaFinal.save()
+
+            #monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+            #pago = Pago(
+            #    fechaTransaccion = datetime.now(),
+            #    monto            = monto,
+            #    reserva          = reservaFinal,
+            #)
+            # Se guarda el recibo de pago en la base de datos
+            #pago.save()
+            try:
+                bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
+                if(bille.pin != form.cleaned_data['pin']):
+                    msg="Autenticación denegada"
+                else:
+                    msg="Saldo Insuficiente"
+            except ObjectDoesNotExist:
+                msg="Autenticación denegada"
+            return render(
+                request,
+                'recibo_billetera.html'
+                ,{"msg":msg,"pin":bille.pin,"real":form.cleaned_data['pin']},
+                #{  "fecha"    : datetime.now(),
+                #    "monto"   : _monto
+                #,   "id"      : form.billetera_id
+                #, "color"   : "green"
+                #, 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                #}
+            )
+
+    return render(
+        request,
+        'pago_billetera.html',
+        { 'form' : form, "monto": _monto }
+    )
+
 def estacionamiento_pago(request,_id):
     form = PagoForm()
     
@@ -398,7 +473,7 @@ def estacionamiento_pago(request,_id):
             # Se guarda la reserva en la base de datos
             reservaFinal.save()
 
-            monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
+            monto = Decimal(request.session['monto']).quantize(Decimal(10) ** -2)
             pago = Pago(
                 fechaTransaccion = datetime.now(),
                 cedula           = form.cleaned_data['cedula'],
@@ -485,7 +560,11 @@ def billetera_recargar(request):
     elif request.method == 'POST':
         form = RecargaForm(request.POST)
         if form.is_valid():
-            success = "Datos validos!"
+            billetera_id = form.cleaned_data['billetera_id']
+            pin = form.cleaned_data['pin']
+            monto = form.cleaned_data['monto']
+            check = recargar_saldo(billetera_id,pin,monto)
+            billetera = Billetera.objects.get(id = billetera_id)
             return render(
                 request,
                 'billetera_recargada.html',
@@ -532,9 +611,13 @@ def billetera_saldo(request):
             pin = form.cleaned_data['pin']
             check = mostrar_saldo(billetera_id,pin)
             billetera = Billetera.objects.get(id = billetera_id)
-            saldo = billetera.saldo
+            getcontext().prec = 2
+            saldo = Decimal(billetera.saldo).quantize(Decimal(10) ** -2)
             if check:
-                mensaje = "Su saldo actual es : "
+                if saldo==0.00:
+                    mensaje = "Se recomienda recargar. Su saldo actual es : "
+                else:
+                    mensaje = "Su saldo actual es : "
 
                 return render(
                     request,
@@ -722,45 +805,36 @@ def crear_billetera(request):
     elif request.method == 'POST':
 
          # Creamos un formulario con los datos que recibimos
-        form = CrearBilleteraForm(request.POST)
+         form = CrearBilleteraForm(request.POST)
 
          # Si el formulario es valido, entonces creamos un objeto con
          # el constructor del modelo
-        if form.is_valid():
-            obj = Usuario(
-                nombre = form.cleaned_data['nombre'],
-                apellido = form.cleaned_data['apellido'],
-                cedula = form.cleaned_data['cedula'],
+         if form.is_valid():
+             obj = Usuario(
+                 nombre = form.cleaned_data['nombre'],
+                 apellido = form.cleaned_data['apellido'],
+                 cedula = form.cleaned_data['cedula'],
             )
 
-            obj.save()
-
-            obj2 = Billetera(
+             obj.save()
+             getcontext().prec = 2
+             obj2 = Billetera(
                 usuario = obj,
-                saldo = 0,
+                saldo = Decimal(0.00),
                 pin = form.cleaned_data['pin']
             )
 
-            obj2.save()
-            id_billetera = obj2.id
-            mensaje = 'El id correspondiente a la billetera es : '
+             obj2.save()
+             id_billetera = obj2.id
+             mensaje = 'El id correspondiente a la billetera es : '
 
-            return render(
-                            request,
-                            'creada-billetera.html',
-                            { "form" : form,
-                              "id_billetera" : id_billetera,
-                              "mensaje" : mensaje  }
-                        )
-
-        else :
-            error = "There was an error!"
-            return render(
-                            request,
-                            'crear-billetera.html',
-                            {"form" : form   }
-                )
-
+         return render(
+             request,
+             'creada-billetera.html',
+             { "form" : form,
+               "id_billetera" : id_billetera,
+               "mensaje" : mensaje  }
+         )
 
     return render(
          request,
