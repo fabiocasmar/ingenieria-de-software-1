@@ -564,23 +564,25 @@ def billetera_recargar(request):
             billetera_id = form.cleaned_data['billetera_id']
             pin = form.cleaned_data['pin']
             monto = form.cleaned_data['monto']
-            try:
-                billetera = Billetera.objects.get(id = billetera_id)
-            except ObjectDoesNotExist:
-                return render(
-                    request,
-                    'autenticacion_denegada.html',
-                    )
+            # try:
+            #     billetera = Billetera.objects.get(id = billetera_id)
+            # except ObjectDoesNotExist:
+            #     return render(
+            #         request,
+            #         'autenticacion_denegada.html',
+            #         )
             check = recargar_saldo(billetera_id,pin,monto)
-            usuario = billetera.usuario
-            nombre = usuario.nombre
-            apellido = usuario.apellido
-            cedula = usuario.cedula
-            recarga = Recarga(saldo = monto,
-                              fechaTransaccion = datetime.now(),
-                              )
-            espacio = " "
+          
             if check:
+                billetera = Billetera.objects.get(id = billetera_id)
+                usuario = billetera.usuario
+                nombre = usuario.nombre
+                apellido = usuario.apellido
+                cedula = usuario.cedula
+                recarga = Recarga(saldo = monto,
+                          fechaTransaccion = datetime.now(),
+                          )
+                espacio = " "
                 return render(
                     request,
                     'billetera_recargada.html',
