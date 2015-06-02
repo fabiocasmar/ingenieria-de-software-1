@@ -17,7 +17,7 @@ class Usuario(models.Model):
 
 class Billetera(models.Model):
 	usuario = models.ForeignKey(Usuario)
-	saldo 	= models.CharField(max_length = 50, null = False)
+	saldo 	= models.FloatField(null=False, blank=False)
 	pin 	= models.CharField(max_length = 4, blank = True, null = True)
 	
 	def __str__(self):
@@ -57,7 +57,7 @@ class Estacionamiento(models.Model):
 		return self.nombre+' '+str(self.id)
 
 class Recarga(models.Model):
-	saldo 			 = models.CharField(max_length = 100, null = False)
+	saldo 			 = models.FloatField(null=False, blank=False)
 	fechaTransaccion = models.DateTimeField()
 	billetera 		 = models.ForeignKey(Billetera)
 

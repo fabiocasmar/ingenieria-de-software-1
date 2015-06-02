@@ -592,8 +592,8 @@ class RecargaForm(forms.Form):
     )
 
     validar_monto = RegexValidator(
-        regex = '^[0-9]+.[0-9]{2}$',
-        message = 'El monto debe ser un número positivo'
+        regex = '^[0-9]+(.[0-9]{2})?$',
+        message = 'El monto debe ser valido'
     )
 
     monto = forms.CharField(
