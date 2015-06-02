@@ -25,7 +25,8 @@ from estacionamientos.controller import (
     calcular_porcentaje_de_tasa,
     consultar_ingresos,
     mostrar_saldo,
-    recargar_saldo
+    recargar_saldo,
+    consumir_saldo
 )
 
 from estacionamientos.forms import (
@@ -400,32 +401,47 @@ def estacionamiento_pago_billetera(request,_id,_monto):
             # Se guarda la reserva en la base de datos
             reservaFinal.save()
 
-            #monto = Decimal(request.session['monto']).quantize(Decimal('1.00'))
-            #pago = Pago(
-            #    fechaTransaccion = datetime.now(),
-            #    monto            = monto,
-            #    reserva          = reservaFinal,
-            #)
-            # Se guarda el recibo de pago en la base de datos
-            #pago.save()
+            monto = Decimal(request.session['monto']).quantize(Decimal(10)* -2)
+            pago = Pago(
+               fechaTransaccion = datetime.now(),
+               monto            = monto,
+               reserva          = reservaFinal,
+            )
+            #Se guarda el recibo de pago en la base de datos
+            pago.save()
             try:
                 bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
+                billetera_id = form.cleaned_data['billetera_id']
+                pin = form.cleaned_data['pin']
                 if(bille.pin != form.cleaned_data['pin']):
                     msg="Autenticación denegada"
-                else:
+                    return render(
+                        request,
+                            'denegado_pago_billetera.html',
+                            {  'msg' : msg,
+                                "color": "red"
+                            }
+                    )
+                elif (bille.saldo < _monto):
                     msg="Saldo Insuficiente"
+                    return render(
+                        request,
+                            'denegado_pago_billetera.html',
+                            {  'msg' : msg,
+                                "color": "red" }
+                    )
+                else:
+                    CHECK = consumir_saldo(billetera_id,pin,monto)
             except ObjectDoesNotExist:
                 msg="Autenticación denegada"
             return render(
                 request,
-                'recibo_billetera.html'
-                ,{"msg":msg},
-                #{  "fecha"    : datetime.now(),
-                #    "monto"   : _monto
-                #,   "id"      : form.billetera_id
-                #, "color"   : "green"
-                #, 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
-                #}
+                'pago_billetera.html',
+                {  "id"    : _id,
+                   "pago"   : _monto
+                , "color"   : "green"
+                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                }
             )
 
     return render(

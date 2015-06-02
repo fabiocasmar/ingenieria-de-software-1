@@ -122,11 +122,14 @@ def recargar_saldo(_id,_pin,monto):
 		return False
 
 
-def consumir_saldo(ci, pin, rif_estacionamiento, consumos):
-	billetera_electronica = Consumo.objects.filter(ci = usuario.cedula, pin = Billetera.pin, rif_estacionamiento = Estacionamiento.rif)
-	billetera_electronica.saldo -= consumos.saldo
-	billetera_electronica.fechaTransaccion = consumos.fecha
-	return billetera_electronica.saldo
+def consumir_saldo(_id,_pin,monto):
+	billetera_electronica = Billetera.objects.get(id=_id)
+	if _pin == billetera_electronica.pin:
+		billetera_electronica.saldo = float(float(billetera_electronica.saldo)-float(monto))
+		billetera_electronica.save()
+		return billetera_electronica.saldo
+	else:
+		return False
 
 def mostrar_saldo(_id,_pin):
 	billetera_electronica = Billetera.objects.get(id=_id)
