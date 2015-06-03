@@ -21,7 +21,7 @@ class Billetera(models.Model):
 	pin 	= models.CharField(max_length = 4, blank = True, null = True)
 	
 	def __str__(self):
-		return self.usuario+' '+str(self.saldo)
+		return str(self.usuario)+' '+str(self.saldo)
 
 class Propietario(models.Model):
 	nombre       = models.CharField(max_length = 50, null = False)
