@@ -411,8 +411,7 @@ def estacionamiento_pago_billetera(request,_id,_monto):
             pago.save()
             try:
                 bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
-                billetera_id = form.cleaned_data['billetera_id']
-                pin = form.cleaned_data['pin']
+                #Se verifica si la billetera existe.
                 if(bille.pin != form.cleaned_data['pin']):
                     msg="Autenticación denegada"
                     return render(
@@ -422,23 +421,34 @@ def estacionamiento_pago_billetera(request,_id,_monto):
                                 "color": "red"
                             }
                     )
+                #Se verifica si hay saldo suficiente.
                 elif (bille.saldo < _monto):
-                    msg="Saldo Insuficiente"
+                    msg="Saldo Insuficiente."
+                    msg2="Se recomienda recargar."
                     return render(
                         request,
                             'denegado_pago_billetera.html',
                             {  'msg' : msg,
+                               'msg2' : msg2,
                                 "color": "red" }
                     )
+                #Se consume de la billetera el monto del pago.
                 else:
                     CHECK = consumir_saldo(billetera_id,pin,monto)
             except ObjectDoesNotExist:
                 msg="Autenticación denegada"
+                return render(
+                    request,
+                        'denegado_pago_billetera.html',
+                        {  'msg' : msg,
+                            "color": "red"
+                        }
+                )
             return render(
                 request,
                 'pago_billetera.html',
-                {  "id"    : _id,
-                   "pago"   : _monto
+                {  'id' : _id
+                ,  'pago' : pago
                 , "color"   : "green"
                 , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
                 }
