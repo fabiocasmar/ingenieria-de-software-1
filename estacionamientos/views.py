@@ -361,105 +361,6 @@ def estacionamiento_reserva(request, _id):
         }
     )
 
-def estacionamiento_pago_billetera(request,_id,_monto):
-    form = ConsumirForm()
-    
-    try:
-        estacionamiento = Estacionamiento.objects.get(id = _id)
-    except ObjectDoesNotExist:
-        raise Http404
-    
-    if (estacionamiento.apertura is None):
-        return HttpResponse(status = 403) # No esta permitido acceder a esta vista aun
-    
-    if request.method == 'POST':
-        form = ConsumirForm(request.POST)
-        if form.is_valid():
-            
-            inicioReserva = datetime(
-                year   = request.session['anioinicial'],
-                month  = request.session['mesinicial'],
-                day    = request.session['diainicial'],
-                hour   = request.session['inicioReservaHora'],
-                minute = request.session['inicioReservaMinuto']
-            )
-
-            finalReserva  = datetime(
-                year   = request.session['aniofinal'],
-                month  = request.session['mesfinal'],
-                day    = request.session['diafinal'],
-                hour   = request.session['finalReservaHora'],
-                minute = request.session['finalReservaMinuto']
-            )
-
-            reservaFinal = Reserva(
-                estacionamiento = estacionamiento,
-                inicioReserva   = inicioReserva,
-                finalReserva    = finalReserva,
-            )
-
-            # Se guarda la reserva en la base de datos
-            reservaFinal.save()
-
-            monto = Decimal(request.session['monto']).quantize(Decimal(10)* -2)
-            pago = Pago(
-               fechaTransaccion = datetime.now(),
-               monto            = monto,
-               reserva          = reservaFinal,
-            )
-            #Se guarda el recibo de pago en la base de datos
-            pago.save()
-            try:
-                bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
-                #Se verifica si la billetera existe.
-                if(bille.pin != form.cleaned_data['pin']):
-                    msg="Autenticación denegada"
-                    return render(
-                        request,
-                            'denegado_pago_billetera.html',
-                            {  'msg' : msg,
-                                "color": "red"
-                            }
-                    )
-                #Se verifica si hay saldo suficiente.
-                elif (bille.saldo < _monto):
-                    msg="Saldo Insuficiente."
-                    msg2="Se recomienda recargar."
-                    return render(
-                        request,
-                            'denegado_pago_billetera.html',
-                            {  'msg' : msg,
-                               'msg2' : msg2,
-                                "color": "red" }
-                    )
-                #Se consume de la billetera el monto del pago.
-                else:
-                    CHECK = consumir_saldo(billetera_id,pin,monto)
-            except ObjectDoesNotExist:
-                msg="Autenticación denegada"
-                return render(
-                    request,
-                        'denegado_pago_billetera.html',
-                        {  'msg' : msg,
-                            "color": "red"
-                        }
-                )
-            return render(
-                request,
-                'pago_billetera.html',
-                {  'id' : _id
-                ,  'pago' : pago
-                , "color"   : "green"
-                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
-                }
-            )
-
-    return render(
-        request,
-        'pago_billetera.html',
-        { 'form' : form, "monto": _monto }
-    )
-
 def estacionamiento_pago(request,_id):
     form = PagoForm()
     
@@ -635,25 +536,110 @@ def billetera_recargar(request):
 
     )
 
-def billetera_consumir(request):
-    if request.method == 'GET':
-        form = ConsumirForm()
-    elif request.method == 'POST':
+def billetera_consumir(request,_id,_monto):
+    form = ConsumirForm()
+    
+    try:
+        estacionamiento = Estacionamiento.objects.get(id = _id)
+    except ObjectDoesNotExist:
+        raise Http404
+    
+    if (estacionamiento.apertura is None):
+        return HttpResponse(status = 403) # No esta permitido acceder a esta vista aun
+    
+    if request.method == 'POST':
         form = ConsumirForm(request.POST)
         if form.is_valid():
-            success = "Datos validos!"
+            
+            inicioReserva = datetime(
+                year   = request.session['anioinicial'],
+                month  = request.session['mesinicial'],
+                day    = request.session['diainicial'],
+                hour   = request.session['inicioReservaHora'],
+                minute = request.session['inicioReservaMinuto']
+            )
+
+            finalReserva  = datetime(
+                year   = request.session['aniofinal'],
+                month  = request.session['mesfinal'],
+                day    = request.session['diafinal'],
+                hour   = request.session['finalReservaHora'],
+                minute = request.session['finalReservaMinuto']
+            )
+
+            reservaFinal = Reserva(
+                estacionamiento = estacionamiento,
+                inicioReserva   = inicioReserva,
+                finalReserva    = finalReserva,
+            )
+
+            # Se guarda la reserva en la base de datos
+            reservaFinal.save()
+
+            monto = Decimal(request.session['monto']).quantize(Decimal(10)* -2)
+            pago = Pago(
+               fechaTransaccion = datetime.now(),
+               monto            = monto,
+               reserva          = reservaFinal,
+            )
+            #Se verifica si la billetera existe. Se toman datos de la billetera.
+            try:
+                bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
+                billetera_id = form.cleaned_data['billetera_id']
+                pin = form.cleaned_data['pin']
+            except ObjectDoesNotExist:
+                msg="Autenticación denegada"
+                return render(
+                    request,
+                        'denegado_pago_billetera.html',
+                        {  'msg' : msg,
+                            "color": "red"
+                        }
+                )
+            #Se verifica el pin de la billetera.
+            if(bille.pin != form.cleaned_data['pin']):
+                msg="Autenticación denegada"
+                return render(
+                    request,
+                        'denegado_pago_billetera.html',
+                        {  'msg' : msg,
+                            "color": "red"
+                        }
+                )
+            #Se verifica si hay saldo suficiente.
+            elif (Decimal(bille.saldo) < monto):
+                msg="Saldo Insuficiente."
+                msg2="Se recomienda recargar."
+                return render(
+                    request,
+                        'denegado_pago_billetera.html',
+                        {  'msg' : msg,
+                           'msg2' : msg2,
+                            "color": "red" }
+                )
+            else:
+
+                 #Se guarda el recibo de pago en la base de datos
+                 pago.save()
+        		 #Se realiza el consumo de la billetera.
+                 check = consumir_saldo(billetera_id,pin,monto)
+                 consumo = Consumo(saldo = monto,
+                          fechaTransaccion = datetime.now(),
+                          )
             return render(
                 request,
-                'billetera_consumorealizado.html',
-                {"form"          : form
+                'pago_billetera.html',
+                {  'id' : _id
+                ,  'pago' : pago
+                , "color"   : "green"
+                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
                 }
             )
-    else:
-        error = "There was an error!"
+
     return render(
         request,
-        'billetera_consumir.html',
-        { "form" : form }
+    	'pago_billetera.html',
+        { 'form' : form, "monto": _monto }
     )
 
 def billetera_saldo(request):
