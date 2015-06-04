@@ -30,10 +30,26 @@ class SaldoFormTestCase(TestCase):
         form = SaldoForm(data = form_data)
         self.assertFalse(form.is_valid())
 
-	# caso malicia
+    # caso malicia
     def test_ConsultarSaldo_ID_Invalido(self):
         form_data = {'billetera_id': 'susa',
-        			 'pin' : 1234
+                     'pin' : 1234
+                    }
+        form = SaldoForm(data = form_data)
+        self.assertFalse(form.is_valid())
+
+    # caso malicia
+    def test_ConsultarSaldo_PIN_Invalido_MasCaracteres(self):
+        form_data = {'billetera_id': 1,
+                     'pin' : '123456p'
+                    }
+        form = SaldoForm(data = form_data)
+        self.assertFalse(form.is_valid())
+
+    # caso malicia
+    def test_ConsultarSaldo_PIN_Invalido_MenosCaracteres(self):
+        form_data = {'billetera_id': 1,
+        			 'pin' : 123
         			}
         form = SaldoForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -45,3 +61,11 @@ class SaldoFormTestCase(TestCase):
           			}
         form = SaldoForm(data = form_data)
         self.assertTrue(form.is_valid())
+
+    #caso borde
+    def test_ConsultarSaldo_ID_0(self):
+        form_data = {'billetera_id' : 0,
+                     'pin': '19u1t'
+                    }
+        form = SaldoForm(data = form_data)
+        self.assertFalse(form.is_valid())

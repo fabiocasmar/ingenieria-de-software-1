@@ -28,7 +28,7 @@ class mostrarSaldoTestCase(TestCase):
 		b = Billetera(
 			usuario = self.crear_usuario(),
 			saldo = 0.00,
-			pin = 1234
+			pin = '1234'
 		)
 		b.save()
 		sePuede = mostrar_saldo (1,'1234')
@@ -39,7 +39,7 @@ class mostrarSaldoTestCase(TestCase):
 		b = Billetera(
 			usuario = self.crear_usuario(),
 			saldo = 0.00,
-			pin = 1234
+			pin = '1234'
 		)
 		b.save()
 		sePuede = mostrar_saldo (1,'1234jk')
@@ -50,7 +50,7 @@ class mostrarSaldoTestCase(TestCase):
 		b = Billetera(
 			usuario = self.crear_usuario(),
 			saldo = 23.00,
-			pin = 1234
+			pin = '1234'
 		)
 		b.save()
 		b2 = Billetera(
@@ -77,7 +77,7 @@ class mostrarSaldoTestCase(TestCase):
 		b = Billetera(
 			usuario = self.crear_usuario(),
 			saldo = 23.00,
-			pin = 1234
+			pin = '1234'
 		)
 
 		usua = Usuario(
@@ -91,7 +91,7 @@ class mostrarSaldoTestCase(TestCase):
 		b2 = Billetera(
 			usuario = self.crear_usuario(),
 			saldo = 25.00,
-			pin = 1234
+			pin = '1234'
 		)
 
 		b.save()
@@ -100,3 +100,14 @@ class mostrarSaldoTestCase(TestCase):
 		sePuede = mostrar_saldo (1,'1234')
 		sePuede2 = mostrar_saldo (2,'1234')
 		self.assertFalse(b.saldo == b2.saldo)
+
+	# Malicia
+	def test_ID_inexistente(self):
+		b = Billetera(
+			usuario = self.crear_usuario(),
+			saldo = 0.00,
+			pin = '1234'
+		)
+		b.save()
+		sePuede = mostrar_saldo(44,'1234')
+		self.assertFalse(sePuede)
