@@ -577,37 +577,54 @@ def billetera_consumir(request,_id,_monto):
             reservaFinal.save()
 
             monto = Decimal(request.session['monto']).quantize(Decimal(10)* -2)
-            pago = Pago(
-               fechaTransaccion = datetime.now(),
-               monto            = monto,
-               reserva          = reservaFinal,
-            )
-            #Se verifica si la billetera existe. Se toman datos de la billetera.
-            try:
-                bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
-                billetera_id = form.cleaned_data['billetera_id']
-                pin = form.cleaned_data['pin']
-            except ObjectDoesNotExist:
-                msg="Autenticación denegada"
+
+            billetera_id = form.cleaned_data['billetera_id']
+            pin = form.cleaned_data['pin']
+
+            check = consumir_saldo(billetera_id,pin,monto)
+            if check == True:
+                 bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
+           
+                 # Se crea el objeto pago.
+                 pago = Pago(
+                   fechaTransaccion = datetime.now(),
+                   cedula           = bille.usuario.cedula,
+                   monto            = monto,
+                   reserva          = reservaFinal,
+                 )
+                 #Se guarda el recibo de pago en la base de datos
+                 pago.save()
+        		 #Se realiza el consumo de la billetera.
+                 consumo = Consumo(saldo = monto,
+                          fechaTransaccion = datetime.now(),
+                          )
+                 bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
+                 if (float(bille.saldo) == 0.00):
+                    mensaje2 = "Su billetera se quedo sin fondos."
+                    mensaje3 = "Se recomienda recargar la billetera."
+                 else:
+                    mensaje3 = ""
+                    mensaje2 = ""
+                 return render(
+                    request,
+                    'pago_billetera.html',
+                    {  'id' : _id
+                    ,  'pago' : pago
+                    , "color"   : "green"
+                    , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+               		, 'mensaje2' : mensaje2
+               		, 'mensaje3' : mensaje3
+                    }
+                 )
+            elif check==False:
+                msg="Autenticacion denegada"
                 return render(
                     request,
                         'denegado_pago_billetera.html',
                         {  'msg' : msg,
-                            "color": "red"
-                        }
+                            "color": "red" }
                 )
-            #Se verifica el pin de la billetera.
-            if(bille.pin != form.cleaned_data['pin']):
-                msg="Autenticación denegada"
-                return render(
-                    request,
-                        'denegado_pago_billetera.html',
-                        {  'msg' : msg,
-                            "color": "red"
-                        }
-                )
-            #Se verifica si hay saldo suficiente.
-            elif (Decimal(bille.saldo) < monto):
+            else:
                 msg="Saldo Insuficiente."
                 msg2="Se recomienda recargar."
                 return render(
@@ -617,24 +634,6 @@ def billetera_consumir(request,_id,_monto):
                            'msg2' : msg2,
                             "color": "red" }
                 )
-            else:
-
-                 #Se guarda el recibo de pago en la base de datos
-                 pago.save()
-        		 #Se realiza el consumo de la billetera.
-                 check = consumir_saldo(billetera_id,pin,monto)
-                 consumo = Consumo(saldo = monto,
-                          fechaTransaccion = datetime.now(),
-                          )
-            return render(
-                request,
-                'pago_billetera.html',
-                {  'id' : _id
-                ,  'pago' : pago
-                , "color"   : "green"
-                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
-                }
-            )
 
     return render(
         request,
