@@ -83,11 +83,11 @@ class recargarSaldoTestCase(TestCase):
 		b.save()
 		resp = recargar_saldo(b.id,'1234',3)
 		resp2 = recargar_saldo(b.id,'1234',4)
-		resp3 = recargar_saldo(b.id,'1234',5)
-		resp4 = recargar_saldo(b.id,'1234',3)
+		resp3 = recargar_saldo(b.id,'1234',5.85)
+		resp4 = recargar_saldo(b.id,'1234',3.00)
 		billetera = Billetera.objects.get(id=b.id)
 		saldo = float(billetera.saldo)
-		self.assertEqual(saldo, float(15))
+		self.assertEqual(saldo, float(15.85))
 
 	# Malicia
 	def test_ID_inexistente(self):
