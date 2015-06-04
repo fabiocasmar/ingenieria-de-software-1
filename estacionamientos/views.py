@@ -822,17 +822,34 @@ def editar_dueno(request, _id):
                 estacionamiento.propietario = nuevo_propietario
                 estacionamiento.save()
                 msg = "¡Cambiado dueño con Éxito!"
+                return render(
+                    request,
+                    'editar_dueno.html',
+                    { 'form': form
+                    , 'estacionamiento': estacionamiento, 
+                    'msg': msg
+                    , 'color' : 'black'
+                    }
+                )
         except ObjectDoesNotExist:
             form = CedulaForm()
             msg = "Propietario no existe"
 
+            return render(
+                request,
+                'editar_dueno_noexiste.html',
+                { 'form': form
+                , 'estacionamiento': estacionamiento
+                }
+            )
     return render(
-        request,
-        'editar_dueno.html',
-        { 'form': form
-        , 'estacionamiento': estacionamiento, 'msg': msg,
-        }
-    )
+                request,
+                'editar_dueno.html',
+                { 'form': form
+                , 'color' : 'red'
+                , 'estacionamiento': estacionamiento, 'msg': msg,
+                }
+            )
 def grafica_tasa_de_reservacion(request):
     
     # Recuperacion del diccionario para crear el grafico
