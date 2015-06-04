@@ -555,7 +555,7 @@ class CedulaForm(forms.Form):
 class RecargaForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '^[1-9]{1}([0-9]+)?$',
         message = 'El ID solo puede contener caracteres numéricos.'
     )
 
@@ -592,7 +592,7 @@ class RecargaForm(forms.Form):
     )
 
     validar_monto = RegexValidator(
-        regex = '^[0-9]+(.[0-9]{2})?$',
+        regex = '^[0-9]+(\.[0-9]{1,2})?$',
         message = 'El monto debe ser valido'
     )
 
@@ -612,7 +612,7 @@ class RecargaForm(forms.Form):
 class ConsumirForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '^[1-9]{1}([0-9]+)?$',
         message = 'El ID solo puede contener caracteres numéricos.'
     )
 
@@ -648,7 +648,7 @@ class ConsumirForm(forms.Form):
     )
 
     validar_monto = RegexValidator(
-        regex = '^[0-9]+.[0-9]{2}$',
+        regex = '^[0-9]+(\.[0-9]{1,2})?$',
         message = 'El monto debe ser valido'
     )
 
