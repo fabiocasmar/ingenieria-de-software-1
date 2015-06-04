@@ -194,3 +194,12 @@ class RecargaFormTestCase(TestCase):
 		form = RecargaForm(data = form_data)
 		self.assertTrue(form.is_valid())
 
+	# TDD
+	def test_Recarga_3Decimales(self):
+		form_data = {'billetera_id' : 11,
+					 'pin': '19ud',
+					 'monto' : 9.012
+					}
+		form = RecargaForm(data = form_data)
+		self.assertFalse(form.is_valid())
+		
