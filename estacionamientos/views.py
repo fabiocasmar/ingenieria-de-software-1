@@ -105,12 +105,14 @@ def estacionamientos_all(request):
                     , 'estacionamientos': estacionamientos
                     }
                 )
+    espacio = " "
     form = CedulaForm()
     return render(
     request,
         'catalogo-estacionamientos.html',
         { 'form': form
         , 'estacionamientos': estacionamientos
+        , 'espacio' : espacio
         }
     )
 
@@ -643,24 +645,39 @@ def billetera_saldo(request):
             billetera_id = form.cleaned_data['billetera_id']
             pin = form.cleaned_data['pin']
             check = mostrar_saldo(billetera_id,pin)
+            try:
+                billetera_electronica = Billetera.objects.get(id =billetera_id)
+            except ObjectDoesNotExist:
+                return render(
+                    request,
+                    'autenticacion_denegada_mostrarsaldo.html'
+                    )
             billetera = Billetera.objects.get(id = billetera_id)
             
             saldo = format(float(billetera.saldo), '.2f')
 
             if check:
-                if saldo==0.00:
-                    mensaje = "Se recomienda recargar. Su saldo actual es : "
-                else:
+                if saldo==format(float(0.00), '.2f'):
                     mensaje = "Su saldo actual es : "
-
-                return render(
+                    return render(
                     request,
-                    'mostrar-saldo.html',
+                    'mostrar-saldo-cero.html',
                     {
                         "mensaje" : mensaje,
                         "saldo"   : saldo
                     }
                 )
+                else:
+                    mensaje = "Su saldo actual es : "
+
+                    return render(
+                        request,
+                        'mostrar-saldo.html',
+                        {
+                            "mensaje" : mensaje,
+                            "saldo"   : saldo
+                        }
+                    )
             else:
                 return render(
                     request,

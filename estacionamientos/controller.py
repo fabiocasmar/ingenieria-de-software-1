@@ -134,6 +134,10 @@ def consumir_saldo(ci, pin, rif_estacionamiento, consumos):
 	return billetera_electronica.saldo
 
 def mostrar_saldo(_id,_pin):
+	try:
+		billetera_electronica = Billetera.objects.get(id =_id)
+	except ObjectDoesNotExist:
+		return False
 	billetera_electronica = Billetera.objects.get(id=_id)
 	if _pin == billetera_electronica.pin:
 		return True
