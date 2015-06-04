@@ -25,7 +25,7 @@
           {% for obj in estacionamientos %}
             <tr>
               <td>{{forloop.counter}}</td>
-              <td>{{obj.propietario.nombre}}</td>
+              <td>{{obj.propietario.nombre}}{{espacio}}{{obj.propietario.apellido}}</td>
               <td>{{obj.nombre}}</td>
               <td>{{obj.rif}}</td>
               <td><a href="./{{obj.id}}">

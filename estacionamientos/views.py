@@ -105,12 +105,14 @@ def estacionamientos_all(request):
                     , 'estacionamientos': estacionamientos
                     }
                 )
+    espacio = " "
     form = CedulaForm()
     return render(
     request,
         'catalogo-estacionamientos.html',
         { 'form': form
         , 'estacionamientos': estacionamientos
+        , 'espacio' : espacio
         }
     )
 
@@ -564,14 +566,44 @@ def billetera_recargar(request):
             billetera_id = form.cleaned_data['billetera_id']
             pin = form.cleaned_data['pin']
             monto = form.cleaned_data['monto']
+            # try:
+            #     billetera = Billetera.objects.get(id = billetera_id)
+            # except ObjectDoesNotExist:
+            #     return render(
+            #         request,
+            #         'autenticacion_denegada.html',
+            #         )
             check = recargar_saldo(billetera_id,pin,monto)
-            billetera = Billetera.objects.get(id = billetera_id)
-            return render(
-                request,
-                'billetera_recargada.html',
-                {"form"          : form
-                }
-            )
+          
+            if check:
+                billetera = Billetera.objects.get(id = billetera_id)
+                usuario = billetera.usuario
+                nombre = usuario.nombre
+                apellido = usuario.apellido
+                cedula = usuario.cedula
+                recarga = Recarga(saldo = monto,
+                          fechaTransaccion = datetime.now(),
+                          )
+                espacio = " "
+                return render(
+                    request,
+                    'billetera_recargada.html',
+
+                    {"form"          : form,
+                     "nombre"        : nombre,
+                     "apellido"      : apellido,
+                     "cedula"        : cedula,
+                     "fecha"         : recarga.fechaTransaccion,
+                     "monto"         : recarga.saldo,
+                     "espacio"       : espacio
+                    }
+
+                )
+            else:
+                return render(
+                    request,
+                    'autenticacion_denegada.html',
+                    )
         else:
             error = "There was an error!"
     return render(
@@ -606,28 +638,46 @@ def billetera_saldo(request):
     if request.method == 'GET':
         form = SaldoForm()
     if request.method == 'POST':
+        print("entre aca")
         form = SaldoForm(request.POST)
+        
         if form.is_valid():
             billetera_id = form.cleaned_data['billetera_id']
             pin = form.cleaned_data['pin']
             check = mostrar_saldo(billetera_id,pin)
-            billetera = Billetera.objects.get(id = billetera_id)
-            getcontext().prec = 2
-            saldo = Decimal(billetera.saldo).quantize(Decimal(10) ** -2)
-            if check:
-                if saldo==0.00:
-                    mensaje = "Se recomienda recargar. Su saldo actual es : "
-                else:
-                    mensaje = "Su saldo actual es : "
-
+            try:
+                billetera_electronica = Billetera.objects.get(id =billetera_id)
+            except ObjectDoesNotExist:
                 return render(
                     request,
-                    'mostrar-saldo.html',
+                    'autenticacion_denegada_mostrarsaldo.html'
+                    )
+            billetera = Billetera.objects.get(id = billetera_id)
+            
+            saldo = format(float(billetera.saldo), '.2f')
+
+            if check:
+                if saldo==format(float(0.00), '.2f'):
+                    mensaje = "Su saldo actual es : "
+                    return render(
+                    request,
+                    'mostrar-saldo-cero.html',
                     {
                         "mensaje" : mensaje,
                         "saldo"   : saldo
                     }
                 )
+                else:
+                    mensaje = "Su saldo actual es : "
+
+                    return render(
+                        request,
+                        'mostrar-saldo.html',
+                        {
+                            "mensaje" : mensaje,
+                            "saldo"   : saldo
+                        }
+                    )
             else:
                 return render(
                     request,
@@ -848,7 +898,7 @@ def crear_billetera(request):
 
             obj2 = Billetera(
                 usuario = obj,
-                saldo = Decimal(0.00),
+                saldo = float(0.00),
                 pin = form.cleaned_data['pin']
             )
 

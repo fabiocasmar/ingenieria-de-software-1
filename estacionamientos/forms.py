@@ -140,8 +140,8 @@ class EstacionamientoForm(forms.Form):
 class CrearBilleteraForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
-        message = 'La cédula solo puede contener caracteres numéricos.'
+        regex   = '^[VE]-[0-9]+$',
+        message = 'La cédula debe ser de la forma V/E-xxx...'
     )
 
     name_validator = RegexValidator(
@@ -592,8 +592,8 @@ class RecargaForm(forms.Form):
     )
 
     validar_monto = RegexValidator(
-        regex = '^[0-9]+.[0-9]{2}$',
-        message = 'El monto debe ser un número positivo'
+        regex = '^[0-9]+(\.[0-9]{1,2})?$',
+        message = 'El monto debe ser valido'
     )
 
     monto = forms.CharField(
@@ -648,7 +648,7 @@ class ConsumirForm(forms.Form):
     )
 
     validar_monto = RegexValidator(
-        regex = '^[0-9]+.[0-9]{2}$',
+        regex = '^[0-9]+(\.[0-9]{1,2})?$',
         message = 'El monto debe ser valido'
     )
 
