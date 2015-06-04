@@ -77,6 +77,15 @@ class RecargaFormTestCase(TestCase):
 		form = RecargaForm(data = form_data)
 		self.assertFalse(form.is_valid())
 
+	#caso borde
+	def test_RecargarSaldo_ID_0(self):
+		form_data = {'billetera_id' : 0,
+					 'pin': '19u1t',
+					 'monto' : 345.08
+					}
+		form = RecargaForm(data = form_data)
+		self.assertFalse(form.is_valid())
+
 	#malicia
 	def test_RecargarSaldo_PIN_Invalido_Mas_digitos(self):
 		form_data = {'billetera_id' : 11,

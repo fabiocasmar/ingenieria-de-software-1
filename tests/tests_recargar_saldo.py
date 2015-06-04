@@ -60,6 +60,19 @@ class recargarSaldoTestCase(TestCase):
 		saldo = float(billetera.saldo)
 		self.assertEqual(saldo, float(resp))
 
+	# TDD
+	def test_Recarga_Decimal(self):
+		b = Billetera(
+			usuario = self.crear_usuario(),
+			saldo = 0.00,
+			pin = '1234'
+		)
+		b.save()
+		resp = recargar_saldo(b.id,'1234',9.0)
+		billetera = Billetera.objects.get(id=b.id)
+		saldo = float(billetera.saldo)
+		self.assertEqual(saldo, float(resp))
+
 	# borde
 	def test_Muchas_Recargas(self):
 		b = Billetera(
