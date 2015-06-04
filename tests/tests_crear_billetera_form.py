@@ -289,7 +289,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_todos_CamposMAlos(self):
         form_data = {'nombre' : 'Andres23',
                      'apellido' : None,
-                     'cedula' : '-23014266',
+                     'cedula' : 23014266,
                      'pin' : None
                     }
 
