@@ -580,7 +580,7 @@ def billetera_consumir(request,_id,_monto):
             # Se guarda la reserva en la base de datos
             reservaFinal.save()
 
-            monto = Decimal(request.session['monto']).quantize(Decimal(10)* -2)
+            monto = Decimal(request.session['monto'])
 
             billetera_id = form.cleaned_data['billetera_id']
             pin = form.cleaned_data['pin']
