@@ -571,12 +571,6 @@ def billetera_consumir(request,_id,_monto):
                 minute = request.session['finalReservaMinuto']
             )
 
-            reservaFinal = Reserva(
-                estacionamiento = estacionamiento,
-                inicioReserva   = inicioReserva,
-                finalReserva    = finalReserva,
-            )
-
             monto = Decimal(request.session['monto'])
 
             billetera_id = form.cleaned_data['billetera_id']
@@ -585,7 +579,15 @@ def billetera_consumir(request,_id,_monto):
             check = consumir_saldo(billetera_id,pin,monto)
             if check == True:
                  bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
-           
+
+                 reservaFinal = Reserva(
+                    estacionamiento = estacionamiento,
+                    inicioReserva   = inicioReserva,
+                    finalReserva    = finalReserva,
+                 )
+                 # Se guarda la reserva en la base de datos
+                 reservaFinal.save()
+
                  # Se crea el objeto pago.
                  pago = Pago(
                    fechaTransaccion = datetime.now(),
@@ -593,8 +595,6 @@ def billetera_consumir(request,_id,_monto):
                    monto            = monto,
                    reserva          = reservaFinal,
                  )
-                 # Se guarda la reserva en la base de datos
-                 reservaFinal.save()
                  #Se guarda el recibo de pago en la base de datos
                  pago.save()
                  #Se realiza el consumo de la billetera.
