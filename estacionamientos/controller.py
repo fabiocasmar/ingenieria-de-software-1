@@ -3,6 +3,7 @@ from estacionamientos.models import Estacionamiento, Reserva, Pago, Billetera
 from datetime import datetime, timedelta, time
 from decimal import Decimal
 from collections import OrderedDict
+from django.core.exceptions import ObjectDoesNotExist
 
 # chequeo de horarios de extended
 def HorarioEstacionamiento(HoraInicio, HoraFin):
@@ -123,13 +124,21 @@ def recargar_saldo(_id,_pin,monto):
 
 
 def consumir_saldo(_id,_pin,monto):
-	billetera_electronica = Billetera.objects.get(id=_id)
-	if _pin == billetera_electronica.pin:
-		billetera_electronica.saldo = float(float(billetera_electronica.saldo)-float(monto))
-		billetera_electronica.save()
-		return billetera_electronica.saldo
-	else:
+	try:
+		billetera_electronica = Billetera.objects.get(id =_id)
+	except ObjectDoesNotExist:
 		return False
+
+	if float(billetera_electronica.saldo) >= float(monto):
+
+		if _pin == billetera_electronica.pin:
+			billetera_electronica.saldo = float(float(billetera_electronica.saldo)-float(monto))
+			billetera_electronica.save()
+			return True
+		else:
+			return False
+	else:
+		return billetera_electronica.saldo
 
 def mostrar_saldo(_id,_pin):
 	billetera_electronica = Billetera.objects.get(id=_id)
