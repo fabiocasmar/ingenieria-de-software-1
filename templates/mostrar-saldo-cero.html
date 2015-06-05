@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load firstof from future %}
+
+{% block title %}
+  SAGE - Estacionamiento {{estacionamiento.nombre}}
+{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Estacionamientos
+    </h3>
+    <hr>
+    <div class="col-md-8">
+      <table class="table table-striped">
+          <h3>Consulta exitosa</h3>
+          <hr>
+      <div class="col-md-8" style="color:{{color}}">
+        <h>{{mensaje}}{{saldo}}</h>
+        <p>
+        <p>
+        <p>
+        <font size=3 color="red"> Se recomienda recargar. </font>
+        <hr>
+      </table>
+      <hr>
+    </div>
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-title">
+            <i class="glyphicon glyphicon-wrench pull-right"></i>
+            
+              <div class="control-group">
+                <label></label>
+                <div class="controls">
+                  <form action="/estacionamientos/">
+                    <input type="submit" class="btn btn-primary" value="Volver al Menu Inicial">
+                  </form>
+                </div>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

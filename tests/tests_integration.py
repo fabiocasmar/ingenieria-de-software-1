@@ -9,7 +9,7 @@ from datetime import (
     timedelta,
 )
 
-from estacionamientos.models import (Estacionamiento, Propietario)
+from estacionamientos.models import (Estacionamiento, Propietario, Usuario, Billetera)
 
 ###################################################################
 #                    ESTACIONAMIENTO VISTA DISPONIBLE
@@ -50,6 +50,24 @@ class IntegrationTest(TestCase):
         e.save()
         return e
 
+    def crear_usuario(self):
+        usua = Usuario(
+            nombre = "nombre",
+            apellido = "apellido",
+            cedula = "24256878",
+            )
+        usua.save()
+        return usua
+
+    def test_crear_Billetera(self):
+        b = Billetera(
+            usuario = self.crear_usuario(),
+            saldo = 0.00,
+            pin = '1234'
+        )
+        b.save()
+        return b
+
     # TDD
     def test_primera_vista_disponible(self):
         response = self.client.get('/estacionamientos/')
@@ -86,6 +104,39 @@ class IntegrationTest(TestCase):
         )
         e.save()
         response = self.client.get('/estacionamientos/1/reserva')
+        self.assertEqual(response.status_code, 200)
+
+    # integracion TDD
+    def test_llamada_a_billetera_electronica(self):
+        b =Billetera(
+            usuario = self.crear_usuario(),
+            saldo = 0.00,
+            pin = '1234'
+        )
+        b.save()
+        response = self.client.get('/estacionamientos/menubilletera')
+        self.assertEqual(response.status_code, 200)
+
+    # integracion TDD
+    def test_llamada_a_recargar_billetera(self):
+        b =Billetera(
+            usuario = self.crear_usuario(),
+            saldo = 0.00,
+            pin = '1234'
+        )
+        b.save()
+        response = self.client.get('/estacionamientos/billetera_recargar')
+        self.assertEqual(response.status_code, 200)
+
+    # integracion TDD
+    def test_llamada_a_consultar_saldo(self):
+        b =Billetera(
+            usuario = self.crear_usuario(),
+            saldo = 0.00,
+            pin = '1234'
+        )
+        b.save()
+        response = self.client.get('/estacionamientos/billetera_saldo')
         self.assertEqual(response.status_code, 200)
         
     # integracion malicia 

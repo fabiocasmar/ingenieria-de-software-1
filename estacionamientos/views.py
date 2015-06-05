@@ -106,12 +106,14 @@ def estacionamientos_all(request):
                     , 'estacionamientos': estacionamientos
                     }
                 )
+    espacio = " "
     form = CedulaForm()
     return render(
     request,
         'catalogo-estacionamientos.html',
         { 'form': form
         , 'estacionamientos': estacionamientos
+        , 'espacio' : espacio
         }
     )
 
@@ -491,23 +493,25 @@ def billetera_recargar(request):
             billetera_id = form.cleaned_data['billetera_id']
             pin = form.cleaned_data['pin']
             monto = form.cleaned_data['monto']
-            try:
-                billetera = Billetera.objects.get(id = billetera_id)
-            except ObjectDoesNotExist:
-                return render(
-                    request,
-                    'autenticacion_denegada.html',
-                    )
+            # try:
+            #     billetera = Billetera.objects.get(id = billetera_id)
+            # except ObjectDoesNotExist:
+            #     return render(
+            #         request,
+            #         'autenticacion_denegada.html',
+            #         )
             check = recargar_saldo(billetera_id,pin,monto)
-            usuario = billetera.usuario
-            nombre = usuario.nombre
-            apellido = usuario.apellido
-            cedula = usuario.cedula
-            recarga = Recarga(saldo = monto,
-                              fechaTransaccion = datetime.now(),
-                              )
-            espacio = " "
+          
             if check:
+                billetera = Billetera.objects.get(id = billetera_id)
+                usuario = billetera.usuario
+                nombre = usuario.nombre
+                apellido = usuario.apellido
+                cedula = usuario.cedula
+                recarga = Recarga(saldo = monto,
+                          fechaTransaccion = datetime.now(),
+                          )
+                espacio = " "
                 return render(
                     request,
                     'billetera_recargada.html',
@@ -652,24 +656,39 @@ def billetera_saldo(request):
             billetera_id = form.cleaned_data['billetera_id']
             pin = form.cleaned_data['pin']
             check = mostrar_saldo(billetera_id,pin)
+            try:
+                billetera_electronica = Billetera.objects.get(id =billetera_id)
+            except ObjectDoesNotExist:
+                return render(
+                    request,
+                    'autenticacion_denegada_mostrarsaldo.html'
+                    )
             billetera = Billetera.objects.get(id = billetera_id)
             
             saldo = format(float(billetera.saldo), '.2f')
 
             if check:
-                if saldo==0.00:
-                    mensaje = "Se recomienda recargar. Su saldo actual es : "
-                else:
+                if saldo==format(float(0.00), '.2f'):
                     mensaje = "Su saldo actual es : "
-
-                return render(
+                    return render(
                     request,
-                    'mostrar-saldo.html',
+                    'mostrar-saldo-cero.html',
                     {
                         "mensaje" : mensaje,
                         "saldo"   : saldo
                     }
                 )
+                else:
+                    mensaje = "Su saldo actual es : "
+
+                    return render(
+                        request,
+                        'mostrar-saldo.html',
+                        {
+                            "mensaje" : mensaje,
+                            "saldo"   : saldo
+                        }
+                    )
             else:
                 return render(
                     request,
@@ -814,17 +833,34 @@ def editar_dueno(request, _id):
                 estacionamiento.propietario = nuevo_propietario
                 estacionamiento.save()
                 msg = "¡Cambiado dueño con Éxito!"
+                return render(
+                    request,
+                    'editar_dueno.html',
+                    { 'form': form
+                    , 'estacionamiento': estacionamiento, 
+                    'msg': msg
+                    , 'color' : 'black'
+                    }
+                )
         except ObjectDoesNotExist:
             form = CedulaForm()
             msg = "Propietario no existe"
 
+            return render(
+                request,
+                'editar_dueno_noexiste.html',
+                { 'form': form
+                , 'estacionamiento': estacionamiento
+                }
+            )
     return render(
-        request,
-        'editar_dueno.html',
-        { 'form': form
-        , 'estacionamiento': estacionamiento, 'msg': msg,
-        }
-    )
+                request,
+                'editar_dueno.html',
+                { 'form': form
+                , 'color' : 'red'
+                , 'estacionamiento': estacionamiento, 'msg': msg,
+                }
+            )
 def grafica_tasa_de_reservacion(request):
     
     # Recuperacion del diccionario para crear el grafico

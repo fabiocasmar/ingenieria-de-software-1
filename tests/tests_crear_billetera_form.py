@@ -22,7 +22,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_test_crear_billetera_UnCampo_nombre(self):
         form_data = {'nombre' : None,
                      'apellido' : 'Zeait Mago Zuñigà',
-                     'cedula' : 34567890,
+                     'cedula' : 'V-34567890',
                      'pin' : '676ft'
                     }
 
@@ -33,7 +33,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_test_crear_billetera_UnCampo_apellido(self):
         form_data = {'nombre' : 'Patricia',
                      'apellido' : None,
-                     'cedula' : 34567890,
+                     'cedula' : 'V-34567890',
                      'pin' : '676ft'
                     }
 
@@ -55,7 +55,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_crear_billetera_UnCampo_Pin(self):
         form_data = {'nombre': 'Susana',
                      'apellido' : 'Rodríguez',
-                     'cedula' : 24222693
+                     'cedula' : 'V-24222693'
                     }
         form = CrearBilleteraForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -70,7 +70,7 @@ class CrearBilleteraFormTestCase(TestCase):
 
     # borde
     def test_crear_billetera_DosCampos_nombre_apellido(self):
-        form_data = {'cedula': 123456789,
+        form_data = {'cedula': 'V-123456789',
                      'pin' : '6789u'
                     }
         form = CrearBilleteraForm(data = form_data)
@@ -87,7 +87,7 @@ class CrearBilleteraFormTestCase(TestCase):
     # borde
     def test_crear_billetera_DosCampos_apellido_pin(self):
         form_data = {'nombre': 'Soraya',
-                     'cedula' : 23456789
+                     'cedula' : 'V-23456789'
                     }
         form = CrearBilleteraForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -95,7 +95,7 @@ class CrearBilleteraFormTestCase(TestCase):
     # borde
     def test_crear_billetera_DosCampos_nombre_pin(self):
         form_data = {'apellido': 'Marques',
-                     'cedula' : 23456789
+                     'cedula' : 'V-23456789'
                     }
         form = CrearBilleteraForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -121,7 +121,7 @@ class CrearBilleteraFormTestCase(TestCase):
 
     #borde
     def test_crear_billetera_tresCampos_nombre_apellido_pin(self):
-        form_data = {'cedula' : 24222693}
+        form_data = {'cedula' : 'V-24222693'}
         form = CrearBilleteraForm(data = form_data)
         self.assertFalse(form.is_valid())
 
@@ -136,7 +136,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_crear_billetera_todosCamposBien(self):
         form_data = {'nombre' : 'Mariana',
                      'apellido' : 'Gomez',
-                     'cedula' : 24222693,
+                     'cedula' : 'V-24222693',
                      'pin'  : '123fr'
                      }
         form = CrearBilleteraForm(data = form_data)
@@ -146,7 +146,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_nombreConAcento(self):
         form_data = {'nombre' : 'Mónica',
                      'apellido' : 'Gomez',
-                     'cedula' : 24222693,
+                     'cedula' : 'V-24222693',
                      'pin'  : '123fr'
                      }
         form = CrearBilleteraForm(data = form_data)
@@ -156,7 +156,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_apellidoConAcento(self):
         form_data = {'nombre' : 'Melissa',
                      'apellido' : 'Gómez',
-                     'cedula' : 24222694,
+                     'cedula' : 'V-24222694',
                      'pin'  : '123fr'
                      }
         form = CrearBilleteraForm(data = form_data)
@@ -166,7 +166,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_apellidoyNombreConAcento(self):
         form_data = {'nombre' : 'Ána',
                      'apellido' : 'Gómez',
-                     'cedula' : 24222694,
+                     'cedula' : 'V-24222694',
                      'pin'  : '123fr'
                      }
         form = CrearBilleteraForm(data = form_data)
@@ -176,7 +176,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_NombreConDieresis(self):
         form_data = {'nombre' : 'Cigüeña',
                      'apellido' : 'Gómez',
-                     'cedula' : 24222694,
+                     'cedula' : 'V-24222694',
                      'pin'  : '123fr'
                      }
         form = CrearBilleteraForm(data = form_data)
@@ -186,7 +186,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_apellidoConDieresis(self):
         form_data = {'nombre' : 'Gabriel',
                      'apellido' : 'Ungüento',
-                     'cedula' : 242226998,
+                     'cedula' : 'V-242226998',
                      'pin'  : '123fr'
                      }
         form = CrearBilleteraForm(data = form_data)
@@ -196,7 +196,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_apellidoYNombreConDieresis(self):
         form_data = {'nombre' : 'cigüeña',
                      'apellido' : 'Ungüento',
-                     'cedula' : 242226998,
+                     'cedula' : 'V-242226998',
                      'pin'  : '123fr'
                      }
         form = CrearBilleteraForm(data = form_data)
@@ -206,7 +206,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_apellidoConguion(self):
         form_data = {'nombre' : 'Susana',
                      'apellido' : 'Rodríguez-Mago',
-                     'cedula' : 242226998,
+                     'cedula' : 'V-242226998',
                      'pin'  : '189r'
                      }
         form = CrearBilleteraForm(data = form_data)
@@ -216,7 +216,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_nombreConguion(self):
         form_data = {'nombre' : 'Jesus-Sofia',
                      'apellido' : 'Rodríguez',
-                     'cedula' : 242226998,
+                     'cedula' : 'V-242226998',
                      'pin'  : '189r'
                      }
         form = CrearBilleteraForm(data = form_data)
@@ -226,7 +226,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_nombreConApostrofe(self):
         form_data = {'nombre' : 'Jesus\'Sofia',
                      'apellido' : 'Rodríguez',
-                     'cedula' : 242226998,
+                     'cedula' : 'V-242226998',
                      'pin'  : '189r'
                      }
         form = CrearBilleteraForm(data = form_data)
@@ -236,7 +236,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_apelllidoConApostrofe(self):
         form_data = {'nombre' : 'Jesus',
                      'apellido' : 'D\'Aguiar',
-                     'cedula' : 242226998,
+                     'cedula' : 'V-242226998',
                      'pin'  : '189r'
                      }
         form = CrearBilleteraForm(data = form_data)
@@ -246,7 +246,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_nombreConAcentoAlreves(self):
         form_data = {'nombre' : 'Andrù',
                      'apellido' : 'Zeait',
-                     'cedula' : 23014266,
+                     'cedula' : 'V-23014266',
                      'pin' : '676ft'
                     }
         form = CrearBilleteraForm(data = form_data)
@@ -256,7 +256,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_nombreYApellidoConAcentoAlreves(self):
         form_data = {'nombre' : 'Andrù',
                      'apellido' : 'Zèait',
-                     'cedula' : 23014266,
+                     'cedula' : 'V-23014266',
                      'pin' : '676ft'
                     }
 
@@ -267,7 +267,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_nombreMalo(self):
         form_data = {'nombre' : 'Andres6',
                      'apellido' : 'Zeait',
-                     'cedula' : 23014266,
+                     'cedula' : 'V-23014266',
                      'pin' : '676ft'
                     }
 
@@ -278,7 +278,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_ApellidoMalo(self):
         form_data = {'nombre' : 'Andres',
                      'apellido' : 'Zeait23',
-                     'cedula' : 23014266,
+                     'cedula' : 'V-23014266',
                      'pin' : '676ft'
                     }
 
@@ -289,7 +289,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_todos_CamposMAlos(self):
         form_data = {'nombre' : 'Andres23',
                      'apellido' : None,
-                     'cedula' : '-23014266',
+                     'cedula' : 23014266,
                      'pin' : None
                     }
 
@@ -300,7 +300,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_nombreyApellidoCompuesto(self):
         form_data = {'nombre' : 'Andres del Carmen',
                      'apellido' : 'Zeait Mago',
-                     'cedula' : 23014266,
+                     'cedula' : 'V-23014266',
                      'pin' : '6567y'
                     }
 
@@ -311,7 +311,7 @@ class CrearBilleteraFormTestCase(TestCase):
     def test_nombreyApellidoCompuesto2(self):
         form_data = {'nombre' : 'Andrés del Carmen Iñaqui',
                      'apellido' : 'Zeait Mago Zuñigà',
-                     'cedula' : 23014266,
+                     'cedula' : 'V-23014266',
                      'pin' : '676ft'
                     }
 

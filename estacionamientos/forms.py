@@ -140,8 +140,8 @@ class EstacionamientoForm(forms.Form):
 class CrearBilleteraForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
-        message = 'La cédula solo puede contener caracteres numéricos.'
+        regex   = '^[VE]-[0-9]+$',
+        message = 'La cédula debe estar en formato V/E-NumCedula'
     )
 
     name_validator = RegexValidator(
@@ -668,7 +668,7 @@ class ConsumirForm(forms.Form):
 class SaldoForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '^[1-9]{1}([0-9]+)?$',
         message = 'El ID solo puede contener caracteres numéricos.'
     )
     
