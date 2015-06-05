@@ -133,16 +133,15 @@ def consumir_saldo(_id,_pin,monto):
 	except ObjectDoesNotExist:
 		return False
 
-	if float(billetera_electronica.saldo) >= float(monto):
-
-		if _pin == billetera_electronica.pin:
+	if _pin == billetera_electronica.pin:
+		if float(billetera_electronica.saldo) >= float(monto):
 			billetera_electronica.saldo = float(float(billetera_electronica.saldo)-float(monto))
 			billetera_electronica.save()
 			return True
 		else:
-			return False
+			return  billetera_electronica.saldo
 	else:
-		return billetera_electronica.saldo
+		return False
 
 def mostrar_saldo(_id,_pin):
 	try:
