@@ -577,9 +577,6 @@ def billetera_consumir(request,_id,_monto):
                 finalReserva    = finalReserva,
             )
 
-            # Se guarda la reserva en la base de datos
-            reservaFinal.save()
-
             monto = Decimal(request.session['monto'])
 
             billetera_id = form.cleaned_data['billetera_id']
@@ -596,9 +593,11 @@ def billetera_consumir(request,_id,_monto):
                    monto            = monto,
                    reserva          = reservaFinal,
                  )
+                 # Se guarda la reserva en la base de datos
+                 reservaFinal.save()
                  #Se guarda el recibo de pago en la base de datos
                  pago.save()
-        		 #Se realiza el consumo de la billetera.
+                 #Se realiza el consumo de la billetera.
                  consumo = Consumo(saldo = monto,
                           fechaTransaccion = datetime.now(),
                           )
