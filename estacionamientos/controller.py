@@ -139,7 +139,7 @@ def consumir_saldo(_id,_pin,monto):
 			billetera_electronica.save()
 			return True
 		else:
-			return  billetera_electronica.saldo
+			return  format(float(billetera_electronica.saldo), '.2f')
 	else:
 		return False
 

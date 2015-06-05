@@ -80,7 +80,7 @@ class consumirSaldoTestCase(TestCase):
 		consumo = consumir_saldo(b.id, '1234ab', 1000.01)
 		b_aux = Billetera.objects.get(id = b.id)
 		saldo = b_aux.saldo
-		self.assertEqual(saldo, consumo)
+		self.assertEqual(saldo, float(consumo))
 
 	# Malicia
 	def test_consumirSaldo_billeteraInexistente(self):
