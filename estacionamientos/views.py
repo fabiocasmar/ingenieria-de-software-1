@@ -26,7 +26,9 @@ from estacionamientos.controller import (
     consultar_ingresos,
     mostrar_saldo,
     recargar_saldo,
-    consumir_saldo
+    consumir_saldo,
+    obtener_recargas,
+    obtener_consumos
 )
 
 from estacionamientos.forms import (
@@ -41,7 +43,8 @@ from estacionamientos.forms import (
     ConsumirForm,
     SaldoForm,
     CrearBilleteraForm,
-    ModificarPropietarioForm
+    ModificarPropietarioForm,
+    MovimientosForm
 )
 from estacionamientos.models import (
     Estacionamiento,
@@ -505,28 +508,35 @@ def billetera_recargar(request):
             if check:
                 billetera = Billetera.objects.get(id = billetera_id)
                 usuario = billetera.usuario
-                nombre = usuario.nombre
-                apellido = usuario.apellido
-                cedula = usuario.cedula
-                recarga = Recarga(saldo = monto,
+                #nombre = usuario.nombre
+                #apellido = usuario.apellido
+                #cedula = usuario.cedula
+                recarga = Recarga(
+                          nombre= form.cleaned_data['nombre'],
+                          apellido = form.cleaned_data['apellido'],
+                          cedula = form.cleaned_data['cedula'],
+                          saldo = monto,
                           fechaTransaccion = datetime.now(),
+                          tarjetaTipo = form.cleaned_data['tarjetaTipo'],
+                          billetera = billetera
                           )
+                recarga.save()
                 espacio = " "
                 return render(
                     request,
                     'billetera_recargada.html',
 
                     {"form"          : form,
-                     "nombre"        : nombre,
-                     "apellido"      : apellido,
-                     "cedula"        : cedula,
+                     "nombre"        : recarga.nombre,
+                     "apellido"      : recarga.apellido,
+                     "cedula"        : recarga.cedula,
                      "fecha"         : recarga.fechaTransaccion,
                      "monto"         : recarga.saldo,
                      "espacio"       : espacio
                     }
 
                 )
-            else:
+            elif not(check):
                 return render(
                     request,
                     'autenticacion_denegada.html',
@@ -598,16 +608,21 @@ def billetera_consumir(request,_id,_monto):
                  #Se guarda el recibo de pago en la base de datos
                  pago.save()
                  #Se realiza el consumo de la billetera.
-                 consumo = Consumo(saldo = monto,
-                          fechaTransaccion = datetime.now(),
-                          )
+
                  bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
+                 montoo = round(monto,2)
+                 consumo = Consumo(saldo = montoo,
+                          fechaTransaccion = datetime.now(),
+                          billetera = bille,
+                          establecimiento = estacionamiento
+                          )
                  if (float(bille.saldo) == 0.00):
                     mensaje2 = "Su billetera se quedo sin fondos."
                     mensaje3 = "Se recomienda recargar la billetera."
                  else:
                     mensaje3 = ""
                     mensaje2 = ""
+                    consumo.save()
                  return render(
                     request,
                     'pago_billetera.html',
@@ -703,6 +718,47 @@ def billetera_saldo(request):
         'billetera_saldo.html',
         { "form" : form }
     )
+
+def billetera_movimientos(request):
+    form = MovimientosForm()
+    if request.method == 'POST':
+        form = MovimientosForm(request.POST)
+        if form.is_valid():
+            billetera_id = form.cleaned_data['billetera_id'] 
+            pin = form.cleaned_data['pin']
+            check_recargas = obtener_recargas(billetera_id,pin)
+            check_consumos = obtener_consumos(billetera_id,pin)
+            recargas = obtener_recargas(billetera_id,pin)
+            consumos = obtener_consumos(billetera_id,pin)
+            if (check_consumos==False) and (check_recargas==False):
+                return render(
+                    request,
+                    'datos_invalidos.html',
+                    {'color'   : 'red'
+                    , 'mensaje' : 'Los datos ingresados son inválidos'
+                    }
+                )
+            else:
+                billetera = Billetera.objects.get(id=billetera_id)
+                usuario = billetera.usuario
+                return render(
+                    request,
+                    'billetera_mostrar_movimientos.html',
+                    { "recargas" : check_recargas,
+                      "consumos" : check_consumos,
+                      "billetera": billetera,
+                      "usuario"  : usuario,
+                      "form"     : form,
+
+                    }
+                )
+    return render(
+        request,
+        'billetera_movimientos.html',
+        {"form" : form
+        }
+    )
+
 
 
 def estacionamiento_ingreso(request):

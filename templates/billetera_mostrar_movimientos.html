@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}
+  SAGE
+{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-dollar"></i>
+      Movimientos
+    </h3>
+    <hr>
+    <div class="col-md-8">
+      <h>
+        <font size=4 color="black"> Usuario: {{usuario.nombre}}&nbsp;{{usuario.apellido}} </font>
+        <p>
+        <p>
+        <p>
+        <font size=4 color="black"> Saldo actual: {{billetera.saldo}}</font>
+
+      </h>
+
+      <table class="table table-striped">
+        <thead>
+
+          <tr>
+            <th>Recargas</th>
+            <th>TarjetaHabiente</th>
+            <th>Fecha</th>
+            <th>ID</th>
+            <th>Crédito</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in recargas %}
+            <tr>
+              <td></td>
+              <td>{{obj.nombre}}&nbsp;{{obj.apellido}} </td>
+              <td>{{obj.fechaTransaccion}}</td>
+              <td>{{obj.id}}</td>
+              <td>{{obj.saldo}}</td>
+            </tr>
+          {% endfor %}
+        <tr>
+            <th>Consumos</th>
+            <th>Quien Reserva</th>
+            <th>Fecha</th>
+            <th>Estacionamiento</th>
+            <th>Débito</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in consumos %}
+            <tr>
+            <td></td>
+            <td></td>
+            <td>{{obj.fechaTransaccion}}</td>
+            <td>{{obj.establecimiento.nombre}}</td>
+            <td>{{obj.saldo}}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <hr>
+    </div>
+{% endblock %}

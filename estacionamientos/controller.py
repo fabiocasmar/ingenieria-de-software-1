@@ -1,5 +1,5 @@
 # Archivo con funciones de control para SAGE
-from estacionamientos.models import Estacionamiento, Reserva, Pago, Billetera
+from estacionamientos.models import Estacionamiento, Reserva, Pago, Billetera, Recarga, Consumo
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta, time
 from decimal import Decimal
@@ -151,5 +151,35 @@ def mostrar_saldo(_id,_pin):
 	billetera_electronica = Billetera.objects.get(id=_id)
 	if _pin == billetera_electronica.pin:
 		return True
+	else:
+		return False
+
+def obtener_recargas(_id,_pin):
+	try:
+		billetera_electronica = Billetera.objects.get(id = _id)
+	except ObjectDoesNotExist:
+		return False
+	if _pin == billetera_electronica.pin:
+		recargas = Recarga.objects.filter(billetera = billetera_electronica)
+		listaRecargas = []
+		for elemento in recargas:
+			print(elemento.fechaTransaccion)
+			listaRecargas.append(elemento)
+		return recargas
+	else:
+		return False
+
+
+def obtener_consumos(_id,_pin):
+	try:
+		billetera_electronica = Billetera.objects.get(id = _id)
+	except ObjectDoesNotExist:
+		return False
+	if _pin == billetera_electronica.pin:
+		consumos = Consumo.objects.filter(billetera = billetera_electronica)
+		listaConsumos = []
+		for elemento in consumos:
+			listaConsumos.append(elemento)
+			return consumos
 	else:
 		return False
