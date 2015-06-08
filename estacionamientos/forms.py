@@ -26,7 +26,7 @@ class EstacionamientoForm(forms.Form):
     )
 
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '^[VE]-[0-9]+$',
         message = 'La cédula solo puede contener caracteres numéricos.'
     )
 
@@ -207,7 +207,7 @@ class CrearBilleteraForm(forms.Form):
 class PropietarioForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '^[VE]-[0-9]+$',
         message = 'La cédula solo puede contener caracteres numéricos.'
     )
 
@@ -285,7 +285,7 @@ class PropietarioForm(forms.Form):
 class EstacionamientoExtendedForm(forms.Form):
     
     tarifa_validator = RegexValidator(
-        regex   = '^([0-9]+(\.[0-9]+)?)$',
+        regex   = '^([VE]-[0-9]+(\.[0-9]+)?)$',
         message = 'Sólo debe contener dígitos.'
     )
     
@@ -535,7 +535,7 @@ class RifForm(forms.Form):
 class CedulaForm(forms.Form):
     
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '^[VE]-[0-9]+$',
         message = 'La cédula solo puede contener caracteres numéricos.'
     )
     
@@ -555,7 +555,7 @@ class CedulaForm(forms.Form):
 class RecargaForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[1-9]{1}([0-9]+)?$',
+        regex   = '^[VE]-[1-9]{1}([0-9]+)?$',
         message = 'El ID solo puede contener caracteres numéricos.'
     )
 
@@ -612,7 +612,7 @@ class RecargaForm(forms.Form):
 class ConsumirForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[1-9]{1}([0-9]+)?$',
+        regex   = '^[VE]-[1-9]{1}([0-9]+)?$',
         message = 'El ID solo puede contener caracteres numéricos.'
     )
 
@@ -668,7 +668,7 @@ class ConsumirForm(forms.Form):
 class SaldoForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[1-9]{1}([0-9]+)?$',
+        regex   = '^[VE]-[1-9]{1}([0-9]+)?$',
         message = 'El ID solo puede contener caracteres numéricos.'
     )
     
@@ -706,7 +706,7 @@ class SaldoForm(forms.Form):
 class ModificarPropietarioForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '^[VE]-[0-9]+$',
         message = 'La cédula solo puede contener caracteres numéricos.'
     )
     
