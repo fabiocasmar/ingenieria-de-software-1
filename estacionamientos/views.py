@@ -59,7 +59,7 @@ from estacionamientos.models import (
     Consumo
 )
 
-# Usamos esta vista para procesar todos los estacionamientos
+# Usamos esta vista para procesar todos los estacionamientos.
 def estacionamientos_all(request):
     estacionamientos = Estacionamiento.objects.all()
     # Si es un GET, mandamos un formulario vacio
@@ -505,34 +505,36 @@ def billetera_recargar(request):
             if check:
                 billetera = Billetera.objects.get(id = billetera_id)
                 usuario = billetera.usuario
-                #nombre = usuario.nombre
-                #apellido = usuario.apellido
-                #cedula = usuario.cedula
-                recarga = Recarga(
-                          nombre= form.cleaned_data['nombre'],
-                          apellido = form.cleaned_data['apellido'],
-                          cedula = form.cleaned_data['cedula'],
-                          saldo = monto,
+                nombre = usuario.nombre
+                apellido = usuario.apellido
+                cedula = usuario.cedula
+                recarga = Recarga(saldo = monto,
                           fechaTransaccion = datetime.now(),
-                          tarjetaTipo = form.cleaned_data['tarjetaTipo'],
-                          billetera = billetera
                           )
                 espacio = " "
+                if float(monto) == 0 :
+                    return render(
+                        request,
+                        'error_monto_cero.html')
+                if check == True:
+                    return render(
+                        request,
+                        'error_recarga_maxima.html')    
                 return render(
                     request,
                     'billetera_recargada.html',
 
                     {"form"          : form,
-                     "nombre"        : recarga.nombre,
-                     "apellido"      : recarga.apellido,
-                     "cedula"        : recarga.cedula,
+                     "nombre"        : nombre,
+                     "apellido"      : apellido,
+                     "cedula"        : cedula,
                      "fecha"         : recarga.fechaTransaccion,
                      "monto"         : recarga.saldo,
                      "espacio"       : espacio
                     }
 
                 )
-            elif not(check):
+            else:
                 return render(
                     request,
                     'autenticacion_denegada.html',
@@ -683,6 +685,7 @@ def billetera_saldo(request):
                         "saldo"   : saldo
                     }
                 )
+           
                 else:
                     mensaje = "Su saldo actual es : "
 

@@ -121,9 +121,12 @@ def recargar_saldo(_id,_pin,monto):
 		return False
 		
 	if _pin == billetera_electronica.pin:
-		billetera_electronica.saldo = float(float(billetera_electronica.saldo)+float(monto))
-		billetera_electronica.save()
-		return billetera_electronica.saldo
+		if float(float(billetera_electronica.saldo)+float(monto)) > 10000:
+			return True
+		else:
+			billetera_electronica.saldo = float(float(billetera_electronica.saldo)+float(monto))
+			billetera_electronica.save()
+			return billetera_electronica.saldo
 	else:
 		return False
 
