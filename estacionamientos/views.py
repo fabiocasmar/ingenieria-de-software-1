@@ -505,11 +505,17 @@ def billetera_recargar(request):
             if check:
                 billetera = Billetera.objects.get(id = billetera_id)
                 usuario = billetera.usuario
-                nombre = usuario.nombre
-                apellido = usuario.apellido
-                cedula = usuario.cedula
-                recarga = Recarga(saldo = monto,
+                #nombre = usuario.nombre
+                #apellido = usuario.apellido
+                #cedula = usuario.cedula
+                recarga = Recarga(
+                          nombre= form.cleaned_data['nombre'],
+                          apellido = form.cleaned_data['apellido'],
+                          cedula = form.cleaned_data['cedula'],
+                          saldo = monto,
                           fechaTransaccion = datetime.now(),
+                          tarjetaTipo = form.cleaned_data['tarjetaTipo'],
+                          billetera = billetera
                           )
                 espacio = " "
                 return render(
@@ -517,16 +523,16 @@ def billetera_recargar(request):
                     'billetera_recargada.html',
 
                     {"form"          : form,
-                     "nombre"        : nombre,
-                     "apellido"      : apellido,
-                     "cedula"        : cedula,
+                     "nombre"        : recarga.nombre,
+                     "apellido"      : recarga.apellido,
+                     "cedula"        : recarga.cedula,
                      "fecha"         : recarga.fechaTransaccion,
                      "monto"         : recarga.saldo,
                      "espacio"       : espacio
                     }
 
                 )
-            else:
+            elif not(check):
                 return render(
                     request,
                     'autenticacion_denegada.html',
