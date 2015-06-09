@@ -41,8 +41,9 @@ from estacionamientos.forms import (
     ConsumirForm,
     SaldoForm,
     CrearBilleteraForm,
-    ModificarPropietarioForm
-)
+    ModificarPropietarioForm,
+    CancelarReservaForm
+    )
 from estacionamientos.models import (
     Estacionamiento,
     Reserva,
@@ -56,7 +57,8 @@ from estacionamientos.models import (
     Usuario,
     Billetera,
     Recarga,
-    Consumo
+    Consumo,
+    CancelarReserva   
 )
 
 # Usamos esta vista para procesar todos los estacionamientos
@@ -1078,3 +1080,75 @@ def buscar_propietario(request):
         obj.email = form.cleaned_data['email']
         obj.save()
     return redirect('estacionamientos_all')
+
+
+def cancelar_reserva(request):
+    form = CancelarReservaForm()
+    if request.method == 'POST':
+        form = CancelarReservaForm(request.POST)
+        
+        if form.is_valid():
+            try:        
+                numero_pago = form.cleaned_data['numero_pago']
+                cedula = form.cleaned_data['cedula']
+                pago = Pago.objects.get(id = numero_pago)
+                    
+            except ObjectDoesNotExist:
+                
+                return render(
+                    request,
+                   'cancelacion_error.html',
+                    { 'color'  :'red'
+                    , 'mensaje': 'Numero de confirmacion invalido'
+                    }
+                )              
+                
+            try:
+                billetera_id = form.cleaned_data['billetera_id']  
+                billetera = Billetera.objects.get(id = billetera_id)
+            except ObjectDoesNotExist:
+                
+                return render(
+                    request,
+                    'cancelacion_error.html',
+                    { 'color'  :'red'
+                    , 'mensaje': 'Datos invalidos de la billetera electronica'
+                    }
+                )
+                
+            if (pago.reserva.inicioReserva < datetime.now()):
+                    return render(
+                        request,
+                        'cancelacion_error.html',
+                        { 'color'  :'red'
+                         , 'mensaje': 'La fecha de reserva ya ocurrio, no es posible cancelarla'
+                         }
+                    )  
+                       
+            if (pago.cedula != cedula):
+                    return render(
+                        request,
+                        'cancelacion_error.html',
+                        { 'color'  :'red'
+                         , 'mensaje': 'Numero de cedula errada. Debe introducir el numero de cedula asociado a la factura de pago'
+                         }
+                    )          
+               
+            else:
+                
+                return render(
+                    request,
+                    'cancelar_reserva.html',
+                    { 
+                        "pago" : pago,
+                        "form" : form
+                    }
+                )
+               
+    return render(
+        request,
+        'cancelar_reserva.html',
+        { "form" : form }
+    )
+    
+    

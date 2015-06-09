@@ -94,6 +94,15 @@ class Pago(models.Model):
 	def __str__(self):
 		return str(self.id)+" "+str(self.reserva.estacionamiento.nombre)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
 
+class CancelarReserva(models.Model):
+	estacionamiento = models.ForeignKey(Estacionamiento)
+	fechaTransaccion = models.DateTimeField()
+	billetera 		 = models.ForeignKey(Billetera)
+	pago =  models.ForeignKey(Pago)
+	
+	def __str__(self):
+		return str(self.id)
+	
 class EsquemaTarifario(models.Model):
 
 	# No se cuantos digitos deberiamos poner
