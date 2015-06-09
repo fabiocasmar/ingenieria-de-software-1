@@ -501,8 +501,11 @@ def billetera_recargar(request):
             #         'autenticacion_denegada.html',
             #         )
             check = recargar_saldo(billetera_id,pin,monto)
-          
-            if check:
+            print(check)
+            print(monto)
+            print(monto=="0")
+            
+            if check or (monto=="0") or (monto=="0.0") or (monto=="0.00") :
                 billetera = Billetera.objects.get(id = billetera_id)
                 usuario = billetera.usuario
                 nombre = usuario.nombre
@@ -512,7 +515,7 @@ def billetera_recargar(request):
                           fechaTransaccion = datetime.now(),
                           )
                 espacio = " "
-                if float(monto) == 0 :
+                if (monto=="0") or (monto=="0.0") or (monto=="0.00") :
                     return render(
                         request,
                         'error_monto_cero.html')
