@@ -56,7 +56,8 @@ from estacionamientos.models import (
     Usuario,
     Billetera,
     Recarga,
-    Consumo
+    Consumo,
+    QuienReserva
 )
 
 # Usamos esta vista para procesar todos los estacionamientos.
@@ -284,6 +285,9 @@ def estacionamiento_reserva(request, _id):
         # Verificamos si es valido con los validadores del formulario
         if form.is_valid():
 
+            nombre = form.cleaned_data['nombre']
+            apellido = form.cleaned_data['apellido']
+            cedula = form.cleaned_data['cedula']
             inicioReserva = form.cleaned_data['inicio']
             finalReserva = form.cleaned_data['final']
 
@@ -335,6 +339,16 @@ def estacionamiento_reserva(request, _id):
                 request.session['aniofinal']           = finalReserva.year
                 request.session['mesfinal']            = finalReserva.month
                 request.session['diafinal']            = finalReserva.day
+                
+                reserva = Reserva( nombre = nombre,
+                              apellido = apellido,
+                              cedula = cedula,
+                              estacionamiento = estacionamiento,
+                              inicioReserva = inicioReserva,
+                              finalReserva = finalReserva
+                            )
+                reserva.save()
+
                 return render(
                     request,
                     'confirmar.html',
@@ -395,6 +409,9 @@ def estacionamiento_pago(request,_id):
             )
 
             reservaFinal = Reserva(
+                nombre = form.cleaned_data['nombre'],
+                apellido = form.cleaned_data['apellido'],
+                cedula = form.cleaned_data['cedula'],
                 estacionamiento = estacionamiento,
                 inicioReserva   = inicioReserva,
                 finalReserva    = finalReserva,
@@ -407,7 +424,6 @@ def estacionamiento_pago(request,_id):
             pago = Pago(
                 fechaTransaccion = datetime.now(),
                 cedula           = form.cleaned_data['cedula'],
-                cedulaTipo       = form.cleaned_data['cedulaTipo'],
                 monto            = monto,
                 tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
                 reserva          = reservaFinal,
@@ -464,13 +480,10 @@ def estacionamiento_consulta_reserva(request):
         if form.is_valid():
 
             cedula        = form.cleaned_data['cedula']
-            facturas      = Pago.objects.filter(cedula = cedula)
+            facturas      = Reserva.objects.filter(cedula = cedula)
             listaFacturas = []
 
-            listaFacturas = sorted(
-                list(facturas),
-                key = lambda r: r.reserva.inicioReserva
-            )
+            listaFacturas = list(facturas)
             return render(
                 request,
                 'consultar-reservas.html',
@@ -590,8 +603,11 @@ def billetera_consumir(request,_id,_monto):
             check = consumir_saldo(billetera_id,pin,monto)
             if check == True:
                  bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
-
+                 usuario = bille.usuario
                  reservaFinal = Reserva(
+                    nombre = usuario.nombre,
+                    apellido = usuario.apellido,
+                    cedula = usuario.cedula,
                     estacionamiento = estacionamiento,
                     inicioReserva   = inicioReserva,
                     finalReserva    = finalReserva,
