@@ -98,8 +98,10 @@ class CancelarReserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	fechaTransaccion = models.DateTimeField()
 	billetera 		 = models.ForeignKey(Billetera)
-	pago =  models.ForeignKey(Pago)
-	
+	cedula           = models.CharField(max_length = 10,blank = True, null = True)
+	inicioReserva   = models.DateTimeField(blank = True, null = True)
+	finalReserva    = models.DateTimeField(blank = True, null = True)
+		
 	def __str__(self):
 		return str(self.id)
 	

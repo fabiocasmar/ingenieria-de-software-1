@@ -1097,7 +1097,7 @@ def cancelar_reserva(request):
                 
                 return render(
                     request,
-                   'cancelacion_error.html',
+                   'cancelacion_mensaje.html',
                     { 'color'  :'red'
                     , 'mensaje': 'Numero de confirmacion invalido'
                     }
@@ -1110,7 +1110,7 @@ def cancelar_reserva(request):
                 
                 return render(
                     request,
-                    'cancelacion_error.html',
+                    'cancelacion_mensaje.html',
                     { 'color'  :'red'
                     , 'mensaje': 'Datos invalidos de la billetera electronica'
                     }
@@ -1119,7 +1119,7 @@ def cancelar_reserva(request):
             if (pago.reserva.inicioReserva < datetime.now()):
                     return render(
                         request,
-                        'cancelacion_error.html',
+                        'cancelacion_mensaje.html',
                         { 'color'  :'red'
                          , 'mensaje': 'La fecha de reserva ya ocurrio, no es posible cancelarla'
                          }
@@ -1128,19 +1128,32 @@ def cancelar_reserva(request):
             if (pago.cedula != cedula):
                     return render(
                         request,
-                        'cancelacion_error.html',
+                        'cancelacion_mensaje.html',
                         { 'color'  :'red'
                          , 'mensaje': 'Numero de cedula errada. Debe introducir el numero de cedula asociado a la factura de pago'
                          }
                     )          
                
             else:
+                obj = CancelarReserva(
+                        estacionamiento   = Estacionamiento.objects.get(id=pago.reserva.estacionamiento.id),
+                        fechaTransaccion = datetime.now(),
+                        billetera   = Billetera.objects.get(id=billetera_id),
+                        inicioReserva = pago.reserva.inicioReserva,
+                        finalReserva = pago.reserva.finalReserva,
+                        cedula = pago.cedula     
+                    )
+                obj.save()
                 
+                reserva  = Reserva.objects.get(id=pago.reserva.id)
+                reserva.delete()
+                                               
                 return render(
                     request,
                     'cancelar_reserva.html',
                     { 
                         "pago" : pago,
+                        "billetera" : billetera,
                         "form" : form
                     }
                 )
