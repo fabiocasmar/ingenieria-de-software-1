@@ -155,4 +155,28 @@ def mostrar_saldo(_id,_pin):
 	else:
 		return False
 	
+def cancelacion(_ci,_pin,_billetera,_pago ):
 	
+	try:
+		pago = Pago.objects.get(id = _pago)
+	except ObjectDoesNotExist:
+		return (False,'Numero de confirmacion invalido') 
+	
+	try:
+		billetera = Billetera.objects.get(id = _billetera)
+	except ObjectDoesNotExist:
+		return (False,'Datos invalidos de la billetera electronica')
+                
+	if (pago.reserva.inicioReserva < datetime.now()):
+		return (False,'La fecha de reserva ya ocurrio, no es posible cancelarla')  
+                       
+	cedula=_ci.split('-')  
+                     
+	if ( pago.cedula != cedula[1]):
+		return (False,'Numero de cedula errada. Debe introducir el numero de cedula asociado a la factura de pago')
+                      	
+	if (billetera.pin != _pin):
+		return (False,'Datos invalidos de la billetera electronica')
+                      	
+	else:
+		return (True,'')
