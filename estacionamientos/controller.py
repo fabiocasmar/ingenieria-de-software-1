@@ -180,3 +180,25 @@ def cancelacion(_ci,_pin,_billetera,_pago ):
                       	
 	else:
 		return (True,'')
+	
+def crear_cancelacion(billetera_id,numero_pago ):
+	
+	pago = Pago.objects.get(id=numero_pago)
+	billetera   = Billetera.objects.get(id=billetera_id)
+	
+	obj = CancelarReserva(
+        estacionamiento   = Estacionamiento.objects.get(id=pago.reserva.estacionamiento.id),
+        fechaTransaccion = datetime.now(),
+        billetera   = Billetera.objects.get(id=billetera_id),
+        inicioReserva = pago.reserva.inicioReserva,
+        finalReserva = pago.reserva.finalReserva,
+        cedula = pago.cedula,                    
+    )
+	
+	reserva  = Reserva.objects.get(id=pago.reserva.id)
+	reserva.delete()
+                
+	obj.save()
+	
+	return obj
+		
