@@ -27,7 +27,8 @@ from estacionamientos.controller import (
     mostrar_saldo,
     recargar_saldo,
     consumir_saldo,
-    cancelacion
+    cancelacion,
+    crear_cancelacion
 )
 
 from estacionamientos.forms import (
@@ -1085,29 +1086,18 @@ def buscar_propietario(request):
 
 
 def confirmar_cancelacion(request):
-    
-    try:
+       
             billetera_id = request.session['billetera_id'] 
             numero_pago = request.session['numero_pago']
-           
+            
             pago = Pago.objects.get(id=numero_pago)
             billetera   = Billetera.objects.get(id=billetera_id)
-        
-            obj = CancelarReserva(
-                estacionamiento   = Estacionamiento.objects.get(id=pago.reserva.estacionamiento.id),
-                fechaTransaccion = datetime.now(),
-                billetera   = Billetera.objects.get(id=billetera_id),
-                inicioReserva = pago.reserva.inicioReserva,
-                finalReserva = pago.reserva.finalReserva,
-                cedula = pago.cedula,                    
-            )
-                
-            obj.save()
+    
+           
+            cancelacion = crear_cancelacion(billetera_id,numero_pago )
                 
             recargar_saldo(billetera_id,billetera.pin,pago.monto)
-            reserva  = Reserva.objects.get(id=pago.reserva.id)
-            reserva.delete()
-    
+            
             return render(
                 request,
                 'confirmar_cancelacion.html',
@@ -1115,17 +1105,11 @@ def confirmar_cancelacion(request):
                 'mensaje': 'Cancelacion realizada con Exito',
                 'exito':'exito',
                 "pago" : pago,
-                "cancelacion": obj,
+                "cancelacion": cancelacion,
                 "billetera" : billetera,
                 }
             )
-    except:
-        form = CancelarReservaForm()
-        return render(
-            request,
-            'cancelar_reserva.html',
-            { "form" : form }
-            )
+   
 
 
 def cancelar_reserva(request):
