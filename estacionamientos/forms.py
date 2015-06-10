@@ -726,7 +726,7 @@ class ModificarPropietarioForm(forms.Form):
 class CancelarReservaForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '^[VE]-[0-9]+$',
         message = 'La cédula debe estar en formato V/E-NumCedula'
     )
     
