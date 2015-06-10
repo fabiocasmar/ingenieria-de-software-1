@@ -1086,13 +1086,14 @@ def buscar_propietario(request):
 
 
 def confirmar_cancelacion(request):
+    
+    try:
        
             billetera_id = request.session['billetera_id'] 
             numero_pago = request.session['numero_pago']
             
             pago = Pago.objects.get(id=numero_pago)
             billetera   = Billetera.objects.get(id=billetera_id)
-    
            
             cancelacion = crear_cancelacion(billetera_id,numero_pago )
                 
@@ -1109,6 +1110,13 @@ def confirmar_cancelacion(request):
                 "billetera" : billetera,
                 }
             )
+    except: 
+        form = CancelarReservaForm()
+        return render(
+            request,
+            'cancelar_reserva.html',
+            {"form" : form }
+        )        
    
 
 
