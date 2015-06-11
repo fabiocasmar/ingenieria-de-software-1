@@ -41,8 +41,8 @@ class cancelacionTestCase(TestCase):
 			apellido = 'apelRes'
 			cedula = 289074
 			estacionamiento = self.crear_Estacionamiento(),
-			inicioReserva = datetime(hoy.year,hoy.month,hoy.day,15),
-			finalReserva = datetime(hoy.year,hoy.month,hoy.day,17),
+			inicioReserva = datetime(hoy.year,hoy.month,hoy.day,13,0),
+			finalReserva = datetime(hoy.year,hoy.month,hoy.day,15,0),
 		reserva.save()
 		return reserva
 
@@ -74,11 +74,88 @@ class cancelacionTestCase(TestCase):
 		)
 		billetera.save()
 		return billetera
+
 	#TDD
 	def test_billeteraExistente(self):
 		b = self.crear_billetera()
 		p = self.crear_Pago()
 		Reserva_cancelada = cancelacion(p.cedula, b.pin, b.id, p.id)
 		self.assertTrue(Reserva_cancelada[0])
-	
 
+	#malicia
+	def test_billeteraNOExistente(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		Reserva_cancelada = cancelacion(p.cedula, b.pin, 67, p.id)
+		self.assertFalse(Reserva_cancelada[0])
+
+	#TDD
+	def test_pagoExistente(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		Reserva_cancelada = cancelacion(p.cedula, b.pin, b.id, p.id)
+		self.assertTrue(Reserva_cancelada[0])
+
+	#malicia
+	def test_pagoNOExistente(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		Reserva_cancelada = cancelacion(p.cedula, b.pin, b.id, 0)
+		self.assertFalse(Reserva_cancelada[0])
+
+	#TDD
+	def test_pinValido(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		pin = '1234ab'
+		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, p.id)
+		self.assertEqual(b.pin, pin)
+
+	#malicia
+	def test_pinInvalido(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		pin = '1234f'
+		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, p.id)
+		self.assertNotEqual(b.pin, pin)
+
+	#TDD
+	def test_pagoIDValido(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		pago_id = p.id
+		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, pago_id)
+		self.assertEqual(p.id, pago_id)
+
+	#malicia
+	def test_pagoIDInvalido(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		pago_id = 0
+		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, pago_id)
+		self.assertNotEqual(p.id, pago_id)
+
+	#TDD
+	def test_CancelacionPosible(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		hoy = datetime.now()
+		p.reserva.inicioReserva =  (hoy.year,hoy.month,hoy.day,12,30)
+		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, pago_id)
+		self.assertTrue(Reserva_cancelada[0])
+
+	#malicia
+	def test_test_CancelacionImposible(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		p.reserva.inicioReserva =  (2015,06,11,18,0)
+		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, pago_id)
+		self.assertFalse(p.id, pago_id)
+
+	#malicia
+	def test_test_CancelacionImposible(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		p.reserva.inicioReserva =  (2015,06,11,18,0)
+		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, pago_id)
+		self.assertFalse(p.id, pago_id)

@@ -5,7 +5,7 @@ from django.test import TestCase
 from estacionamientos.forms import CancelarReservaForm
 
 ###################################################################
-# ESTACIONAMIENTO_CANCELAR_RESERVA_FORM
+#             ESTACIONAMIENTO_CANCELAR_RESERVA_FORM
 ###################################################################
 
 class CancelarReservaFormTestCase(TestCase):
