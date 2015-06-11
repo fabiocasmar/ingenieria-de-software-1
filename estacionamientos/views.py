@@ -632,9 +632,9 @@ def billetera_consumir(request,_id,_monto):
                  bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
                  usuario = bille.usuario
                  reservaFinal = Reserva(
-                    nombre = usuario.nombre,
-                    apellido = usuario.apellido,
-                    cedula = usuario.cedula,
+                    nombre = request.session['nombre'],
+                    apellido = request.session['apellido'],
+                    cedula = request.session['cedula'],
                     estacionamiento = estacionamiento,
                     inicioReserva   = inicioReserva,
                     finalReserva    = finalReserva
@@ -659,8 +659,9 @@ def billetera_consumir(request,_id,_monto):
                           fechaTransaccion = datetime.now(),
                           billetera = bille,
                           establecimiento = estacionamiento,
-                          reserva = reservaFinal
+                          reserva = reservaFinal,
                           )
+
                  if (float(bille.saldo) == 0.00):
                     mensaje2 = "Su billetera se quedo sin fondos."
                     mensaje3 = "Se recomienda recargar la billetera."

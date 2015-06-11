@@ -81,7 +81,7 @@ class Consumo(models.Model):
 	fechaTransaccion = models.DateTimeField()
 	billetera 		 = models.ForeignKey(Billetera)
 	establecimiento	 = models.ForeignKey(Estacionamiento)
-	reserva 		 = models.ForeignKey(Reserva)
+	reserva 		 = models.ForeignKey(Reserva,default=0)
 
 class ConfiguracionSMS(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)

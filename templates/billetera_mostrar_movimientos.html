@@ -44,7 +44,7 @@
             <th>Consumos</th>
             <th>Quien Reserva</th>
             <th>Fecha</th>
-            <th>Estacionamiento</th>
+            <th>ID</th>
             <th>Débito</th>
           </tr>
         </thead>
@@ -52,9 +52,9 @@
           {% for obj in consumos %}
             <tr>
             <td></td>
-            <td></td>
+            <td>{{obj.reserva.nombre}}</td>
             <td>{{obj.fechaTransaccion}}</td>
-            <td>{{obj.establecimiento.nombre}}</td>
+            <td>{{obj.id}}</td>
             <td>{{obj.saldo}}</td>
             </tr>
           {% endfor %}
