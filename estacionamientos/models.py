@@ -57,15 +57,16 @@ class Estacionamiento(models.Model):
 		return self.nombre+' '+str(self.id)
 
 class Recarga(models.Model):
-	nombre       = models.CharField(max_length = 50, null = True)
+	nombre       = models.CharField(max_length = 50, null = False)
 	apellido     = models.CharField(max_length = 50, blank = True, null = True)
-	cedula       = models.CharField(max_length = 10, null = True)
+	cedula       = models.CharField(max_length = 10, null = False)
 	saldo 			 = models.FloatField(null=False, blank=False)
 	fechaTransaccion = models.DateTimeField()
+	tarjetaTipo      = models.CharField(max_length = 6)
 	billetera 		 = models.ForeignKey(Billetera)
 
 class Consumo(models.Model):
-	saldo 			 = models.CharField(max_length = 100, null = False)
+	saldo 			 = models.FloatField(null=False, blank=False)
 	fechaTransaccion = models.DateTimeField()
 	billetera 		 = models.ForeignKey(Billetera)
 	establecimiento	 = models.ForeignKey(Estacionamiento)
@@ -80,7 +81,7 @@ class Reserva(models.Model):
 
 	def __str__(self):
 		return self.estacionamiento.nombre+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
-		
+
 class ConfiguracionSMS(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()

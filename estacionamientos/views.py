@@ -29,6 +29,8 @@ from estacionamientos.controller import (
     consumir_saldo,
     cancelacion,
     crear_cancelacion
+    obtener_recargas,
+    obtener_consumos
 )
 
 from estacionamientos.forms import (
@@ -45,7 +47,9 @@ from estacionamientos.forms import (
     CrearBilleteraForm,
     ModificarPropietarioForm,
     CancelarReservaForm
-    )
+    MovimientosForm
+)
+
 from estacionamientos.models import (
     Estacionamiento,
     Reserva,
@@ -320,7 +324,10 @@ def estacionamiento_reserva(request, _id):
                     estacionamiento = estacionamiento,
                     inicioReserva   = inicioReserva,
                     finalReserva    = finalReserva,
-                )
+                    nombre          = form.cleaned_data['nombre'],
+                    cedula          = form.cleaned_data['cedula'],
+                    apellido 	    = form.cleaned_data['apellido']
+		)
 
                 monto = Decimal(
                     estacionamiento.tarifa.calcularPrecio(
@@ -344,17 +351,11 @@ def estacionamiento_reserva(request, _id):
                 request.session['aniofinal']           = finalReserva.year
                 request.session['mesfinal']            = finalReserva.month
                 request.session['diafinal']            = finalReserva.day
+                request.session['nombre']              = reservaFinal.nombre
+                request.session['apellido']            = reservaFinal.apellido
+                request.session['cedula']              = reservaFinal.cedula
                 
-                reserva = Reserva( nombre = nombre,
-                              apellido = apellido,
-                              cedula = cedula,
-                              estacionamiento = estacionamiento,
-                              inicioReserva = inicioReserva,
-                              finalReserva = finalReserva
-                            )
-                reserva.save()
-
-                return render(
+		return render(
                     request,
                     'confirmar.html',
                     { 'id'      : _id
@@ -420,6 +421,9 @@ def estacionamiento_pago(request,_id):
                 estacionamiento = estacionamiento,
                 inicioReserva   = inicioReserva,
                 finalReserva    = finalReserva,
+                nombre          = request.session['nombre'],
+                apellido        = request.session['apellido'],
+                cedula          = request.session['cedula'] 
             )
 
             # Se guarda la reserva en la base de datos
@@ -483,19 +487,31 @@ def estacionamiento_consulta_reserva(request):
     if request.method == 'POST':
         form = CedulaForm(request.POST)
         if form.is_valid():
-
             cedula        = form.cleaned_data['cedula']
-            facturas      = Reserva.objects.filter(cedula = cedula)
-            listaFacturas = []
+            reservar      = Reserva.objects.filter(cedula = cedula)
+            listaReservas = []
 
-            listaFacturas = list(facturas)
-            return render(
-                request,
-                'consultar-reservas.html',
-                { "listaFacturas" : listaFacturas
-                , "form"          : form
-                }
+            listaReservas = sorted(
+                list(reservar),
+                key = lambda r: r.inicioReserva
             )
+            
+            if not reservar:
+                msg = "Usuario no existe";
+                return render(
+                    request,
+                    'consultar-reservas.html',
+                    { "form" : form , "msg": msg}
+                )
+            else:
+                return render(
+                    request,
+                    'consultar-reservas.html',
+                    { "listaReservas" : listaReservas
+                    , "form"          : form
+                    }
+                )
+
     return render(
         request,
         'consultar-reservas.html',
@@ -526,15 +542,19 @@ def billetera_recargar(request):
             if check or (monto=="0") or (monto=="0.0") or (monto=="0.00") :
                 billetera = Billetera.objects.get(id = billetera_id)
                 usuario = billetera.usuario
-                nombre = usuario.nombre
-                apellido = usuario.apellido
-                cedula = usuario.cedula
-                recarga = Recarga(nombre = form.cleaned_data['nombre'],
-                                  apellido = form.cleaned_data['apellido'],
-                                  cedula = form.cleaned_data['cedula'],
-                                  saldo = monto,
-                                  fechaTransaccion = datetime.now(),
+                #nombre = usuario.nombre
+                #apellido = usuario.apellido
+                #cedula = usuario.cedula
+                recarga = Recarga(
+                          nombre= form.cleaned_data['nombre'],
+                          apellido = form.cleaned_data['apellido'],
+                          cedula = form.cleaned_data['cedula'],
+                          saldo = monto,
+                          fechaTransaccion = datetime.now(),
+                          tarjetaTipo = form.cleaned_data['tarjetaTipo'],
+                          billetera = billetera
                           )
+                recarga.save()
                 espacio = " "
                 if (monto=="0") or (monto=="0.0") or (monto=="0.00") :
                     return render(
@@ -559,7 +579,7 @@ def billetera_recargar(request):
                     }
 
                 )
-            else:
+            elif not(check):
                 return render(
                     request,
                     'autenticacion_denegada.html',
@@ -620,6 +640,9 @@ def billetera_consumir(request,_id,_monto):
                     estacionamiento = estacionamiento,
                     inicioReserva   = inicioReserva,
                     finalReserva    = finalReserva,
+                    nombre          = request.session['nombre'],
+                    apellido        = request.session['apellido'],
+                    cedula          = request.session['cedula'] 
                  )
                  # Se guarda la reserva en la base de datos
                  reservaFinal.save()
@@ -634,16 +657,21 @@ def billetera_consumir(request,_id,_monto):
                  #Se guarda el recibo de pago en la base de datos
                  pago.save()
                  #Se realiza el consumo de la billetera.
-                 consumo = Consumo(saldo = monto,
-                          fechaTransaccion = datetime.now(),
-                          )
+
                  bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
+                 montoo = round(monto,2)
+                 consumo = Consumo(saldo = montoo,
+                          fechaTransaccion = datetime.now(),
+                          billetera = bille,
+                          establecimiento = estacionamiento
+                          )
                  if (float(bille.saldo) == 0.00):
                     mensaje2 = "Su billetera se quedo sin fondos."
                     mensaje3 = "Se recomienda recargar la billetera."
                  else:
                     mensaje3 = ""
                     mensaje2 = ""
+                    consumo.save()
                  return render(
                     request,
                     'pago_billetera.html',
@@ -740,6 +768,47 @@ def billetera_saldo(request):
         'billetera_saldo.html',
         { "form" : form }
     )
+
+def billetera_movimientos(request):
+    form = MovimientosForm()
+    if request.method == 'POST':
+        form = MovimientosForm(request.POST)
+        if form.is_valid():
+            billetera_id = form.cleaned_data['billetera_id'] 
+            pin = form.cleaned_data['pin']
+            check_recargas = obtener_recargas(billetera_id,pin)
+            check_consumos = obtener_consumos(billetera_id,pin)
+            recargas = obtener_recargas(billetera_id,pin)
+            consumos = obtener_consumos(billetera_id,pin)
+            if (check_consumos==False) and (check_recargas==False):
+                return render(
+                    request,
+                    'datos_invalidos.html',
+                    {'color'   : 'red'
+                    , 'mensaje' : 'Los datos ingresados son inválidos'
+                    }
+                )
+            else:
+                billetera = Billetera.objects.get(id=billetera_id)
+                usuario = billetera.usuario
+                return render(
+                    request,
+                    'billetera_mostrar_movimientos.html',
+                    { "recargas" : check_recargas,
+                      "consumos" : check_consumos,
+                      "billetera": billetera,
+                      "usuario"  : usuario,
+                      "form"     : form,
+
+                    }
+                )
+    return render(
+        request,
+        'billetera_movimientos.html',
+        {"form" : form
+        }
+    )
+
 
 
 def estacionamiento_ingreso(request):
