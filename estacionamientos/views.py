@@ -341,6 +341,7 @@ def estacionamiento_reserva(request, _id):
                 request.session['mesfinal']            = finalReserva.month
                 request.session['diafinal']            = finalReserva.day
                 request.session['nombre']              = reservaFinal.nombre
+                request.session['apellido']            = reservaFinal.apellido
                 request.session['cedula']              = reservaFinal.cedula
                 return render(
                     request,
@@ -406,6 +407,7 @@ def estacionamiento_pago(request,_id):
                 inicioReserva   = inicioReserva,
                 finalReserva    = finalReserva,
                 nombre          = request.session['nombre'],
+                apellido        = request.session['apellido'],
                 cedula          = request.session['cedula'] 
             )
 
@@ -479,13 +481,23 @@ def estacionamiento_consulta_reserva(request):
                 list(reservar),
                 key = lambda r: r.inicioReserva
             )
-            return render(
-                request,
-                'consultar-reservas.html',
-                { "listaReservas" : listaReservas
-                , "form"          : form
-                }
-            )
+            
+            if not reservar:
+                msg = "Usuario no existe";
+                return render(
+                    request,
+                    'consultar-reservas.html',
+                    { "form" : form , "msg": msg}
+                )
+            else:
+                return render(
+                    request,
+                    'consultar-reservas.html',
+                    { "listaReservas" : listaReservas
+                    , "form"          : form
+                    }
+                )
+
     return render(
         request,
         'consultar-reservas.html',
@@ -599,6 +611,9 @@ def billetera_consumir(request,_id,_monto):
                     estacionamiento = estacionamiento,
                     inicioReserva   = inicioReserva,
                     finalReserva    = finalReserva,
+                    nombre          = request.session['nombre'],
+                    apellido        = request.session['apellido'],
+                    cedula          = request.session['cedula'] 
                  )
                  # Se guarda la reserva en la base de datos
                  reservaFinal.save()

@@ -26,7 +26,7 @@ class EstacionamientoForm(forms.Form):
     )
 
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '^[VE]-[0-9]+$',
         message = 'La cédula solo puede contener caracteres numéricos.'
     )
 
@@ -207,7 +207,7 @@ class CrearBilleteraForm(forms.Form):
 class PropietarioForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '^[VE]-[0-9]+$',
         message = 'La cédula solo puede contener caracteres numéricos.'
     )
 
@@ -427,11 +427,24 @@ class ReservaForm(forms.Form):
         
     nombre = forms.CharField(
         required   = True,
-        label      = "Nombre del Tarjetahabiente",
+        label      = "Nombre de Persona que Reserva",
         validators = [name_validator],
         widget = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Nombre del Tarjetahabiente'
+            , 'placeholder' : 'Nombre de Persona que Reserva'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+
+    apellido = forms.CharField(
+        required   = True,
+        label      = "Apellido de Persona que Reserva",
+        validators = [name_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Apellido de Persona que Reserva'
             , 'pattern'     : name_validator.regex.pattern
             , 'message'     : name_validator.message
             }
@@ -866,7 +879,7 @@ class MovimientosForm(forms.Form):
 class ModificarPropietarioForm(forms.Form):
 
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
+        regex   = '^[VE]-[0-9]+$',
         message = 'La cédula solo puede contener caracteres numéricos.'
     )
     

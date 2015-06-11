@@ -13,7 +13,7 @@
     <hr>
     <div class="col-md-8">
       <table class="table table-striped">
-        {% if listaFacturas %}
+        {% if listaReservas %}
           <thead>
             <tr>
               <th></th>
@@ -24,13 +24,14 @@
             </tr>
           </thead>
           <tbody>
-            {% for factura in listaFacturas%}
+            {% for reserva in listaReservas%}
+
               <tr>
                 <td></td>
-                <td>{{factura.reserva.inicioReserva}}</td>
-                <td>{{factura.reserva.finalReserva}}</td>
-                <td>{{factura.reserva.estacionamiento.nombre}}</td>
-                <td>{%firstof factura.reserva.estacionamiento.telefono1 factura.reserva.estacionamiento.telefono2 factura.reserva.estacionamiento.telefono3 "N/A"%}
+                <td>{{reserva.inicioReserva}}</td>
+                <td>{{reserva.finalReserva}}</td>
+                <td>{{reserva.estacionamiento.nombre}}</td>
+                <td>{%firstof reserva.estacionamiento.telefono1 reserva.estacionamiento.telefono2 reserva.estacionamiento.telefono3 "N/A"%}
                 </td>
               </tr>
             {% endfor %}
@@ -67,6 +68,7 @@
                   </div>
                 </div>
               {% endfor %}
+              
               <div class="control-group">
                 <label></label>
                 <div class="controls">
@@ -76,6 +78,7 @@
                 </div>
               </div>
           </form>
+          {{ msg }}
         </div>
       </div>
     </div>
