@@ -60,7 +60,7 @@ class RecargaFormTestCase(TestCase):
 		self.assertFalse(form.is_valid())
 
 	#caso borde
-	def test_RecargarSaldo_UnCampo_MONTO(self):
+	def test_RecargarSaldo_UnCampo_TARJETA(self):
 		form_data = {'tarjeta': 1111111111111111}
 		form = RecargaForm(data = form_data)
 		self.assertFalse(form.is_valid())
@@ -169,6 +169,61 @@ class RecargaFormTestCase(TestCase):
 						'billetera_id' : 11,
 						 'pin': '19u1t',
 						 'monto' : -345
+					}
+		form = RecargaForm(data = form_data)
+		self.assertFalse(form.is_valid())
+
+	#malicia
+	def test_RecargarSaldo_NOMBRE_Invalido(self):
+		form_data = {'nombre' : 'Marisela1',
+						'apellido' : 'Del Valle',
+						'cedula' : 'V-23638870',
+						'tarjetaTipo' : 'Vista',
+						'tarjeta' : 1111111111111111,
+						'billetera_id' : 11,
+						 'pin': '19u1t',
+						 'monto' : 345
+					}
+		form = RecargaForm(data = form_data)
+		self.assertFalse(form.is_valid())
+
+	#malicia
+	def test_RecargarSaldo_APELLIDO_Invalido(self):
+		form_data = {'nombre' : 'Marisela1',
+						'apellido' : 'Del Valle1',
+						'cedula' : 'V-23638870',
+						'tarjetaTipo' : 'Vista',
+						'tarjeta' : 1111111111111111,
+						'billetera_id' : 11,
+						 'pin': '19u1t',
+						 'monto' : 345
+					}
+		form = RecargaForm(data = form_data)
+		self.assertFalse(form.is_valid())
+
+	#malicia
+	def test_RecargarSaldo_TARJETATIPO_Invalido(self):
+		form_data = {'nombre' : 'Marisela1',
+						'apellido' : 'Del Valle',
+						'cedula' : 'V-23638870',
+						'tarjetaTipo' : 'Vis',
+						'tarjeta' : 1111111111111111,
+						'billetera_id' : 11,
+						 'pin': '19u1t',
+						 'monto' : 345
+					}
+		form = RecargaForm(data = form_data)
+		self.assertFalse(form.is_valid())
+	#malicia
+	def test_RecargarSaldo_TARJETA_Invalido(self):
+		form_data = {'nombre' : 'Marisela1',
+						'apellido' : 'Del Valle',
+						'cedula' : 'V-23638870',
+						'tarjetaTipo' : 'Vista',
+						'tarjeta' : 1111111111,
+						'billetera_id' : 11,
+						 'pin': '19u1t',
+						 'monto' : 345
 					}
 		form = RecargaForm(data = form_data)
 		self.assertFalse(form.is_valid())
