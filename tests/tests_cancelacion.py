@@ -3,7 +3,7 @@
 from django.test import TestCase
 
 from datetime import time,datetime
-from estacionamientos.controller import cancelacion
+from estacionamientos.controller import crear_cancelacion, cancelacion
 from estacionamientos.models import (
                                         Pago,
                                         Reserva,
@@ -37,23 +37,22 @@ class cancelacionTestCase(TestCase):
 	def crear_Reserva(self):
 		hoy = datetime.now()
 		reserva = Reserva(
+			nombre = 'nomRes'
+			apellido = 'apelRes'
+			cedula = 289074
 			estacionamiento = self.crear_Estacionamiento(),
 			inicioReserva = datetime(hoy.year,hoy.month,hoy.day,15),
 			finalReserva = datetime(hoy.year,hoy.month,hoy.day,17),
-			HoraApertura = time(hour = 12, minute = 0, second = 0),
-			HoraCierre = time(hour = 18, minute = 0, second = 0),
-			 )
 		reserva.save()
 		return reserva
 
 	def crear_Pago(self):
 		pago = Pago(
-			nombre = "NombreT",
-			apellido = "apellidoT",
-			cedulaTipo = 'V',
+			fechaTransaccion = datetime.now(),
 			cedula = 24277100,
 			tarjetaTipo = 'Vista',
-			tarjeta = 1234567890123456,
+			reserva = self.crear_Reserva(),
+			monto = 10.08,
 			 )
 		pago.save()
 		return pago
@@ -75,4 +74,11 @@ class cancelacionTestCase(TestCase):
 		)
 		billetera.save()
 		return billetera
+	#TDD
+	def test_billeteraExistente(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		Reserva_cancelada = cancelacion(p.cedula, b.pin, b.id, p.id)
+		self.assertTrue(Reserva_cancelada[0])
+	
 
