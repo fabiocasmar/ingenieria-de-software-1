@@ -171,6 +171,7 @@ def cancelacion(_ci,_pin,_billetera,_pago ):
 		return (False,'La fecha de reserva ya ocurrio, no es posible cancelarla')  
                        
                      
+
 	if ( pago.cedula != _ci):
 		return (False,'Numero de cedula errada. Debe introducir el numero de cedula asociado a la factura de pago')
                       	
