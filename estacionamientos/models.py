@@ -57,9 +57,9 @@ class Estacionamiento(models.Model):
 		return self.nombre+' '+str(self.id)
 
 class Recarga(models.Model):
-	nombre       = models.CharField(max_length = 50, null = False)
+	nombre       = models.CharField(max_length = 50, null = True)
 	apellido     = models.CharField(max_length = 50, blank = True, null = True)
-	cedula       = models.CharField(max_length = 10, null = False)
+	cedula       = models.CharField(max_length = 10, null = True)
 	saldo 			 = models.FloatField(null=False, blank=False)
 	fechaTransaccion = models.DateTimeField()
 	billetera 		 = models.ForeignKey(Billetera)
