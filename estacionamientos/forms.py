@@ -392,7 +392,17 @@ class EstacionamientoExtendedForm(forms.Form):
     )
 
 class ReservaForm(forms.Form):
-    
+
+    id_validator = RegexValidator(
+    regex   = '^[VE]-[0-9]+$',
+    message = 'La cédula debe estar en formato V/E-NumCedula'   
+    )
+
+    name_validator = RegexValidator(
+        regex   = '^[a-zA-ZÁáÀàÉéÈèÍíÌìÓóÒòÚúÙùÑñüÜ\-\' ]+$',
+        message = 'El nombre no puede iniciar con espacio en blanco ni contener números ni caracteres desconocidos.'
+    )
+
     inicio = forms.SplitDateTimeField(
         required = True,
         label = 'Horario Inicio Reserva',
@@ -411,6 +421,32 @@ class ReservaForm(forms.Form):
             { 'class'       : 'form-control'
             , 'type'        : 'date'
             , 'placeholder' : 'Hora Final Reserva'
+            }
+        )
+    )
+        
+    nombre = forms.CharField(
+        required   = True,
+        label      = "Nombre del Tarjetahabiente",
+        validators = [name_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Nombre del Tarjetahabiente'
+            , 'pattern'     : name_validator.regex.pattern
+            , 'message'     : name_validator.message
+            }
+        )
+    )
+
+    cedula = forms.CharField(
+        required   = True,
+        label      = "Cédula",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
             }
         )
     )
@@ -535,8 +571,8 @@ class RifForm(forms.Form):
 class CedulaForm(forms.Form):
     
     id_validator = RegexValidator(
-        regex   = '^[0-9]+$',
-        message = 'La cédula solo puede contener caracteres numéricos.'
+        regex   = '^[VE]-[0-9]+$',
+        message = 'La cédula debe estar en formato V/E-NumCedula'   
     )
     
     cedula = forms.CharField(

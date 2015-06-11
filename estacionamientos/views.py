@@ -314,6 +314,8 @@ def estacionamiento_reserva(request, _id):
                     estacionamiento = estacionamiento,
                     inicioReserva   = inicioReserva,
                     finalReserva    = finalReserva,
+                    nombre          = form.cleaned_data['nombre'],
+                    cedula          = form.cleaned_data['cedula']
                 )
 
                 monto = Decimal(
@@ -338,6 +340,8 @@ def estacionamiento_reserva(request, _id):
                 request.session['aniofinal']           = finalReserva.year
                 request.session['mesfinal']            = finalReserva.month
                 request.session['diafinal']            = finalReserva.day
+                request.session['nombre']              = reservaFinal.nombre
+                request.session['cedula']              = reservaFinal.cedula
                 return render(
                     request,
                     'confirmar.html',
@@ -401,6 +405,8 @@ def estacionamiento_pago(request,_id):
                 estacionamiento = estacionamiento,
                 inicioReserva   = inicioReserva,
                 finalReserva    = finalReserva,
+                nombre          = request.session['nombre'],
+                cedula          = request.session['cedula'] 
             )
 
             # Se guarda la reserva en la base de datos
@@ -465,19 +471,18 @@ def estacionamiento_consulta_reserva(request):
     if request.method == 'POST':
         form = CedulaForm(request.POST)
         if form.is_valid():
-
             cedula        = form.cleaned_data['cedula']
-            facturas      = Pago.objects.filter(cedula = cedula)
-            listaFacturas = []
+            reservar      = Reserva.objects.filter(cedula = cedula)
+            listaReservas = []
 
-            listaFacturas = sorted(
-                list(facturas),
-                key = lambda r: r.reserva.inicioReserva
+            listaReservas = sorted(
+                list(reservar),
+                key = lambda r: r.inicioReserva
             )
             return render(
                 request,
                 'consultar-reservas.html',
-                { "listaFacturas" : listaFacturas
+                { "listaReservas" : listaReservas
                 , "form"          : form
                 }
             )

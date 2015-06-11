@@ -72,13 +72,16 @@ class Consumo(models.Model):
 	establecimiento	 = models.ForeignKey(Estacionamiento)
 
 class Reserva(models.Model):
+	nombre       = models.CharField(max_length = 50, blank = True, null = True)
+	apellido     = models.CharField(max_length = 50, blank = True, null = True)
+	cedula       = models.CharField(max_length = 10, null = True)
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()
 	finalReserva    = models.DateTimeField()
 
 	def __str__(self):
 		return self.estacionamiento.nombre+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
-	
+
 class ConfiguracionSMS(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()
