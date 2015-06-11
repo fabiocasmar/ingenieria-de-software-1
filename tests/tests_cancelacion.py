@@ -19,7 +19,7 @@ class cancelacionTestCase(TestCase):
 		propietario = Propietario(
 			nombre = "Nom",
 			apellido = "Apell",
-			cedula = 242768,
+			cedula = 'V-242768',
 			 )
 		propietario.save()
 		return propietario
@@ -37,19 +37,20 @@ class cancelacionTestCase(TestCase):
 	def crear_Reserva(self):
 		hoy = datetime.now()
 		reserva = Reserva(
-			nombre = 'nomRes'
-			apellido = 'apelRes'
-			cedula = 289074
+			nombre = 'nomRes',
+			apellido = 'apelRes',
+			cedula = 'V-289074',
 			estacionamiento = self.crear_Estacionamiento(),
-			inicioReserva = datetime(hoy.year,hoy.month,hoy.day,13,0),
-			finalReserva = datetime(hoy.year,hoy.month,hoy.day,15,0),
+			inicioReserva = datetime(2015,7,12,13,40),
+			finalReserva = datetime(2015,7,12,18,40),
+			)
 		reserva.save()
 		return reserva
 
 	def crear_Pago(self):
 		pago = Pago(
 			fechaTransaccion = datetime.now(),
-			cedula = 24277100,
+			cedula = "V-2345678",
 			tarjetaTipo = 'Vista',
 			reserva = self.crear_Reserva(),
 			monto = 10.08,
@@ -70,7 +71,7 @@ class cancelacionTestCase(TestCase):
 		billetera = Billetera(
 			usuario = self.crear_usuario(),
 			saldo = 1000.00,
-			pin = '1234ab'
+			pin = '1234ab',
 		)
 		billetera.save()
 		return billetera
@@ -124,7 +125,7 @@ class cancelacionTestCase(TestCase):
 		b = self.crear_billetera()
 		p = self.crear_Pago()
 		pago_id = p.id
-		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, pago_id)
+		Reserva_cancelada = cancelacion(p.cedula, b.pin, b.id, pago_id)
 		self.assertEqual(p.id, pago_id)
 
 	#malicia
@@ -132,22 +133,34 @@ class cancelacionTestCase(TestCase):
 		b = self.crear_billetera()
 		p = self.crear_Pago()
 		pago_id = 0
-		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, pago_id)
+		Reserva_cancelada = cancelacion(p.cedula, b.pin, b.id, pago_id)
 		self.assertNotEqual(p.id, pago_id)
 
 	#TDD
 	def test_CancelacionPosible(self):
 		b = self.crear_billetera()
 		p = self.crear_Pago()
-		hoy = datetime.now()
-		p.reserva.inicioReserva =  (hoy.year,hoy.month,hoy.day,12,30)
-		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, pago_id)
+		Reserva_cancelada = cancelacion(p.cedula, b.pin, b.id, p.id)
 		self.assertTrue(Reserva_cancelada[0])
 
-	#malicia
-	def test_test_CancelacionImposible(self):
+	#TDD
+	def test_SeHaceLaCancelacion(self):
 		b = self.crear_billetera()
 		p = self.crear_Pago()
-		p.reserva.inicioReserva =  (2015,06,11,18,0)
-		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, pago_id)
-		self.assertFalse(p.id, pago_id)
+		cancelacion = crear_cancelacion(b.id, p.id)
+		self.assertTrue(cancelacion[0])
+
+	#malicia
+	def test_NOSeHaceLaCancelacion_porBilletera(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		cancelacion = crear_cancelacion(87, p.id)
+		self.assertFalse(cancelacion[0])
+
+	#malicia
+	def test_NOSeHaceLaCancelacion_porPago(self):
+		b = self.crear_billetera()
+		p = self.crear_Pago()
+		cancelacion = crear_cancelacion(b.id, 87)
+		self.assertFalse(cancelacion[0])
+

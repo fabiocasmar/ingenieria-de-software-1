@@ -1202,7 +1202,7 @@ def confirmar_cancelacion(request):
                 'mensaje': 'Cancelacion realizada con Exito',
                 'exito':'exito',
                 "pago" : pago,
-                "cancelacion": cancelacion,
+                "cancelacion": cancelacion[1],
                 "billetera" : billetera,
                 }
             )
