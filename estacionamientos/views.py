@@ -524,8 +524,11 @@ def billetera_recargar(request):
                 nombre = usuario.nombre
                 apellido = usuario.apellido
                 cedula = usuario.cedula
-                recarga = Recarga(saldo = monto,
-                          fechaTransaccion = datetime.now(),
+                recarga = Recarga(nombre = form.cleaned_data['nombre'],
+                                  apellido = form.cleaned_data['apellido'],
+                                  cedula = form.cleaned_data['cedula'],
+                                  saldo = monto,
+                                  fechaTransaccion = datetime.now(),
                           )
                 espacio = " "
                 if (monto=="0") or (monto=="0.0") or (monto=="0.00") :
@@ -541,9 +544,9 @@ def billetera_recargar(request):
                     'billetera_recargada.html',
 
                     {"form"          : form,
-                     "nombre"        : nombre,
-                     "apellido"      : apellido,
-                     "cedula"        : cedula,
+                     "nombre"        : recarga.nombre,
+                     "apellido"      : recarga.apellido,
+                     "cedula"        : recarga.cedula,
                      "fecha"         : recarga.fechaTransaccion,
                      "monto"         : recarga.saldo,
                      "espacio"       : espacio
