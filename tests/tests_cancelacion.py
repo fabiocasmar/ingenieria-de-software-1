@@ -151,11 +151,3 @@ class cancelacionTestCase(TestCase):
 		p.reserva.inicioReserva =  (2015,06,11,18,0)
 		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, pago_id)
 		self.assertFalse(p.id, pago_id)
-
-	#malicia
-	def test_test_CancelacionImposible(self):
-		b = self.crear_billetera()
-		p = self.crear_Pago()
-		p.reserva.inicioReserva =  (2015,06,11,18,0)
-		Reserva_cancelada = cancelacion(p.cedula, pin, b.id, pago_id)
-		self.assertFalse(p.id, pago_id)
