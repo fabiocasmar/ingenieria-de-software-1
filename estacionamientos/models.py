@@ -68,13 +68,16 @@ class Consumo(models.Model):
 	establecimiento	 = models.ForeignKey(Estacionamiento)
 
 class Reserva(models.Model):
+	nombre       = models.CharField(max_length = 50, blank = True, null = True)
+	apellido     = models.CharField(max_length = 50, blank = True, null = True)
+	cedula       = models.CharField(max_length = 10, null = True)
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()
 	finalReserva    = models.DateTimeField()
 
 	def __str__(self):
 		return self.estacionamiento.nombre+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
-	
+		
 class ConfiguracionSMS(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()
@@ -85,15 +88,25 @@ class ConfiguracionSMS(models.Model):
 
 class Pago(models.Model):
 	fechaTransaccion = models.DateTimeField()
-	cedulaTipo       = models.CharField(max_length = 1)
 	cedula           = models.CharField(max_length = 10)
 	tarjetaTipo      = models.CharField(max_length = 6)
 	reserva          = models.ForeignKey(Reserva)
 	monto            = models.DecimalField(decimal_places = 2, max_digits = 256)
 
 	def __str__(self):
-		return str(self.id)+" "+str(self.reserva.estacionamiento.nombre)+" "+str(self.cedulaTipo)+"-"+str(self.cedula)
+		return str(self.id)+" "+str(self.reserva.estacionamiento.nombre)+" "+str(self.cedula)
 
+class CancelarReserva(models.Model):
+	estacionamiento = models.ForeignKey(Estacionamiento)
+	fechaTransaccion = models.DateTimeField()
+	billetera 		 = models.ForeignKey(Billetera)
+	cedula           = models.CharField(max_length = 10,blank = True, null = True)
+	inicioReserva   = models.DateTimeField(blank = True, null = True)
+	finalReserva    = models.DateTimeField(blank = True, null = True)
+		
+	def __str__(self):
+		return str(self.id)
+	
 class EsquemaTarifario(models.Model):
 
 	# No se cuantos digitos deberiamos poner

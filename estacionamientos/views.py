@@ -26,7 +26,9 @@ from estacionamientos.controller import (
     consultar_ingresos,
     mostrar_saldo,
     recargar_saldo,
-    consumir_saldo
+    consumir_saldo,
+    cancelacion,
+    crear_cancelacion
 )
 
 from estacionamientos.forms import (
@@ -41,8 +43,9 @@ from estacionamientos.forms import (
     ConsumirForm,
     SaldoForm,
     CrearBilleteraForm,
-    ModificarPropietarioForm
-)
+    ModificarPropietarioForm,
+    CancelarReservaForm
+    )
 from estacionamientos.models import (
     Estacionamiento,
     Reserva,
@@ -56,8 +59,10 @@ from estacionamientos.models import (
     Usuario,
     Billetera,
     Recarga,
-    Consumo
+    Consumo,
+    CancelarReserva   
 )
+from django.template.context_processors import request
 
 # Usamos esta vista para procesar todos los estacionamientos
 def estacionamientos_all(request):
@@ -1078,3 +1083,90 @@ def buscar_propietario(request):
         obj.email = form.cleaned_data['email']
         obj.save()
     return redirect('estacionamientos_all')
+
+
+def confirmar_cancelacion(request):
+    
+    try:
+       
+            billetera_id = request.session['billetera_id'] 
+            numero_pago = request.session['numero_pago']
+            
+            pago = Pago.objects.get(id=numero_pago)
+            billetera   = Billetera.objects.get(id=billetera_id)
+           
+            cancelacion = crear_cancelacion(billetera_id,numero_pago )
+                
+            recargar_saldo(billetera_id,billetera.pin,pago.monto)
+            
+            return render(
+                request,
+                'confirmar_cancelacion.html',
+                { 'color'  :'green',
+                'mensaje': 'Cancelacion realizada con Exito',
+                'exito':'exito',
+                "pago" : pago,
+                "cancelacion": cancelacion,
+                "billetera" : billetera,
+                }
+            )
+    except: 
+        form = CancelarReservaForm()
+        return render(
+            request,
+            'cancelar_reserva.html',
+            {"form" : form }
+        )        
+   
+
+
+def cancelar_reserva(request):
+    
+    form = CancelarReservaForm()
+    
+    if request.method == 'POST':
+        form = CancelarReservaForm(request.POST)
+        
+        if form.is_valid():
+               
+            numero_pago = form.cleaned_data['numero_pago']
+            cedula = form.cleaned_data['cedula']
+            billetera_id = form.cleaned_data['billetera_id']
+            pin = form.cleaned_data['pin']   
+                 
+            check = cancelacion(cedula,pin,billetera_id,numero_pago)  
+           
+            if check[0]:
+                
+                billetera = Billetera.objects.get(id=billetera_id)
+                pago = Pago.objects.get(id=numero_pago)
+           
+                request.session['billetera_id']    = billetera_id
+                request.session['numero_pago']  = numero_pago 
+                                                           
+                return render(
+                        request,
+                        'confirmar_cancelacion.html',
+                        {  "pago" : pago,
+                           "mensaje":"Datos de la Cancelacion",
+                           "color" : "black",
+                           "billetera" : billetera,
+                        }
+                    )
+            else:
+                return render(
+                    request,
+                    'cancelacion_mensaje.html',
+                    { 'color'  :'red'
+                    , 'mensaje': check[1]
+                    }
+                )
+         
+    return render(
+        request,
+        'cancelar_reserva.html',
+        { "form" : form }
+    )
+    
+    
+    
