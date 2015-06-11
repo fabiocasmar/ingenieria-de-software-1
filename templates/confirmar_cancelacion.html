@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load firstof from future %}
+
+{% block title %}
+  SAGE - Estacionamiento {{estacionamiento.nombre}}
+{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Estacionamientos
+    </h3>
+    <hr>
+    <div class="col-md-8" style="color:{{color}}">
+        {{mensaje}}
+    </div>   
+    <div class="col-md-8">  
+     <hr>
+        <div class="row">
+          <div>
+            <table class="table table-striped">
+             {% if exito %}
+              <caption>Factura de la Cancelacion</caption>
+             {% else %}
+              <caption>Datos de la Reserva </caption>
+             {% endif %}  
+              <tbody>
+              	{% if exito %}
+              	<tr><td><b><i class="fa fa-circle"></i>
+                  Número de Transacción de la cancelacion:
+                </b></td></tr>
+                <tr><td>
+                  {{cancelacion.id}}
+                </td></tr>
+             	{% endif %}
+                <tr><td><b><i class="fa fa-circle"></i>
+                  Número de Transacción del pago:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.id}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
+                  Fecha de Transacción:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.fechaTransaccion}}
+                </td></tr>
+
+				 <tr><td><b><i class="fa fa-car"></i>
+                  Estacionamiento:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.estacionamiento.nombre}}
+                </td></tr>
+                
+                <tr><td><b><i class="fa fa-clock-o"></i>
+                  Horario inicio de reserva:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.inicioReserva}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
+                  Horario fin de reserva:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.finalReserva}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-user"></i>
+                  Cédula:
+                </b></td></tr>
+                <tr><td>
+                  V-{{pago.cedula}}
+                </td></tr>
+                <tr><td><b><i class="fa fa-money"></i>
+                  Monto:
+                </b></td></tr>
+                <tr><td>
+                  BsF. {{pago.monto|floatformat:2|intcomma }}
+                </td></tr>
+              </tbody>
+            </table>
+            <table class="table table-striped">
+             {% if exito %}
+             <caption>Datos de la Billetera recargada</caption>
+             {% else %}
+             <caption>Datos de la billetera a recargar </caption>
+             {% endif %}
+             <tbody>
+               <tr><td><b><i class="fa fa-circle"></i>
+                 Número de identificador:
+               </b></td></tr>
+               <tr><td>
+                 {{billetera.id}}
+               </td></tr>
+            {% if exito %}
+            <tr><td>
+            <form action="/estacionamientos/cancelar_reserva">
+              <input type="submit" class="btn btn-primary" value="Volver">
+            </form>
+         </td></tr>
+        </tbody>
+      </table>
+           
+            {% else %}
+            <tr><td>
+              <a href="/estacionamientos/confirmar_cancelacion">
+                <button class="btn btn-primary">
+                  Continuar
+                </button>
+              <a href="/estacionamientos/cancelar_reserva">
+                <button class="btn btn-primary">
+                  Volver
+                </button>
+              </a>
+            </td></tr>
+          </tbody>
+        </table>
+            {% endif %}   
+            <hr>
+         </div>
+      </div>
+{% endblock %}
