@@ -13,32 +13,7 @@
     <hr>
     <div class="col-md-8">
       <table class="table table-striped">
-        {% if listaReservas %}
-          <thead>
-            <tr>
-              <th></th>
-              <th>Inicio</th>
-              <th>Fin</th>
-              <th>Estacionamiento</th>
-              <th>Telefono</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for reserva in listaReservas%}
-
-              <tr>
-                <td></td>
-                <td>{{reserva.inicioReserva}}</td>
-                <td>{{reserva.finalReserva}}</td>
-                <td>{{reserva.estacionamiento.nombre}}</td>
-                <td>{%firstof reserva.estacionamiento.telefono1 reserva.estacionamiento.telefono2 reserva.estacionamiento.telefono3 "N/A"%}
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        {% else %}
-          <h3>Introduzca su Cédula</h3>
-        {% endif %}
+          <h3>Introduzca el ID de su billetera y su PIN</h3>
       </table>
       <hr>
     </div>
@@ -48,13 +23,13 @@
           <div class="panel-title">
             <i class="glyphicon glyphicon-wrench pull-right"></i>
             <h4>
-              Consultar Reservas
+              Consultar movimientos
             </h4>
           </div>
         </div>
         <div class="panel-body">
           <form
-            action="/estacionamientos/consulta_reserva"
+            action="/estacionamientos/billetera_movimientos"
             method="post"
             class="form form-vertical"
           >
@@ -68,7 +43,6 @@
                   </div>
                 </div>
               {% endfor %}
-              
               <div class="control-group">
                 <label></label>
                 <div class="controls">
@@ -78,9 +52,9 @@
                 </div>
               </div>
           </form>
-          {{ msg }}
         </div>
       </div>
     </div>
   </div>
+{% include "validator.js.html" %}
 {% endblock %}

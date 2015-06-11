@@ -1,5 +1,5 @@
 # Archivo con funciones de control para SAGE
-from estacionamientos.models import Estacionamiento, Reserva, Pago, Billetera
+from estacionamientos.models import Estacionamiento, Reserva, Pago, Billetera, Recarga, Consumo, CancelarReserva
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta, time
 from decimal import Decimal
@@ -130,6 +130,7 @@ def recargar_saldo(_id,_pin,monto):
 	else:
 		return False
 
+
 def consumir_saldo(_id,_pin,monto):
 	try:
 		billetera_electronica = Billetera.objects.get(id =_id)
@@ -154,5 +155,82 @@ def mostrar_saldo(_id,_pin):
 	billetera_electronica = Billetera.objects.get(id=_id)
 	if _pin == billetera_electronica.pin:
 		return True
+	else:
+		return False
+	
+def cancelacion(_ci,_pin,_billetera,_pago ):
+	
+	try:
+		pago = Pago.objects.get(id = _pago)
+	except ObjectDoesNotExist:
+		return (False,'Numero de confirmacion invalido') 
+	
+	try:
+		billetera = Billetera.objects.get(id = _billetera)
+	except ObjectDoesNotExist:
+		return (False,'Datos invalidos de la billetera electronica')
+                
+	if (pago.reserva.inicioReserva < datetime.now()):
+		return (False,'La fecha de reserva ya ocurrio, no es posible cancelarla')  
+                       
+                     
+
+	if ( pago.cedula != _ci):
+		return (False,'Numero de cedula errada. Debe introducir el numero de cedula asociado a la factura de pago')
+                      	
+	if (billetera.pin != _pin):
+		return (False,'Datos invalidos de la billetera electronica')
+                      	
+	else:
+		return (True,'')
+	
+def crear_cancelacion(billetera_id,numero_pago ):
+	
+	pago = Pago.objects.get(id=numero_pago)
+	billetera   = Billetera.objects.get(id=billetera_id)
+	
+	obj = CancelarReserva(
+        estacionamiento   = Estacionamiento.objects.get(id=pago.reserva.estacionamiento.id),
+        fechaTransaccion = datetime.now(),
+        billetera   = Billetera.objects.get(id=billetera_id),
+        inicioReserva = pago.reserva.inicioReserva,
+        finalReserva = pago.reserva.finalReserva,
+        cedula = pago.cedula,                    
+    )
+	
+	reserva  = Reserva.objects.get(id=pago.reserva.id)
+	reserva.delete()
+                
+	obj.save()
+	
+	return obj
+		
+def obtener_recargas(_id,_pin):
+	try:
+		billetera_electronica = Billetera.objects.get(id = _id)
+	except ObjectDoesNotExist:
+		return False
+	if _pin == billetera_electronica.pin:
+		recargas = Recarga.objects.filter(billetera = billetera_electronica)
+		listaRecargas = []
+		for elemento in recargas:
+			print(elemento.fechaTransaccion)
+			listaRecargas.append(elemento)
+		return recargas
+	else:
+		return False
+
+
+def obtener_consumos(_id,_pin):
+	try:
+		billetera_electronica = Billetera.objects.get(id = _id)
+	except ObjectDoesNotExist:
+		return False
+	if _pin == billetera_electronica.pin:
+		consumos = Consumo.objects.filter(billetera = billetera_electronica)
+		listaConsumos = []
+		for elemento in consumos:
+			listaConsumos.append(elemento)
+			return consumos
 	else:
 		return False
