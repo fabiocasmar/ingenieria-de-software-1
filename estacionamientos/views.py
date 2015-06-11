@@ -61,10 +61,11 @@ from estacionamientos.models import (
     Recarga,
     Consumo,
     CancelarReserva   
+#    QuienReserva
 )
 from django.template.context_processors import request
 
-# Usamos esta vista para procesar todos los estacionamientos
+# Usamos esta vista para procesar todos los estacionamientos.
 def estacionamientos_all(request):
     estacionamientos = Estacionamiento.objects.all()
     # Si es un GET, mandamos un formulario vacio
@@ -289,6 +290,9 @@ def estacionamiento_reserva(request, _id):
         # Verificamos si es valido con los validadores del formulario
         if form.is_valid():
 
+            nombre = form.cleaned_data['nombre']
+            apellido = form.cleaned_data['apellido']
+            cedula = form.cleaned_data['cedula']
             inicioReserva = form.cleaned_data['inicio']
             finalReserva = form.cleaned_data['final']
 
@@ -340,6 +344,16 @@ def estacionamiento_reserva(request, _id):
                 request.session['aniofinal']           = finalReserva.year
                 request.session['mesfinal']            = finalReserva.month
                 request.session['diafinal']            = finalReserva.day
+                
+                reserva = Reserva( nombre = nombre,
+                              apellido = apellido,
+                              cedula = cedula,
+                              estacionamiento = estacionamiento,
+                              inicioReserva = inicioReserva,
+                              finalReserva = finalReserva
+                            )
+                reserva.save()
+
                 return render(
                     request,
                     'confirmar.html',
@@ -400,6 +414,9 @@ def estacionamiento_pago(request,_id):
             )
 
             reservaFinal = Reserva(
+                nombre = form.cleaned_data['nombre'],
+                apellido = form.cleaned_data['apellido'],
+                cedula = form.cleaned_data['cedula'],
                 estacionamiento = estacionamiento,
                 inicioReserva   = inicioReserva,
                 finalReserva    = finalReserva,
@@ -412,7 +429,6 @@ def estacionamiento_pago(request,_id):
             pago = Pago(
                 fechaTransaccion = datetime.now(),
                 cedula           = form.cleaned_data['cedula'],
-                cedulaTipo       = form.cleaned_data['cedulaTipo'],
                 monto            = monto,
                 tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
                 reserva          = reservaFinal,
@@ -469,13 +485,10 @@ def estacionamiento_consulta_reserva(request):
         if form.is_valid():
 
             cedula        = form.cleaned_data['cedula']
-            facturas      = Pago.objects.filter(cedula = cedula)
+            facturas      = Reserva.objects.filter(cedula = cedula)
             listaFacturas = []
 
-            listaFacturas = sorted(
-                list(facturas),
-                key = lambda r: r.reserva.inicioReserva
-            )
+            listaFacturas = list(facturas)
             return render(
                 request,
                 'consultar-reservas.html',
@@ -506,25 +519,40 @@ def billetera_recargar(request):
             #         'autenticacion_denegada.html',
             #         )
             check = recargar_saldo(billetera_id,pin,monto)
-          
-            if check:
+            print(check)
+            print(monto)
+            print(monto=="0")
+            
+            if check or (monto=="0") or (monto=="0.0") or (monto=="0.00") :
                 billetera = Billetera.objects.get(id = billetera_id)
                 usuario = billetera.usuario
                 nombre = usuario.nombre
                 apellido = usuario.apellido
                 cedula = usuario.cedula
-                recarga = Recarga(saldo = monto,
-                          fechaTransaccion = datetime.now(),
+                recarga = Recarga(nombre = form.cleaned_data['nombre'],
+                                  apellido = form.cleaned_data['apellido'],
+                                  cedula = form.cleaned_data['cedula'],
+                                  saldo = monto,
+                                  fechaTransaccion = datetime.now(),
                           )
                 espacio = " "
+                if (monto=="0") or (monto=="0.0") or (monto=="0.00") :
+                    return render(
+                        request,
+                        'error_monto_cero.html')
+                if check == True:
+                    return render(
+                        request,
+                        'error_recarga_maxima.html')    
+                recarga.save()
                 return render(
                     request,
                     'billetera_recargada.html',
 
                     {"form"          : form,
-                     "nombre"        : nombre,
-                     "apellido"      : apellido,
-                     "cedula"        : cedula,
+                     "nombre"        : recarga.nombre,
+                     "apellido"      : recarga.apellido,
+                     "cedula"        : recarga.cedula,
                      "fecha"         : recarga.fechaTransaccion,
                      "monto"         : recarga.saldo,
                      "espacio"       : espacio
@@ -584,8 +612,11 @@ def billetera_consumir(request,_id,_monto):
             check = consumir_saldo(billetera_id,pin,monto)
             if check == True:
                  bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
-
+                 usuario = bille.usuario
                  reservaFinal = Reserva(
+                    nombre = usuario.nombre,
+                    apellido = usuario.apellido,
+                    cedula = usuario.cedula,
                     estacionamiento = estacionamiento,
                     inicioReserva   = inicioReserva,
                     finalReserva    = finalReserva,
@@ -682,6 +713,7 @@ def billetera_saldo(request):
                         "saldo"   : saldo
                     }
                 )
+           
                 else:
                     mensaje = "Su saldo actual es : "
 

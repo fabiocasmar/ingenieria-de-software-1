@@ -57,6 +57,9 @@ class Estacionamiento(models.Model):
 		return self.nombre+' '+str(self.id)
 
 class Recarga(models.Model):
+	nombre       = models.CharField(max_length = 50, null = True)
+	apellido     = models.CharField(max_length = 50, blank = True, null = True)
+	cedula       = models.CharField(max_length = 10, null = True)
 	saldo 			 = models.FloatField(null=False, blank=False)
 	fechaTransaccion = models.DateTimeField()
 	billetera 		 = models.ForeignKey(Billetera)
@@ -203,3 +206,11 @@ class TarifaHoraPico(EsquemaTarifario):
 
 	def tipo(self):
 		return("Tarifa diferenciada por hora pico")
+
+class QuienReserva(models.Model):
+	nombre       = models.CharField(max_length = 50, blank = True, null = True)
+	apellido     = models.CharField(max_length = 50, blank = True, null = True)
+	cedula       = models.CharField(max_length = 10, null = False)
+
+	def __str__(self):
+		return self.cedula+' '+str(self.id)

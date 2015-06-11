@@ -27,10 +27,10 @@
             {% for factura in listaFacturas%}
               <tr>
                 <td></td>
-                <td>{{factura.reserva.inicioReserva}}</td>
-                <td>{{factura.reserva.finalReserva}}</td>
-                <td>{{factura.reserva.estacionamiento.nombre}}</td>
-                <td>{%firstof factura.reserva.estacionamiento.telefono1 factura.reserva.estacionamiento.telefono2 factura.reserva.estacionamiento.telefono3 "N/A"%}
+                <td>{{factura.inicioReserva}}</td>
+                <td>{{factura.finalReserva}}</td>
+                <td>{{factura.estacionamiento.nombre}}</td>
+                <td>{%firstof factura.estacionamiento.telefono1 factura.estacionamiento.telefono2 factura.estacionamiento.telefono3 "N/A"%}
                 </td>
               </tr>
             {% endfor %}
