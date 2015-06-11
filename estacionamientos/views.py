@@ -28,9 +28,9 @@ from estacionamientos.controller import (
     recargar_saldo,
     consumir_saldo,
     cancelacion,
-    crear_cancelacion
+    crear_cancelacion,
     obtener_recargas,
-    obtener_consumos
+    obtener_consumos,
 )
 
 from estacionamientos.forms import (
@@ -46,8 +46,8 @@ from estacionamientos.forms import (
     SaldoForm,
     CrearBilleteraForm,
     ModificarPropietarioForm,
-    CancelarReservaForm
-    MovimientosForm
+    CancelarReservaForm,
+    MovimientosForm,
 )
 
 from estacionamientos.models import (
@@ -64,10 +64,11 @@ from estacionamientos.models import (
     Billetera,
     Recarga,
     Consumo,
-    CancelarReserva   
-#    QuienReserva
+    CancelarReserva,
+   # QuienReserva
 )
-from django.template.context_processors import request
+
+#from django.template.context_processors import request
 
 # Usamos esta vista para procesar todos los estacionamientos.
 def estacionamientos_all(request):
@@ -327,7 +328,7 @@ def estacionamiento_reserva(request, _id):
                     nombre          = form.cleaned_data['nombre'],
                     cedula          = form.cleaned_data['cedula'],
                     apellido 	    = form.cleaned_data['apellido']
-		)
+		        )
 
                 monto = Decimal(
                     estacionamiento.tarifa.calcularPrecio(
@@ -355,16 +356,16 @@ def estacionamiento_reserva(request, _id):
                 request.session['apellido']            = reservaFinal.apellido
                 request.session['cedula']              = reservaFinal.cedula
                 
-		return render(
-                    request,
-                    'confirmar.html',
-                    { 'id'      : _id
-                    , 'monto'   : monto
-                    , 'reserva' : reservaFinal
-                    , 'color'   : 'green'
-                    , 'mensaje' : 'Existe un puesto disponible'
-                    }
-                )
+                return render(
+                            request,
+                            'confirmar.html',
+                            { 'id'      : _id
+                            , 'monto'   : monto
+                            , 'reserva' : reservaFinal
+                            , 'color'   : 'green'
+                            , 'mensaje' : 'Existe un puesto disponible'
+                            }
+                        )
             else:
                 # Cambiar mensaje
                 return render(
@@ -420,10 +421,7 @@ def estacionamiento_pago(request,_id):
                 cedula = form.cleaned_data['cedula'],
                 estacionamiento = estacionamiento,
                 inicioReserva   = inicioReserva,
-                finalReserva    = finalReserva,
-                nombre          = request.session['nombre'],
-                apellido        = request.session['apellido'],
-                cedula          = request.session['cedula'] 
+                finalReserva    = finalReserva
             )
 
             # Se guarda la reserva en la base de datos
@@ -639,10 +637,7 @@ def billetera_consumir(request,_id,_monto):
                     cedula = usuario.cedula,
                     estacionamiento = estacionamiento,
                     inicioReserva   = inicioReserva,
-                    finalReserva    = finalReserva,
-                    nombre          = request.session['nombre'],
-                    apellido        = request.session['apellido'],
-                    cedula          = request.session['cedula'] 
+                    finalReserva    = finalReserva
                  )
                  # Se guarda la reserva en la base de datos
                  reservaFinal.save()
