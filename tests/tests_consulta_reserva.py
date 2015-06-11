@@ -20,7 +20,7 @@ class consultaReservaTestCase(TestCase):
         prop = Propietario(
             nombre = "nom",
             apellido = "apell",
-            cedula = "041414141111",
+            cedula = "V-041414141111",
             telefono = "041414141112",
             email = "hola@gmail.com",
             )
@@ -77,8 +77,7 @@ class consultaReservaTestCase(TestCase):
         r.save()
         p = Pago(
                 fechaTransaccion = datetime.now(),
-                cedulaTipo       = "V",
-                cedula           = "1234567",
+                cedula           = "V-1234567",
                 tarjetaTipo      = "VISTA",
                 reserva          = r,
                 monto            = 150,
@@ -113,8 +112,7 @@ class consultaReservaTestCase(TestCase):
             r.save()
             p = Pago(
                     fechaTransaccion = datetime.now(),
-                    cedulaTipo       = "V",
-                    cedula           = "1234567",
+                    cedula           = "V-1234567",
                     tarjetaTipo      = "VISTA",
                     reserva          = r,
                     monto            = 100,
@@ -150,8 +148,7 @@ class consultaReservaTestCase(TestCase):
             r.save()
             p = Pago(
                     fechaTransaccion = datetime.now(),
-                    cedulaTipo       = "V",
-                    cedula           = "1234567",
+                    cedula           = "V-1234567",
                     tarjetaTipo      = "VISTA",
                     reserva          = r,
                     monto            = 100,
@@ -171,7 +168,7 @@ class consultaReservaTestCase(TestCase):
             prop = Propietario(
             nombre = "prop%d"%i,
             apellido = "apell",
-            cedula = "041414141111",
+            cedula = "V-041414141111",
             telefono = "041414141112",
             email = "hola@gmail.com",
             )
@@ -188,7 +185,7 @@ class consultaReservaTestCase(TestCase):
             pro = Propietario(
             nombre = "pro%d"%i,
             apellido = "apell",
-            cedula = "041414141111",
+            cedula = "V-041414141111",
             telefono = "041414141112",
             email = "hola@gmail.com",
             )
@@ -213,8 +210,7 @@ class consultaReservaTestCase(TestCase):
                 r.save()
                 p = Pago(
                         fechaTransaccion = datetime.now(),
-                        cedulaTipo       = "V",
-                        cedula           = "1234567",
+                        cedula           = "V-1234567",
                         tarjetaTipo      = "VISTA",
                         reserva          = r,
                         monto            = 100,
@@ -230,7 +226,7 @@ class consultaReservaTestCase(TestCase):
             prop = Propietario(
             nombre = "prop%d"%i,
             apellido = "apell",
-            cedula = "041414141111",
+            cedula = "V-041414141111",
             telefono = "041414141112",
             email = "hola@gmail.com",
             )
@@ -254,7 +250,7 @@ class consultaReservaTestCase(TestCase):
             prop = Propietario(
             nombre = "prop%d"%i,
             apellido = "apell",
-            cedula = "041414141111",
+            cedula = "V-041414141111",
             telefono = "041414141112",
             email = "hola@gmail.com",
             )
@@ -277,8 +273,7 @@ class consultaReservaTestCase(TestCase):
             r.save()
             p = Pago(
                     fechaTransaccion = datetime.now(),
-                    cedulaTipo       = "V",
-                    cedula           = "1234567",
+                    cedula           = "V-1234567",
                     tarjetaTipo      = "VISTA",
                     reserva          = r,
                     monto            = 100,

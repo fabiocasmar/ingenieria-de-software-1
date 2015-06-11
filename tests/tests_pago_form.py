@@ -37,7 +37,7 @@ class PagoTarjetaDeCreditoFormTestCase(TestCase):
         form_data = {
             'nombre': 'Pedro',
             'apellido': 'Perez',
-            'cedulaTipo': 'V',
+            'cedula': 'V-111111',
         }
         form = PagoForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -70,8 +70,7 @@ class PagoTarjetaDeCreditoFormTestCase(TestCase):
         form_data = {
             'nombre': 'Pedro',
             'apellido': 'Perez',
-            'cedulaTipo': 'V',
-            'cedula': '24277100',
+            'cedula': 'V-24277100',
             'tarjetaTipo': 'Vista',
             'tarjeta': '1234567890123456',
         }
@@ -109,8 +108,7 @@ class PagoTarjetaDeCreditoFormTestCase(TestCase):
         form_data = {
             'nombre': ' Pedro',
             'apellido': 'Perez',
-            'cedulaTipo': 'V',
-            'cedula': '123456789',
+            'cedula': 'V-123456789',
             'tarjetaTipo': 'Vista',
             'tarjeta': '1234567890123456',
         }
@@ -149,8 +147,7 @@ class PagoTarjetaDeCreditoFormTestCase(TestCase):
         form_data = {
             'nombre': 'Pedro',
             'apellido': ' Perez',
-            'cedulaTipo': 'V',
-            'cedula': '123456789',
+            'cedula': 'V-123456789',
             'tarjetaTipo': 'Vista',
             'tarjeta': '1234567890123456',
         }
@@ -188,8 +185,7 @@ class PagoTarjetaDeCreditoFormTestCase(TestCase):
         form_data = {
             'nombre': 'Pedro',
             'apellido': 'Perez',
-            'cedulaTipo': 'V',
-            'cedula': '999999999',
+            'cedula': 'V-999999999',
             'tarjetaTipo': 'Vista',
             'tarjeta': '1234567890123456',
         }
@@ -201,8 +197,7 @@ class PagoTarjetaDeCreditoFormTestCase(TestCase):
         form_data = {
             'nombre': 'Pedro',
             'apellido': 'Perez',
-            'cedulaTipo': 'V',
-            'cedula': '0',
+            'cedula': 'V-0',
             'tarjetaTipo': 'Vista',
             'tarjeta': '1234567890123456',
         }

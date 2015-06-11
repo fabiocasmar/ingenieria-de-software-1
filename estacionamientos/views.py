@@ -622,7 +622,7 @@ def billetera_consumir(request,_id,_monto):
                  # Se crea el objeto pago.
                  pago = Pago(
                    fechaTransaccion = datetime.now(),
-                   cedula           = bille.usuario.cedula[2:],
+                   cedula           = bille.usuario.cedula,
                    monto            = monto,
                    reserva          = reservaFinal,
                  )

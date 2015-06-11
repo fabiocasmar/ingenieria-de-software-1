@@ -29,7 +29,10 @@ class ReservaFormTestCase(TestCase):
 
     # TDD
     def test_EstacionamientoReserva_TodosCamposBien(self):
-        form_data = {'inicio_1': time(hour=6, minute=0),
+        form_data = {'nombre': 'Marisela',
+                     'apellido': 'Del Valle',
+                     'cedula': 'V-23638870',
+                     'inicio_1': time(hour=6, minute=0),
                      'final_1' : time(hour=15, minute=0),
                      'final_0' : date(year=2015, month=2, day=27),
                      'inicio_0': date(year=2015, month=2, day=27)
