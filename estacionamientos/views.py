@@ -497,11 +497,11 @@ def estacionamiento_consulta_reserva(request):
             )
             
             if not reservar:
-                msg = "Usuario no existe";
+                msg = "Datos Inválidos";
                 return render(
                     request,
                     'consultar-reservas.html',
-                    { "form" : form , "msg": msg}
+                    { "form" : form , "msg": msg,'color' : 'red'}
                 )
             else:
                 return render(
@@ -758,7 +758,7 @@ def billetera_saldo(request):
                     request,
                     'datos_invalidos.html',
                     {'color'   : 'red'
-                    , 'mensaje' : 'Los datos ingresados son inválidos'
+                    , 'mensaje' : 'Autenticacion Denegada'
                     }
                 )
 
@@ -799,7 +799,7 @@ def billetera_movimientos(request):
                     request,
                     'datos_invalidos.html',
                     {'color'   : 'red'
-                    , 'mensaje' : 'Los datos ingresados son inválidos'
+                    , 'mensaje' : 'autenticación Denegada'
                     }
                 )
             else:
