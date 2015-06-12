@@ -147,8 +147,7 @@ class cancelacionTestCase(TestCase):
 	def test_SeHaceLaCancelacion(self):
 		b = self.crear_billetera()
 		p = self.crear_Pago()
-		cancelacion = crear_cancelacion(b.id, p.id)
-		self.assertTrue(cancelacion[0])
+		self.assertTrue(crear_cancelacion(b.id, p.id))
 
 	#malicia
 	def test_NOSeHaceLaCancelacion_porBilletera(self):
