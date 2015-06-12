@@ -777,6 +777,19 @@ def billetera_movimientos(request):
             check_consumos = obtener_consumos(billetera_id,pin)
             recargas = obtener_recargas(billetera_id,pin)
             consumos = obtener_consumos(billetera_id,pin)
+            if recargas:
+                if consumos:
+                    lista_final = list(recargas)+list(consumos)
+                else:
+                    lista_final = list(recargas)
+            else:
+                if consumos:
+                    lista_final = list(consumos)
+
+            listaTotal = sorted(lista_final,
+                key = lambda r: r.fechaTransaccion
+            )
+
             if (check_consumos==False) and (check_recargas==False):
                 return render(
                     request,
@@ -791,11 +804,12 @@ def billetera_movimientos(request):
                 return render(
                     request,
                     'billetera_mostrar_movimientos.html',
-                    { "recargas" : check_recargas,
-                      "consumos" : check_consumos,
-                      "billetera": billetera,
-                      "usuario"  : usuario,
-                      "form"     : form,
+                    { "recargas"  : check_recargas,
+                      "consumos"  : check_consumos,
+                      "billetera" : billetera,
+                      "usuario"   : usuario,
+                      "listaTotal": listaTotal,
+                      "form"      : form,
 
                     }
                 )

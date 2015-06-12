@@ -23,7 +23,7 @@
         <thead>
 
           <tr>
-            <th>Recargas</th>
+            <th>ID</th>
             <th>TarjetaHabiente</th>
             <th>Fecha</th>
             <th>ID</th>
@@ -31,31 +31,13 @@
           </tr>
         </thead>
         <tbody>
-          {% for obj in recargas %}
+          {% for obj in listaTotal %}
             <tr>
               <td></td>
               <td>{{obj.nombre}}&nbsp;{{obj.apellido}} </td>
               <td>{{obj.fechaTransaccion}}</td>
               <td>{{obj.id}}</td>
               <td>{{obj.saldo}}</td>
-            </tr>
-          {% endfor %}
-        <tr>
-            <th>Consumos</th>
-            <th>Quien Reserva</th>
-            <th>Fecha</th>
-            <th>ID</th>
-            <th>Débito</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for obj in consumos %}
-            <tr>
-            <td></td>
-            <td>{{obj.reserva.nombre}}</td>
-            <td>{{obj.fechaTransaccion}}</td>
-            <td>{{obj.id}}</td>
-            <td>{{obj.saldo}}</td>
             </tr>
           {% endfor %}
         </tbody>
