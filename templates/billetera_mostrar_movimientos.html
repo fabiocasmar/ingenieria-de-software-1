@@ -18,7 +18,7 @@
         <font size=4 color="black"> Saldo actual: {{billetera.saldo}}</font>
 
       </h>
-
+<!--
       <table class="table table-striped">
         <thead>
 
@@ -42,15 +42,6 @@
             <td>{{obj.saldo}}</td>
             </tr>
           {% endfor %}
-          {% for obj in reembolsos %}
-              <tr></tr>
-              <td></td>
-              <td></td>
-              <td>{{obj.nombre}}&nbsp;{{obj.apellido}} </td>
-              <td>{{obj.fechaTransaccion}} </td>
-              <td>{{obj.id}} </td>
-              <td>{{obj.saldo}} </td>
-              {% endfor %}
         <tr>
             <th>Consumos</th>
             <th></th>
@@ -82,7 +73,7 @@
         </tbody>
       </table>
 
-
+-->
 
 
 
@@ -106,7 +97,7 @@
                   <p>
                   Últimos dígitos Tarjeta: {{obj.numtarjeta}}</td>
               <td> {{obj.fechaTransaccion}}</td>
-              <td> {{obj.id}}</td>
+              <td> rc{{obj.id}}</td>
               <td></td>
               <td> {{obj.saldo}}</td>
               <tr></tr>
@@ -115,7 +106,7 @@
             {% if obj.establecimiento%}
               <td>Reservó: {{obj.reserva.nombre}}&nbsp;{{obj.reserva.apellido}}</td>
               <td>{{obj.fechaTransaccion}}</td>
-              <td>{{obj.id}}</td>
+              <td>co{{obj.id}}</td>
               <td>{{obj.saldo}}</td>
               <td></td>
               <tr></tr>
@@ -124,9 +115,15 @@
             {% if obj.inicioReserva%}
               <td>Canceló reserva: {{obj.nombre}}&nbsp;{{obj.apellido}}</td>
               <td>{{obj.fechaTransaccion}}</td>
-              <td>{{obj.id}}</td>
+              <td>re{{obj.id}}</td>
               <td></td>
               <td>{{obj.saldo}}</td>
+              <tr></tr>
+              <td>Reserva Cancelada: {{obj.nombre}}&nbsp;{{obj.apellido}}</td>
+              <td>{{obj.fechaTransaccion_vieja}}</td>
+              <td>co{{obj.id_viejo}}</td>
+              <td>{{obj.saldo}}</td>
+              <td></td>
               <tr></tr>
             {%endif%}
           {%endfor%}

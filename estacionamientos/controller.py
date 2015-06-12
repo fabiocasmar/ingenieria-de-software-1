@@ -187,7 +187,7 @@ def crear_cancelacion(billetera_id,numero_pago ):
 	try:
 		pago = Pago.objects.get(id=numero_pago)
 		billetera   = Billetera.objects.get(id=billetera_id)
-		
+		consumo = Consumo.objects.get(reserva=pago.reserva.id)
 		obj = CancelarReserva(
 			estacionamiento   = Estacionamiento.objects.get(id=pago.reserva.estacionamiento.id),
 			fechaTransaccion = datetime.now(),
@@ -206,7 +206,9 @@ def crear_cancelacion(billetera_id,numero_pago ):
 								finalReserva = reserva.finalReserva,
 								saldo = pago.monto,
 								fechaTransaccion = obj.fechaTransaccion,
-								billetera = billetera
+								fechaTransaccion_vieja = pago.fechaTransaccion,
+								billetera = billetera,
+								id_viejo = consumo.id,
 								)
 		reembolso.save()
 		print("Veo reembolso:")
