@@ -60,7 +60,7 @@ class RecargaFormTestCase(TestCase):
 		self.assertFalse(form.is_valid())
 
 	#caso borde
-	def test_RecargarSaldo_UnCampo_MONTO(self):
+	def test_RecargarSaldo_UnCampo_TARJETA(self):
 		form_data = {'tarjeta': 1111111111111111}
 		form = RecargaForm(data = form_data)
 		self.assertFalse(form.is_valid())
@@ -89,216 +89,7 @@ class RecargaFormTestCase(TestCase):
 		form = RecargaForm(data = form_data)
 		self.assertFalse(form.is_valid())
 
-	#caso borde
-	def test_RecargarSaldo_TresCampos_nombre_apellido_ci(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-24222692'
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_TresCampos_nombre_apellido_tarjetaTipo(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'tarjetaTipo' : 'Vista'
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_TresCampos_nombre_apellido_tarjeta(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'tarjeta' : 1234567890012345
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_TresCampos_nombre_apellido_ID(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'billetera_id' : 1
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_TresCampos_nombre_apellido_PIN(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'tarjeta' : 'dfgh'
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_TresCampos_nombre_apellido_monto(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'monto' : 12.09
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_CuatroCampos_nombre_apellido_cedula_tarjetaTipo(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'tarjetaTipo' : 'Mister'
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_CuatroCampos_nombre_apellido_cedula_tarjeta(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'tarjeta' : 1234567890123456
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_CuatroCampos_nombre_apellido_cedula_ID(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'billetera_id' : 1
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_CuatroCampos_nombre_apellido_cedula_PIN(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'tarjetaTipo' : 'uj89'
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_CuatroCampos_nombre_apellido_cedula_monto(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'monto' : 567.9
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_CincoCampos_nombre_apellido_cedula_tarjetaTipo_tarjeta(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'tarjetaTipo' : 'Mister',
-					 'tarjeta' : 1234567891234567
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_CincoCampos_nombre_apellido_cedula_tarjetaTipo_ID(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'tarjetaTipo' : 'Mister',
-					 'billetera_id' : 12
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_CincoCampos_nombre_apellido_cedula_tarjetaTipo_PIN(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'tarjetaTipo' : 'Mister',
-					 'pin' : 'er13'
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_CincoCampos_nombre_apellido_cedula_tarjetaTipo_monto(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'tarjetaTipo' : 'Mister',
-					 'monto' : 123
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_SeisCampos_nombre_apellido_cedula_tarjetaTipo_tarjeta_ID(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'tarjetaTipo' : 'Mister',
-					 'tarjeta' : 1234567891234567,
-					 'billetera_id' : 1
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_SeisCampos_nombre_apellido_cedula_tarjetaTipo_tarjeta_PIN(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'tarjetaTipo' : 'Mister',
-					 'tarjeta' : 1234567891234567,
-					 'pin' : '45gt'
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_SeisCampos_nombre_apellido_cedula_tarjetaTipo_tarjeta_monto(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'tarjetaTipo' : 'Mister',
-					 'tarjeta' : 1234567891234567,
-					 'monto' : 100.9
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-	#caso borde
-	def test_RecargarSaldo_SieteCampos_nombre_apellido_cedula_tarjetaTipo_tarjeta_ID_PIN(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'tarjetaTipo' : 'Mister',
-					 'tarjeta' : 1234567891234567,
-					 'billetera_id' : 1,
-					 'pin' : '09ol'
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
-#caso borde
-	def test_RecargarSaldo_SieteCampos_nombre_apellido_cedula_tarjetaTipo_tarjeta_ID_monto(self):
-		form_data = {'nombre': 'Nelson',
-					 'apellido' : 'Saturno',
-					 'cedula' : 'V-23638870',
-					 'tarjetaTipo' : 'Mister',
-					 'tarjeta' : 1234567891234567,
-					 'billetera_id' : 1,
-					 'monto' : 45
-					}
-		form = RecargaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
+	#TDD
 	def test_RecargarSaldo_CamposBien(self):
 		form_data = {	'nombre' : 'Marisela',
 						'apellido' : 'Del Valle',
@@ -378,6 +169,61 @@ class RecargaFormTestCase(TestCase):
 						'billetera_id' : 11,
 						 'pin': '19u1t',
 						 'monto' : -345
+					}
+		form = RecargaForm(data = form_data)
+		self.assertFalse(form.is_valid())
+
+	#malicia
+	def test_RecargarSaldo_NOMBRE_Invalido(self):
+		form_data = {'nombre' : 'Marisela1',
+						'apellido' : 'Del Valle',
+						'cedula' : 'V-23638870',
+						'tarjetaTipo' : 'Vista',
+						'tarjeta' : 1111111111111111,
+						'billetera_id' : 11,
+						 'pin': '19u1t',
+						 'monto' : 345
+					}
+		form = RecargaForm(data = form_data)
+		self.assertFalse(form.is_valid())
+
+	#malicia
+	def test_RecargarSaldo_APELLIDO_Invalido(self):
+		form_data = {'nombre' : 'Marisela1',
+						'apellido' : 'Del Valle1',
+						'cedula' : 'V-23638870',
+						'tarjetaTipo' : 'Vista',
+						'tarjeta' : 1111111111111111,
+						'billetera_id' : 11,
+						 'pin': '19u1t',
+						 'monto' : 345
+					}
+		form = RecargaForm(data = form_data)
+		self.assertFalse(form.is_valid())
+
+	#malicia
+	def test_RecargarSaldo_TARJETATIPO_Invalido(self):
+		form_data = {'nombre' : 'Marisela1',
+						'apellido' : 'Del Valle',
+						'cedula' : 'V-23638870',
+						'tarjetaTipo' : 'Vis',
+						'tarjeta' : 1111111111111111,
+						'billetera_id' : 11,
+						 'pin': '19u1t',
+						 'monto' : 345
+					}
+		form = RecargaForm(data = form_data)
+		self.assertFalse(form.is_valid())
+	#malicia
+	def test_RecargarSaldo_TARJETA_Invalido(self):
+		form_data = {'nombre' : 'Marisela1',
+						'apellido' : 'Del Valle',
+						'cedula' : 'V-23638870',
+						'tarjetaTipo' : 'Vista',
+						'tarjeta' : 1111111111,
+						'billetera_id' : 11,
+						 'pin': '19u1t',
+						 'monto' : 345
 					}
 		form = RecargaForm(data = form_data)
 		self.assertFalse(form.is_valid())
