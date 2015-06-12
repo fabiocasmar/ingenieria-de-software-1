@@ -233,3 +233,17 @@ def obtener_consumos(_id,_pin):
 			return consumos
 	else:
 		return False
+
+def obtener_reembolsos(_id,_pin):
+	try:
+		billetera_electronica = Billetera.objects.get(id = _id)
+	except ObjectDoesNotExist:
+		return False
+	if _pin == billetera_electronica.pin:
+		reembolsos = Reembolso.objects.filter(billetera = billetera_electronica)
+		listaReembolsos = []
+		for elemento in reembolsos:
+			listaReembolsos.append(elemento)
+			return reembolsos
+	else:
+		return False

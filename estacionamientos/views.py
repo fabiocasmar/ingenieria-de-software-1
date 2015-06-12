@@ -775,16 +775,16 @@ def billetera_movimientos(request):
             pin = form.cleaned_data['pin']
             check_recargas = obtener_recargas(billetera_id,pin)
             check_consumos = obtener_consumos(billetera_id,pin)
+            check_reembolsos = obtener_reembolsos(billetera_id,pin)
             recargas = obtener_recargas(billetera_id,pin)
             consumos = obtener_consumos(billetera_id,pin)
+            lista_final = []
             if recargas:
-                if consumos:
-                    lista_final = list(recargas)+list(consumos)
-                else:
-                    lista_final = list(recargas)
-            else:
-                if consumos:
-                    lista_final = list(consumos)
+                lista_final = lista_final + list(recargas)
+            if consumos:
+                lista_final = lista_final + list(consumos)
+            if reembolsos:
+                lista_final = lista_final + list(reembolsos)
 
             listaTotal = sorted(lista_final,
                 key = lambda r: r.fechaTransaccion
