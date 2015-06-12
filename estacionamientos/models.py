@@ -62,6 +62,7 @@ class Recarga(models.Model):
 	cedula       	 = models.CharField(max_length = 10, null = False)
 	saldo 			 = models.FloatField(null=False, blank=False)
 	fechaTransaccion = models.DateTimeField()
+	numtarjeta    	 = models.CharField(max_length = 16, null = False,default=0)
 	tarjetaTipo      = models.CharField(max_length = 6)
 	billetera 		 = models.ForeignKey(Billetera)
 

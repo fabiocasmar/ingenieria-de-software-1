@@ -1,5 +1,5 @@
 # Archivo con funciones de control para SAGE
-from estacionamientos.models import Estacionamiento, Reserva, Pago, Billetera, Recarga, Consumo, CancelarReserva
+from estacionamientos.models import Estacionamiento, Reserva, Pago, Billetera, Recarga, Consumo, CancelarReserva, Reembolso
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta, time
 from decimal import Decimal
@@ -198,6 +198,19 @@ def crear_cancelacion(billetera_id,numero_pago ):
 	    )
 		
 		reserva  = Reserva.objects.get(id=pago.reserva.id)
+		reembolso = Reembolso(	nombre= reserva.nombre,
+								apellido = reserva.apellido,
+								cedula = reserva.cedula,
+								estacionamiento = reserva.estacionamiento,
+								inicioReserva = reserva.inicioReserva,
+								finalReserva = reserva.finalReserva,
+								saldo = pago.monto,
+								fechaTransaccion = obj.fechaTransaccion,
+								billetera = billetera
+								)
+		reembolso.save()
+		print("Veo reembolso:")
+		print(reembolso.nombre)
 		reserva.delete()
 		obj.save()
 		
@@ -231,6 +244,8 @@ def obtener_consumos(_id,_pin):
 		listaConsumos = []
 		for elemento in consumos:
 			listaConsumos.append(elemento)
+			print("Hola")
+			print(elemento.saldo)
 			return consumos
 	else:
 		return False

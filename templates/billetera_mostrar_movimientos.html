@@ -23,23 +23,113 @@
         <thead>
 
           <tr>
-            <th>ID</th>
+            <th>Recargas</th>
             <th>TarjetaHabiente</th>
+            <th>QuienReservo</th>
             <th>Fecha</th>
             <th>ID</th>
             <th>Crédito</th>
           </tr>
         </thead>
         <tbody>
-          {% for obj in listaTotal %}
+          {% for obj in recargas %}
             <tr>
+            <td></td>
+            <td>{{obj.nombre}}&nbsp;{{obj.apellido}} </td> 
+            <td></td>  
+            <td>{{obj.fechaTransaccion}}</td>
+            <td>{{obj.id}}</td>
+            <td>{{obj.saldo}}</td>
+            </tr>
+          {% endfor %}
+          {% for obj in reembolsos %}
+              <tr></tr>
+              <td></td>
               <td></td>
               <td>{{obj.nombre}}&nbsp;{{obj.apellido}} </td>
+              <td>{{obj.fechaTransaccion}} </td>
+              <td>{{obj.id}} </td>
+              <td>{{obj.saldo}} </td>
+              {% endfor %}
+        <tr>
+            <th>Consumos</th>
+            <th></th>
+            <th>Quien Reserva</th>
+            <th>Fecha</th>
+            <th>ID</th>
+            <th>Débito</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in consumos %}
+            <tr>
+            <td></td>
+            <td>{{obj.reserva.nombre}}</td>
+            <td>{{obj.fechaTransaccion}}</td>
+            <td>{{obj.id}}</td>
+            <td>{{obj.saldo}}</td>
+            </tr>
+          {% endfor %}
+          {% for obj in reembolsos %}
+            <tr></tr>
+            <td></td>
+            <td></td>
+            <td>{{obj.nombre}}&nbsp;{{obj.apellido}} </td>
+            <td>Fecha consumo (?) </td>
+            <td>Id consumo (?) </td>
+            <td>{{obj.saldo}} </td>
+          {% endfor %}
+        </tbody>
+      </table>
+
+
+
+
+
+
+      <table class="table table-striped">
+        <thead>
+
+          <tr>
+            <th>Descripción</th>
+            <th>Fecha</th>
+            <th>ID</th>
+            <th>Débito</th>
+            <th>Crédito</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in listaTotal %}
+            <!-- Condicional para recarga-->
+            {% if obj.tarjetaTipo  %}
+              <td> Tarjeta Habiente: {{obj.nombre}}&nbsp;{{obj.apellido}}
+                  <p>
+                  Últimos dígitos Tarjeta: {{obj.numtarjeta}}</td>
+              <td> {{obj.fechaTransaccion}}</td>
+              <td> {{obj.id}}</td>
+              <td></td>
+              <td> {{obj.saldo}}</td>
+              <tr></tr>
+            {% endif %}
+            <!-- Condicional para consumo-->
+            {% if obj.establecimiento%}
+              <td>Reservó: {{obj.reserva.nombre}}&nbsp;{{obj.reserva.apellido}}</td>
               <td>{{obj.fechaTransaccion}}</td>
               <td>{{obj.id}}</td>
               <td>{{obj.saldo}}</td>
-            </tr>
-          {% endfor %}
+              <td></td>
+              <tr></tr>
+            {%endif%}
+            <!-- Condicional para reembolso-->
+            {% if obj.inicioReserva%}
+              <td>Canceló reserva: {{obj.nombre}}&nbsp;{{obj.apellido}}</td>
+              <td>{{obj.fechaTransaccion}}</td>
+              <td>{{obj.id}}</td>
+              <td></td>
+              <td>{{obj.saldo}}</td>
+              <tr></tr>
+            {%endif%}
+          {%endfor%}
         </tbody>
       </table>
       <hr>
