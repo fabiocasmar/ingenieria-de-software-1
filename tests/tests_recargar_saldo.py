@@ -100,3 +100,35 @@ class recargarSaldoTestCase(TestCase):
 		recarga = recargar_saldo(6,'1234',78)
 		self.assertFalse(recarga)
 
+	#borde
+	def test_recarga_maxima_saldo_cero(self):
+		b = Billetera(
+			usuario = self.crear_usuario(),
+			saldo = 0.00,
+			pin = '1234'
+		)
+		b.save()
+		recarga = recargar_saldo(6,'1234',10000)
+		self.assertFalse(recarga)
+
+	#Malicia
+	def test_recarga_maxima_saldo_cero(self):
+		b = Billetera(
+			usuario = self.crear_usuario(),
+			saldo = 10000,
+			pin = '1234'
+		)
+		b.save()
+		recarga = recargar_saldo(6,'1234',10000)
+		self.assertFalse(recarga)
+
+	#Malicia
+	def test_recarga_maxima_saldo_cero(self):
+		b = Billetera(
+			usuario = self.crear_usuario(),
+			saldo = 9999,
+			pin = '1234'
+		)
+		b.save()
+		recarga = recargar_saldo(6,'1234',10000)
+		self.assertFalse(recarga)
