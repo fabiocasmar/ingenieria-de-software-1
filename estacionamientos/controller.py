@@ -1,5 +1,5 @@
 # Archivo con funciones de control para SAGE
-from estacionamientos.models import Estacionamiento, Reserva, Pago, Billetera, Recarga, Consumo, CancelarReserva
+from estacionamientos.models import Estacionamiento, Reserva, Pago, Billetera, Recarga, Consumo, CancelarReserva, Reembolso
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta, time
 from decimal import Decimal
@@ -172,8 +172,7 @@ def cancelacion(_ci,_pin,_billetera,_pago ):
                 
 	if (pago.reserva.inicioReserva < datetime.now()):
 		return (False,'La fecha de reserva ya ocurrio, no es posible cancelarla')  
-                       
-                     
+                                  
 
 	if ( pago.cedula != _ci):
 		return (False,'Numero de cedula errada. Debe introducir el numero de cedula asociado a la factura de pago')
@@ -188,7 +187,7 @@ def crear_cancelacion(billetera_id,numero_pago ):
 	try:
 		pago = Pago.objects.get(id=numero_pago)
 		billetera   = Billetera.objects.get(id=billetera_id)
-		
+		consumo = Consumo.objects.get(reserva=pago.reserva.id)
 		obj = CancelarReserva(
 			estacionamiento   = Estacionamiento.objects.get(id=pago.reserva.estacionamiento.id),
 			fechaTransaccion = datetime.now(),
@@ -199,6 +198,21 @@ def crear_cancelacion(billetera_id,numero_pago ):
 	    )
 		
 		reserva  = Reserva.objects.get(id=pago.reserva.id)
+		reembolso = Reembolso(	nombre= reserva.nombre,
+								apellido = reserva.apellido,
+								cedula = reserva.cedula,
+								estacionamiento = reserva.estacionamiento,
+								inicioReserva = reserva.inicioReserva,
+								finalReserva = reserva.finalReserva,
+								saldo = pago.monto,
+								fechaTransaccion = obj.fechaTransaccion,
+								fechaTransaccion_vieja = pago.fechaTransaccion,
+								billetera = billetera,
+								id_viejo = consumo.id,
+								)
+		reembolso.save()
+		print("Veo reembolso:")
+		print(reembolso.nombre)
 		reserva.delete()
 		obj.save()
 		
@@ -232,6 +246,22 @@ def obtener_consumos(_id,_pin):
 		listaConsumos = []
 		for elemento in consumos:
 			listaConsumos.append(elemento)
+			print("Hola")
+			print(elemento.saldo)
 			return consumos
+	else:
+		return False
+
+def obtener_reembolsos(_id,_pin):
+	try:
+		billetera_electronica = Billetera.objects.get(id = _id)
+	except ObjectDoesNotExist:
+		return False
+	if _pin == billetera_electronica.pin:
+		reembolsos = Reembolso.objects.filter(billetera = billetera_electronica)
+		listaReembolsos = []
+		for elemento in reembolsos:
+			listaReembolsos.append(elemento)
+			return reembolsos
 	else:
 		return False

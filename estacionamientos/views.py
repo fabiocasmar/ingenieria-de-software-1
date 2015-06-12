@@ -31,6 +31,7 @@ from estacionamientos.controller import (
     crear_cancelacion,
     obtener_recargas,
     obtener_consumos,
+    obtener_reembolsos
 )
 
 from estacionamientos.forms import (
@@ -65,6 +66,7 @@ from estacionamientos.models import (
     Recarga,
     Consumo,
     CancelarReserva,
+    Reembolso
    # QuienReserva
 )
 
@@ -549,6 +551,7 @@ def billetera_recargar(request):
                           cedula = form.cleaned_data['cedula'],
                           saldo = monto,
                           fechaTransaccion = datetime.now(),
+                          numtarjeta = form.cleaned_data['tarjeta'][12:16],
                           tarjetaTipo = form.cleaned_data['tarjetaTipo'],
                           billetera = billetera
                           )
@@ -775,8 +778,22 @@ def billetera_movimientos(request):
             pin = form.cleaned_data['pin']
             check_recargas = obtener_recargas(billetera_id,pin)
             check_consumos = obtener_consumos(billetera_id,pin)
+            check_reembolsos = obtener_reembolsos(billetera_id,pin)
             recargas = obtener_recargas(billetera_id,pin)
             consumos = obtener_consumos(billetera_id,pin)
+            reembolsos = obtener_reembolsos(billetera_id,pin)
+            lista_final = []
+            if recargas:
+                lista_final = lista_final + list(recargas)
+            if consumos:
+                lista_final = lista_final + list(consumos)
+            if reembolsos:
+                lista_final = lista_final + list(reembolsos)
+
+            listaTotal = sorted(lista_final,
+                key = lambda r: r.fechaTransaccion
+            )
+
             if (check_consumos==False) and (check_recargas==False):
                 return render(
                     request,
@@ -788,14 +805,17 @@ def billetera_movimientos(request):
             else:
                 billetera = Billetera.objects.get(id=billetera_id)
                 usuario = billetera.usuario
+                pago = Pago
                 return render(
                     request,
                     'billetera_mostrar_movimientos.html',
-                    { "recargas" : check_recargas,
-                      "consumos" : check_consumos,
-                      "billetera": billetera,
-                      "usuario"  : usuario,
-                      "form"     : form,
+                    { "recargas"   : check_recargas,
+                      "consumos"   : check_consumos,
+                      "reembolsos" : reembolsos,
+                      "billetera"  : billetera,
+                      "usuario"    : usuario,
+                      "listaTotal" : listaTotal,
+                      "form"       : form,
 
                     }
                 )

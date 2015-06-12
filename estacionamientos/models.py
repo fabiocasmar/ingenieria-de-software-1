@@ -57,18 +57,35 @@ class Estacionamiento(models.Model):
 		return self.nombre+' '+str(self.id)
 
 class Recarga(models.Model):
-	nombre       = models.CharField(max_length = 50, null = False)
-	apellido     = models.CharField(max_length = 50, blank = True, null = True)
-	cedula       = models.CharField(max_length = 10, null = False)
+	nombre       	 = models.CharField(max_length = 50, null = False)
+	apellido     	 = models.CharField(max_length = 50, blank = True, null = True)
+	cedula       	 = models.CharField(max_length = 10, null = False)
 	saldo 			 = models.FloatField(null=False, blank=False)
 	fechaTransaccion = models.DateTimeField()
+	numtarjeta    	 = models.CharField(max_length = 16, null = False,default=0)
 	tarjetaTipo      = models.CharField(max_length = 6)
 	billetera 		 = models.ForeignKey(Billetera)
 
+class Reembolso(models.Model):
+	nombre       		   = models.CharField(max_length = 50, blank = True, null = True)
+	apellido     	 	   = models.CharField(max_length = 50, blank = True, null = True)
+	cedula       	 	   = models.CharField(max_length = 10, null = True)
+	estacionamiento  	   = models.ForeignKey(Estacionamiento)
+	inicioReserva    	   = models.DateTimeField()
+	finalReserva    	   = models.DateTimeField()
+	saldo 				   = models.FloatField(null=False, blank=False)
+	fechaTransaccion_vieja = models.DateTimeField()
+	fechaTransaccion 	   = models.DateTimeField()
+	billetera 		       = models.ForeignKey(Billetera)
+	id_viejo			   = models.CharField(max_length = 10, null = False)
+
+	def __str__(self):
+		return self.estacionamiento.nombre+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
+
 class Reserva(models.Model):
-	nombre       = models.CharField(max_length = 50, blank = True, null = True)
-	apellido     = models.CharField(max_length = 50, blank = True, null = True)
-	cedula       = models.CharField(max_length = 10, null = True)
+	nombre       	= models.CharField(max_length = 50, blank = True, null = True)
+	apellido     	= models.CharField(max_length = 50, blank = True, null = True)
+	cedula       	= models.CharField(max_length = 10, null = True)
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()
 	finalReserva    = models.DateTimeField()
@@ -102,12 +119,12 @@ class Pago(models.Model):
 		return str(self.id)+" "+str(self.reserva.estacionamiento.nombre)+" "+str(self.cedula)
 
 class CancelarReserva(models.Model):
-	estacionamiento = models.ForeignKey(Estacionamiento)
+	estacionamiento  = models.ForeignKey(Estacionamiento)
 	fechaTransaccion = models.DateTimeField()
 	billetera 		 = models.ForeignKey(Billetera)
 	cedula           = models.CharField(max_length = 10,blank = True, null = True)
-	inicioReserva   = models.DateTimeField(blank = True, null = True)
-	finalReserva    = models.DateTimeField(blank = True, null = True)
+	inicioReserva    = models.DateTimeField(blank = True, null = True)
+	finalReserva     = models.DateTimeField(blank = True, null = True)
 		
 	def __str__(self):
 		return str(self.id)
