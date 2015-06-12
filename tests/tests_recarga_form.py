@@ -116,7 +116,7 @@ class RecargaFormTestCase(TestCase):
 	#caso borde
 	def test_RecargarSaldo_DosCampos_nombre_tarjeta(self):
 		form_data = {'nombre': 'Susana',
-					 'tarjeta' : 0111111222233334
+					 'tarjeta' : 1111112222333343
 					}
 		form = RecargaForm(data = form_data)
 		self.assertFalse(form.is_valid())
