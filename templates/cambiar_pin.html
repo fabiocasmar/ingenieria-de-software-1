@@ -35,7 +35,10 @@
             method="post"
             class="form form-vertical"
             onSubmit="return Validate(this);"
-            oncontextmenu="return false"
+            onpaste="return false"
+            oncut="return false" 
+            oncopy="return false"
+            oncontextmenu="return false" 
           >
             {% csrf_token %}
               {% for field in form %}
