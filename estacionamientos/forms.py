@@ -196,7 +196,8 @@ class CrearBilleteraForm(forms.Form):
     pin = forms.CharField(
         required = True,
         widget = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
+            { 'type'        : 'password'
+            , 'class'       : 'form-control'
             , 'placeholder' : 'PIN de la billetera'
             , 'pattern'     : pin_validator.regex.pattern
             , 'message'     : pin_validator.message
@@ -708,7 +709,8 @@ class RecargaForm(forms.Form):
         label = "PIN",
         validators = [validar_pin],
         widget = forms.TextInput(attrs =
-                { 'class'       : 'form-control'
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'PIN Billetera'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message
@@ -761,7 +763,8 @@ class ConsumirForm(forms.Form):
         label = "PIN",
         validators = [validar_pin],
         widget = forms.TextInput(attrs =
-                { 'class'       : 'form-control'
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'PIN'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message
@@ -817,7 +820,8 @@ class SaldoForm(forms.Form):
         label = "PIN",
         validators = [validar_pin],
         widget = forms.TextInput(attrs =
-                { 'class'       : 'form-control'
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'PIN'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message
@@ -855,7 +859,8 @@ class MovimientosForm(forms.Form):
         label = "PIN",
         validators = [validar_pin],
         widget = forms.TextInput(attrs =
-                { 'class'       : 'form-control'
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'PIN'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message
@@ -950,7 +955,8 @@ class CancelarReservaForm(forms.Form):
         label = "PIN",
         validators = [validar_pin],
         widget = forms.TextInput(attrs =
-                { 'class'       : 'form-control'
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'PIN'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message

@@ -32,6 +32,7 @@
             action="/estacionamientos/billetera_saldo"
             method="post"
             class="form form-vertical"
+            oncontextmenu="return false" 
           >
             {% csrf_token %}
               {% for field in form %}
