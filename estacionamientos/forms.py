@@ -859,8 +859,9 @@ class CambiarPinForm(forms.Form):
         required = True,
         label = "PIN",
         validators = [validar_pin],
-        widget = forms.PasswordInput(attrs =
-                { 'class'       : 'form-control'
+        widget = forms.TextInput(attrs =
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'Introduzca PIN actual'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message
@@ -872,8 +873,9 @@ class CambiarPinForm(forms.Form):
         required = True,
         label = "PIN",
         validators = [validar_pin],
-        widget = forms.PasswordInput(attrs =
-                { 'class'       : 'form-control'
+        widget = forms.TextInput(attrs =
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'Introduzca nuevo PIN'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message
@@ -885,8 +887,9 @@ class CambiarPinForm(forms.Form):
         required = True,
         label = "PIN",
         validators = [validar_pin],
-        widget = forms.PasswordInput(attrs =
-                { 'class'       : 'form-control'
+        widget = forms.TextInput(attrs =
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'Vuelva a introducir nuevo PIN'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message

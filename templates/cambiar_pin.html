@@ -35,6 +35,7 @@
             method="post"
             class="form form-vertical"
             onSubmit="return Validate(this);"
+            oncontextmenu="return false"
           >
             {% csrf_token %}
               {% for field in form %}
