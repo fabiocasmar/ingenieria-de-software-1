@@ -31,7 +31,9 @@ from estacionamientos.controller import (
     crear_cancelacion,
     obtener_recargas,
     obtener_consumos,
-    obtener_reembolsos
+    obtener_reembolsos,
+    cambiar_pin,
+    check_pin
 )
 
 from estacionamientos.forms import (
@@ -49,6 +51,7 @@ from estacionamientos.forms import (
     ModificarPropietarioForm,
     CancelarReservaForm,
     MovimientosForm,
+    CambiarPinForm
 )
 
 from estacionamientos.models import (
@@ -767,6 +770,47 @@ def billetera_saldo(request):
         request,
         'billetera_saldo.html',
         { "form" : form }
+    )
+
+def cambiar_pin(request):
+    form = CambiarPinForm()
+    if request.method == 'POST':
+        form = CambiarPinForm(request.POST)
+        if form.is_valid():
+            billetera_id = form.cleaned_data['billetera_id']
+            pin = form.cleaned_data['pin']
+            nuevoPin = form.cleaned_data['nuevoPin']
+            nuevoPin2 = form.cleaned_data['nuevoPin2']
+            check = check_pin(billetera_id,pin)
+            if check:
+                billetera = Billetera.objects.get(id = billetera_id)
+                billetera.pin = nuevoPin
+                billetera.save()
+                return render(
+                    request,
+                    'pin_actualizado.html'
+                )
+            else:
+                return render(
+                    request,
+                    'datos_invalidos.html',
+                    {'color'   : 'red'
+                    , 'mensaje' : 'autenticación Denegada'
+                    }
+                )
+        else:
+            return render(
+                request,
+                'cambiar_pin.html',
+                {'form' : form
+                }
+            )
+
+    return render(
+        request,
+        'cambiar_pin.html',
+        {'form' : form
+        }
     )
 
 def billetera_movimientos(request):

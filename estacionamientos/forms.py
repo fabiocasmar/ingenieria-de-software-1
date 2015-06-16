@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 from django import forms
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.forms.widgets import SplitDateTimeWidget
 
@@ -195,7 +196,7 @@ class CrearBilleteraForm(forms.Form):
 
     pin = forms.CharField(
         required = True,
-        widget = forms.TextInput(attrs =
+        widget = forms.PasswordInput(attrs =
             { 'class'       : 'form-control'
             , 'placeholder' : 'PIN de la billetera'
             , 'pattern'     : pin_validator.regex.pattern
@@ -824,6 +825,79 @@ class SaldoForm(forms.Form):
                 }
         )
     )
+
+class CambiarPinForm(forms.Form):
+
+    id_validator = RegexValidator(
+        regex   = '^[1-9]{1}([0-9]+)?$',
+        message = 'El ID solo puede contener caracteres numéricos.'
+    )
+    
+    billetera_id = forms.CharField(
+        required   = True,
+        label      = "ID",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'ID'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+
+    validar_pin = RegexValidator(
+        regex = '^[\s\S]{4,6}$',
+        message = 'El PIN debe contener entre 4 y 6 caracteres'
+        )
+
+    pin = forms.CharField(
+        required = True,
+        label = "PIN",
+        validators = [validar_pin],
+        widget = forms.PasswordInput(attrs =
+                { 'class'       : 'form-control'
+                , 'placeholder' : 'Introduzca PIN actual'
+                , 'pattern'     : validar_pin.regex.pattern
+                , 'message'     : validar_pin.message
+                }
+        )
+    )
+
+    nuevoPin = forms.CharField(
+        required = True,
+        label = "PIN",
+        validators = [validar_pin],
+        widget = forms.PasswordInput(attrs =
+                { 'class'       : 'form-control'
+                , 'placeholder' : 'Introduzca nuevo PIN'
+                , 'pattern'     : validar_pin.regex.pattern
+                , 'message'     : validar_pin.message
+                }
+        )
+    )
+
+    nuevoPin2 = forms.CharField(
+        required = True,
+        label = "PIN",
+        validators = [validar_pin],
+        widget = forms.PasswordInput(attrs =
+                { 'class'       : 'form-control'
+                , 'placeholder' : 'Vuelva a introducir nuevo PIN'
+                , 'pattern'     : validar_pin.regex.pattern
+                , 'message'     : validar_pin.message
+                }
+        )
+    )
+
+    def clean(self):
+        cleaned_data = self.cleaned_data # individual field's clean methods have already been called
+        password1 = cleaned_data.get("nuevoPin")
+        password2 = cleaned_data.get("nuevoPin2")
+        if password1 != password2:
+            raise forms.ValidationError("Passwords must be identical.")
+
+        return cleaned_data
 
 class MovimientosForm(forms.Form):
 
