@@ -163,22 +163,25 @@ def cancelacion(_ci,_pin,_billetera,_pago ):
 	try:
 		pago = Pago.objects.get(id = _pago)
 	except ObjectDoesNotExist:
-		return (False,'Numero de confirmacion invalido') 
+		return (False,'Numero de confirmacion invalido.') 
 	
 	try:
 		billetera = Billetera.objects.get(id = _billetera)
 	except ObjectDoesNotExist:
-		return (False,'Datos invalidos de la billetera electronica')
+		return (False,'Datos invalidos de la billetera electronica.')
                 
 	if (pago.reserva.inicioReserva < datetime.now()):
-		return (False,'La fecha de reserva ya ocurrio, no es posible cancelarla')  
+		return (False,'La fecha de reserva ya ocurrio, no es posible cancelarla.')  
                                   
 
 	if ( pago.cedula != _ci):
-		return (False,'Numero de cedula errada. Debe introducir el numero de cedula asociado a la factura de pago')
+		return (False,'Numero de cedula errada. Debe introducir el numero de cedula asociado a la factura de pago.')
                       	
 	if (billetera.pin != _pin):
-		return (False,'Datos invalidos de la billetera electronica')
+		return (False,'Datos invalidos de la billetera electronica.')
+	
+	if float(float(billetera.saldo)+float(pago.monto)) > 10000:
+		return (False,'El monto a recargar en la billetera excede el maximo saldo permitido. Por favor elija otra billetera.')
                       	
 	else:
 		return (True,'')
@@ -227,10 +230,6 @@ def obtener_recargas(_id,_pin):
 		return False
 	if _pin == billetera_electronica.pin:
 		recargas = Recarga.objects.filter(billetera = billetera_electronica)
-		listaRecargas = []
-		for elemento in recargas:
-			print(elemento.fechaTransaccion)
-			listaRecargas.append(elemento)
 		return recargas
 	else:
 		return False
@@ -243,12 +242,7 @@ def obtener_consumos(_id,_pin):
 		return False
 	if _pin == billetera_electronica.pin:
 		consumos = Consumo.objects.filter(billetera = billetera_electronica)
-		listaConsumos = []
-		for elemento in consumos:
-			listaConsumos.append(elemento)
-			print("Hola")
-			print(elemento.saldo)
-			return consumos
+		return consumos
 	else:
 		return False
 
@@ -259,9 +253,6 @@ def obtener_reembolsos(_id,_pin):
 		return False
 	if _pin == billetera_electronica.pin:
 		reembolsos = Reembolso.objects.filter(billetera = billetera_electronica)
-		listaReembolsos = []
-		for elemento in reembolsos:
-			listaReembolsos.append(elemento)
-			return reembolsos
+		return reembolsos
 	else:
 		return False
