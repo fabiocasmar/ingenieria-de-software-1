@@ -31,7 +31,9 @@ from estacionamientos.controller import (
     crear_cancelacion,
     obtener_recargas,
     obtener_consumos,
-    obtener_reembolsos
+    obtener_reembolsos,
+    chequear_consumo,
+    calcular_mover_reserva
 )
 
 from estacionamientos.forms import (
@@ -49,6 +51,7 @@ from estacionamientos.forms import (
     ModificarPropietarioForm,
     CancelarReservaForm,
     MovimientosForm,
+    CedulaIDForm,
     MoverReservaForm
 )
 
@@ -1288,9 +1291,11 @@ def cancelar_reserva(request):
     )
 
 def mover_reserva(request):
-    form = MoverReservaForm()
+
+    form = CedulaIDForm()
+    form2 = MoverReservaForm()
     if request.method == 'POST':
-        form = MoverReservaForm(request.POST)
+        form = CedulaIDForm(request.POST)
         if form.is_valid():
             reserva_id = form.cleaned_data['reserva_id']
             cedula     = form.cleaned_data['cedula']
@@ -1299,7 +1304,7 @@ def mover_reserva(request):
             except ObjectDoesNotExist:
                 return render(
                     request,
-                    'datos_invalidos.html',
+                    'datos_invalidos_mover-reserva.html',
                     {"mensaje": "Datos invalidos",
                      "color"  : "red"
                      }
@@ -1307,19 +1312,145 @@ def mover_reserva(request):
             if cedula!=reserva.cedula:
                 return render(
                     request,
-                    'datos_invalidos.html',
+                    'datos_invalidos_mover-reserva.html',
                     {"mensaje": "Datos invalidos",
                      "color"  : "red"
                      }
                 )
+            
             else:
+                request.session['reserva_id'] = reserva_id
                 return render(
                     request,
-                    'mover_reserva_2.html'
+                    'mover_reserva_2.html',
+                    {"form": form2
+                    }
                 )
     return render(
         request,
         'mover_reserva.html',
         {"form": form
+        }
+    )
+
+def mover_reserva_2(request):
+    reserva_id = request.session['reserva_id']
+    reserva = Reserva.objects.get(id = reserva_id)
+    estacionamiento = Estacionamiento.objects.get(id = reserva.estacionamiento.id)
+    form = MoverReservaForm()
+    if request.method == 'POST':
+        form = MoverReservaForm(request.POST)
+        # Verificamos si es valido con los validadores del formulario
+        if form.is_valid():
+            inicioReserva = form.cleaned_data['inicio']
+            finalReserva = form.cleaned_data['final']
+
+            reserva_id = request.session['reserva_id']
+            reserva = Reserva.objects.get(id = reserva_id)
+            estacionamiento = Estacionamiento.objects.get(id = reserva.estacionamiento.id)
+            pago = Pago.objects.get(reserva = reserva)
+            viejo_monto = pago.monto
+            # debería funcionar con excepciones, y el mensaje debe ser mostrado
+            # en el mismo formulario
+            m_validado = validarHorarioReserva(
+                inicioReserva,
+                finalReserva,
+                estacionamiento.apertura,
+                estacionamiento.cierre,
+            )
+
+            # Si no es valido devolvemos el request
+            if not m_validado[0]:
+                return render(
+                    request,
+                    'template-mensaje.html',
+                    { 'color'  :'red'
+                    , 'mensaje': m_validado[1]
+                    }
+                )
+
+            if marzullo(estacionamiento.id, inicioReserva, finalReserva):
+                reserva.inicioReserva = inicioReserva
+                reserva.finalReserva = finalReserva
+
+                reservaFinal = reserva
+
+                nuevo_monto = Decimal(
+                    estacionamiento.tarifa.calcularPrecio(
+                        inicioReserva,finalReserva
+                    )
+                )
+
+                request.session['monto'] = float(
+                    estacionamiento.tarifa.calcularPrecio(
+                        inicioReserva,
+                        finalReserva
+                    )
+                )
+                request.session['finalReservaHora']    = finalReserva.hour
+                request.session['finalReservaMinuto']  = finalReserva.minute
+                request.session['inicioReservaHora']   = inicioReserva.hour
+                request.session['inicioReservaMinuto'] = inicioReserva.minute
+                request.session['anioinicial']         = inicioReserva.year
+                request.session['mesinicial']          = inicioReserva.month
+                request.session['diainicial']          = inicioReserva.day
+                request.session['aniofinal']           = finalReserva.year
+                request.session['mesfinal']            = finalReserva.month
+                request.session['diafinal']            = finalReserva.day
+                request.session['nombre']              = reservaFinal.nombre
+                request.session['apellido']            = reservaFinal.apellido
+                request.session['cedula']              = reservaFinal.cedula
+                
+
+                check_consumo = chequear_consumo(reserva)
+                if check_consumo==False:
+                    monto_total = calcular_mover_reserva(viejo_monto,nuevo_monto)
+                    print(monto_total[0])
+                    # En caso que el monto nuevo sea mayor al anterior, se realizan
+                    # los calculos respectivos para el pago 
+                    if monto_total[0] != -1:
+                        monto_final = monto_total[0]+monto_total[1]
+                        return render(
+                                    request,
+                                    'confirmar_mover-reserva.html',
+                                    { 'id'            : estacionamiento.id
+                                    , 'monto_total'   : monto_total[0]
+                                    , 'multa'         : monto_total[1]
+                                    , 'monto_final'   : monto_final
+                                    , 'reserva'       : reservaFinal
+                                    , 'color'         : 'green'
+                                    , 'mensaje'       : 'Existe un puesto disponible'
+                                    }
+                                )
+                    # En caso que el monto anterior sea mayor al nuevo, la diferencia
+                    # se envia a la billetera indicada
+                    elif monto_total[0]==False:
+                        return render(
+                                    request,
+                                    'confirmar_mover-reserva_devolver_dinero.html',
+                                    { 'id'            : estacionamiento.id
+                                    , 'monto_total'   : monto_total[1]
+                                    , 'multa'         : monto_total[2]
+                                    , 'reserva'       : reservaFinal
+                                    , 'color'         : 'green'
+                                    , 'mensaje'       : 'Existe un puesto disponible'
+                                    }
+                                )
+
+            else:
+                # Cambiar mensaje
+                return render(
+                    request,
+                    'template-mensaje.html',
+                    {'color'   : 'red'
+                    , 'mensaje' : 'No hay un puesto disponible para ese horario'
+                    }
+                )
+
+    return render(
+        request,
+        'mover_reserva_2.html',
+        { 'form': form
+        , 'estacionamiento': estacionamiento
         }
     )

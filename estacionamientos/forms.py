@@ -958,7 +958,7 @@ class CancelarReservaForm(forms.Form):
         )
     )
 
-class MoverReservaForm(forms.Form):
+class CedulaIDForm(forms.Form):
     reserva_id_validator = RegexValidator(
         regex   = '^[1-9]{1}([0-9]+)?$',
         message = 'El ID solo puede contener caracteres numéricos.'
@@ -990,6 +990,29 @@ class MoverReservaForm(forms.Form):
             , 'placeholder' : 'Cédula Correspondiente'
             , 'pattern'     : ci_validator.regex.pattern
             , 'message'     : ci_validator.message
+            }
+        )
+    )
+
+class MoverReservaForm(forms.Form):
+    inicio = forms.SplitDateTimeField(
+    required = True,
+    label = 'Horario Inicio Reserva',
+    widget= CustomSplitDateTimeWidget(attrs=
+        { 'class'       : 'form-control'
+        , 'type'        : 'date'
+        , 'placeholder' : 'Hora Inicio Reserva'
+        }
+    )
+    )   
+
+    final = forms.SplitDateTimeField(
+        required = True,
+        label    = 'Horario Final Reserva',
+        widget   = CustomSplitDateTimeWidget(attrs=
+            { 'class'       : 'form-control'
+            , 'type'        : 'date'
+            , 'placeholder' : 'Hora Final Reserva'
             }
         )
     )

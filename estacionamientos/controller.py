@@ -265,3 +265,24 @@ def obtener_reembolsos(_id,_pin):
 			return reembolsos
 	else:
 		return False
+
+def chequear_consumo(reserva):
+	try:
+		consumo = Consumo.objects.get(reserva = reserva)
+	except ObjectDoesNotExist:
+	    return False
+	return True        
+
+def calcular_mover_reserva(viejo,nuevo):
+	if nuevo>=viejo:
+		actual = nuevo-viejo
+		multa = (10*actual)/100
+		return actual,multa
+		print("multa1: ",multa)
+	else:
+		actual = viejo-nuevo
+		multa = (10*actual)/100
+		print("multa2: ",multa)
+		return -1,actual,multa
+
+
