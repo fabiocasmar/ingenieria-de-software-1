@@ -49,6 +49,7 @@ from estacionamientos.forms import (
     ModificarPropietarioForm,
     CancelarReservaForm,
     MovimientosForm,
+    MoverReservaForm
 )
 
 from estacionamientos.models import (
@@ -1285,6 +1286,40 @@ def cancelar_reserva(request):
         'cancelar_reserva.html',
         { "form" : form }
     )
-    
-    
-    
+
+def mover_reserva(request):
+    form = MoverReservaForm()
+    if request.method == 'POST':
+        form = MoverReservaForm(request.POST)
+        if form.is_valid():
+            reserva_id = form.cleaned_data['reserva_id']
+            cedula     = form.cleaned_data['cedula']
+            try:
+                reserva = Reserva.objects.get(id = reserva_id)
+            except ObjectDoesNotExist:
+                return render(
+                    request,
+                    'datos_invalidos.html',
+                    {"mensaje": "Datos invalidos",
+                     "color"  : "red"
+                     }
+                )
+            if cedula!=reserva.cedula:
+                return render(
+                    request,
+                    'datos_invalidos.html',
+                    {"mensaje": "Datos invalidos",
+                     "color"  : "red"
+                     }
+                )
+            else:
+                return render(
+                    request,
+                    'mover_reserva_2.html'
+                )
+    return render(
+        request,
+        'mover_reserva.html',
+        {"form": form
+        }
+    )

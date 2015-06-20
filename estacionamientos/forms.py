@@ -958,3 +958,38 @@ class CancelarReservaForm(forms.Form):
         )
     )
 
+class MoverReservaForm(forms.Form):
+    reserva_id_validator = RegexValidator(
+        regex   = '^[1-9]{1}([0-9]+)?$',
+        message = 'El ID solo puede contener caracteres numéricos.'
+    )
+    ci_validator = RegexValidator(
+        regex   = '^[VE]-[0-9]+$',
+        message = 'La cédula debe estar en formato V/E-xxx...'
+        )
+
+    reserva_id = forms.CharField(
+        required   = True,
+        label      = "ID",
+        validators = [reserva_id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'ID Reserva'
+            , 'pattern'     : reserva_id_validator.regex.pattern
+            , 'message'     : reserva_id_validator.message
+            }
+        )
+    )
+
+    cedula = forms.CharField(
+        required   = True,
+        label      = "Cédula",
+        validators = [ci_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula Correspondiente'
+            , 'pattern'     : ci_validator.regex.pattern
+            , 'message'     : ci_validator.message
+            }
+        )
+    )
