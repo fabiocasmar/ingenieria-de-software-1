@@ -44,35 +44,45 @@
             Monto a reembolsar
           </b></td></tr>
           <tr><td>
-            BsF. {{monto_total|floatformat:2|intcomma }} 
+            BsF. {{monto_pagar|floatformat:2|intcomma }} 
           </td></tr>
 
           <tr><td><b><i class="fa fa-money"></i>
             Pago servicio: mover reservación
           </b></td></tr>
           <tr><td>
-            BsF. {{multa|floatformat:2|intcomma }}
+            BsF. {{pago_servicio|floatformat:2|intcomma }}
           </td></tr>
-
           <tr><td>
-            <a href="pago" onClick="return popup(this, 'Pago de Reserva')">
+            Introduzca los datos de la billetera a reembolsar
+          </td></tr>
+        </tbody>
+      </table>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="control-group">
+          <div class="controls">
+              {{ field }}
+              {{ field.errors }}
+          </div>
+        </div>
+        <br/>
+      {% endfor %}
+      <a href="{{id}}/pago" onClick="return popup(this, 'Pago de Reserva')">
               <button class="btn btn-primary">
                 Pagar con tarjeta
               </button>
             </a>
-            <a href="pago_billetera/{{monto}}" onClick="return popup(this, 'Pago de Reserva')">
+            <a href="pago_billetera/{{pago_servicio}}" onClick="return popup(this, 'Pago de Reserva')">
               <button class="btn btn-primary">
                 Pagar con billetera
               </button>
             </a>
-            <a href="/estacionamientos/{{ id }}/reserva">
+            <a href="/estacionamientos/mover_reserva_2">
               <button type="submit" class="btn btn-primary">
                 Volver
               </button>
             </a>
-          </td></tr>
-        </tbody>
-      </table>
     </div>
   </div>
   <script type="text/javascript">

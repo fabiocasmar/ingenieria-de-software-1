@@ -52,7 +52,8 @@ from estacionamientos.forms import (
     CancelarReservaForm,
     MovimientosForm,
     CedulaIDForm,
-    MoverReservaForm
+    MoverReservaForm,
+    ReembolsoForm
 )
 
 from estacionamientos.models import (
@@ -1338,6 +1339,7 @@ def mover_reserva_2(request):
     reserva = Reserva.objects.get(id = reserva_id)
     estacionamiento = Estacionamiento.objects.get(id = reserva.estacionamiento.id)
     form = MoverReservaForm()
+    form2 = ReembolsoForm()
     if request.method == 'POST':
         form = MoverReservaForm(request.POST)
         # Verificamos si es valido con los validadores del formulario
@@ -1375,6 +1377,8 @@ def mover_reserva_2(request):
 
                 reservaFinal = reserva
 
+                request.session['reservaFinal_id'] = reservaFinal.id
+
                 nuevo_monto = Decimal(
                     estacionamiento.tarifa.calcularPrecio(
                         inicioReserva,finalReserva
@@ -1404,8 +1408,7 @@ def mover_reserva_2(request):
 
                 check_consumo = chequear_consumo(reserva)
                 if check_consumo==False:
-                    monto_total = calcular_mover_reserva(viejo_monto,nuevo_monto)
-                    print(monto_total[0])
+                    monto_total = calcular_mover_reserva(viejo_monto,nuevo_monto,)
                     # En caso que el monto nuevo sea mayor al anterior, se realizan
                     # los calculos respectivos para el pago 
                     if monto_total[0] != -1:
@@ -1424,16 +1427,21 @@ def mover_reserva_2(request):
                                 )
                     # En caso que el monto anterior sea mayor al nuevo, la diferencia
                     # se envia a la billetera indicada
-                    elif monto_total[0]==False:
+                    elif monto_total[0]==-1:
+                        request.session['estacionamiento_id'] = estacionamiento.id
+                        request.session['monto_pagar'] = float(monto_total[1])
+                        request.session['pago_servicio'] = float(monto_total[2])
+                        request.session['pago_id'] = pago.id
                         return render(
                                     request,
                                     'confirmar_mover-reserva_devolver_dinero.html',
                                     { 'id'            : estacionamiento.id
-                                    , 'monto_total'   : monto_total[1]
-                                    , 'multa'         : monto_total[2]
+                                    , 'monto_pagar'   : monto_total[1]
+                                    , 'pago_servicio' : monto_total[2]
                                     , 'reserva'       : reservaFinal
                                     , 'color'         : 'green'
                                     , 'mensaje'       : 'Existe un puesto disponible'
+                                    , 'form'          : form2
                                     }
                                 )
 
@@ -1452,5 +1460,55 @@ def mover_reserva_2(request):
         'mover_reserva_2.html',
         { 'form': form
         , 'estacionamiento': estacionamiento
+        }
+    )
+
+def reserva_devolver_dinero(request):
+    form = ReembolsoForm()
+    estacionamiento_id = request.session['estacionamiento_id']
+    monto_pagar = request.session['monto_pagar'] 
+    pago_servicio= request.session['pago_servicio'] 
+    reserva_id = request.session['reserva_id']
+    reservaFinal_id = request.session['reservaFinal_id']
+    pago_id = request.session['pago_id']
+
+    estacionamiento = Estacionamiento.objects.get(id = estacionamiento_id)
+    reservaFinal = Reserva.objects.get(id = reservaFinal_id)
+    pago = Pago.objects.get(id = pago_id)
+    if request.method == 'POST':
+        if form.is_valid():
+            billetera_id = form.cleaned_data['billetera_id']
+            pin = form.cleaned_data['pin']
+            reembolso = reserva_reembolso(billetera_id,pago,monto_pagar)
+            request.session['monto'] = reembolso.saldo
+            billetera = Billetera.objects.get(id = billetera_id)
+            recargar_saldo(billetera_id,billetera.pin,reembolso.saldo)
+            return render(
+                request,
+                'reembolso-reserva_satisfactorio.html',
+                {'form'      : form
+                , 'nombre'   : billetera.nombre
+                , 'apellido' : billetera.apellido
+                , 'cedula'   : billetera.cedula
+                , 'fecha'    : reembolso.fechaTransaccion
+                , 'monto'    : reembolso.monto
+                }
+            )
+        else:
+            return render(
+                request,
+                'datos-invalidos_reembolso.html'
+                )
+
+    return render(
+        request,
+        'confirmar_mover-reserva_devolver_dinero.html',
+        { 'id'            : estacionamiento.id
+        , 'monto_total'   : monto_pagar
+        , 'multa'         : pago_servicio
+        , 'reserva'       : reservaFinal
+        , 'color'         : 'green'
+        , 'mensaje'       : 'Existe un puesto disponible'
+        , 'form'          : form
         }
     )

@@ -1016,3 +1016,40 @@ class MoverReservaForm(forms.Form):
             }
         )
     )
+
+class ReembolsoForm(forms.Form):
+    id_validator = RegexValidator(
+        regex   = '^[1-9]{1}([0-9]+)?$',
+        message = 'El ID solo puede contener caracteres numéricos.'
+    )
+
+    validar_pin = RegexValidator(
+        regex = '^[\s\S]{4,6}$',
+        message = 'El PIN debe contener entre 4 y 6 caracteres'
+    )
+
+    billetera_id = forms.CharField(
+        required   = True,
+        label      = "ID Billetera",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'ID Billetera'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+
+    pin = forms.CharField(
+        required = True,
+        label = "PIN",
+        validators = [validar_pin],
+        widget = forms.TextInput(attrs =
+                { 'class'       : 'form-control'
+                , 'placeholder' : 'PIN Billetera'
+                , 'pattern'     : validar_pin.regex.pattern
+                , 'message'     : validar_pin.message
+                }
+        )
+    )

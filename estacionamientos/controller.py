@@ -211,8 +211,6 @@ def crear_cancelacion(billetera_id,numero_pago ):
 								id_viejo = consumo.id,
 								)
 		reembolso.save()
-		print("Veo reembolso:")
-		print(reembolso.nombre)
 		reserva.delete()
 		obj.save()
 		
@@ -274,15 +272,34 @@ def chequear_consumo(reserva):
 	return True        
 
 def calcular_mover_reserva(viejo,nuevo):
+	# Si el monto nuevo es mayor al viejo, se calcula la diferencia
+	# a pagar por el usuario, y luego el pago por el servicio
 	if nuevo>=viejo:
 		actual = nuevo-viejo
 		multa = (10*actual)/100
 		return actual,multa
-		print("multa1: ",multa)
+	# Si el monto se la reserva vieja es mayor al de la nueva reserva,
+	# se calcula la diferencia para calcular el pago del servicio
 	else:
 		actual = viejo-nuevo
 		multa = (10*actual)/100
-		print("multa2: ",multa)
 		return -1,actual,multa
 
-
+def reserva_reembolso(billetera_id,pago,monto_pagar):
+	billetera = Billetera.objects.get(id = billetera_id)
+	reserva = pago.reserva
+	consumo = Consumo.objects.get(billetera = billetera)
+	reembolso = Reembolso(	nombre= reserva.nombre,
+								apellido = reserva.apellido,
+								cedula = reserva.cedula,
+								estacionamiento = reserva.estacionamiento,
+								inicioReserva = reserva.inicioReserva,
+								finalReserva = reserva.finalReserva,
+								saldo = monto_pagar,
+								fechaTransaccion = datetime.now(),
+								fechaTransaccion_vieja = pago.fechaTransaccion,
+								billetera = billetera,
+								id_viejo = consumo.id,
+							)
+	reembolso.save()
+	return reembolso
