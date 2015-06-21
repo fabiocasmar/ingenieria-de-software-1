@@ -185,34 +185,43 @@ def cancelacion(_ci,_pin,_billetera,_pago ):
 	
 def crear_cancelacion(billetera_id,numero_pago ):
 	try:
+		
 		pago = Pago.objects.get(id=numero_pago)
 		billetera   = Billetera.objects.get(id=billetera_id)
 		consumo = Consumo.objects.get(reserva=pago.reserva.id)
+		
+		if (pago.tarjetaTipo!= ''):
+			multa = (10*pago.monto)/100
+		else:
+			multa = 0 
+		
 		obj = CancelarReserva(
 			estacionamiento   = Estacionamiento.objects.get(id=pago.reserva.estacionamiento.id),
 			fechaTransaccion = datetime.now(),
 			billetera   = Billetera.objects.get(id=billetera_id),
 			inicioReserva = pago.reserva.inicioReserva,
 			finalReserva = pago.reserva.finalReserva,
-			cedula = pago.cedula,                    
+			cedula = pago.cedula,
+			multa = multa                    
 	    )
-		
 		reserva  = Reserva.objects.get(id=pago.reserva.id)
+		
+		recargar_saldo(billetera_id,billetera.pin,pago.monto - multa)
+		
 		reembolso = Reembolso(	nombre= reserva.nombre,
 								apellido = reserva.apellido,
 								cedula = reserva.cedula,
 								estacionamiento = reserva.estacionamiento,
 								inicioReserva = reserva.inicioReserva,
 								finalReserva = reserva.finalReserva,
-								saldo = pago.monto,
+								saldo = pago.monto - multa,
 								fechaTransaccion = obj.fechaTransaccion,
 								fechaTransaccion_vieja = pago.fechaTransaccion,
 								billetera = billetera,
 								id_viejo = consumo.id,
 								)
+		i="falla 5"
 		reembolso.save()
-		print("Veo reembolso:")
-		print(reembolso.nombre)
 		reserva.delete()
 		obj.save()
 		

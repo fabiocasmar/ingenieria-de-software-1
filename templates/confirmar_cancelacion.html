@@ -20,7 +20,7 @@
           <div>
             <table class="table table-striped">
              {% if exito %}
-              <caption>Factura de la Cancelacion</caption>
+              <caption>Datos de la Reserva cancelada</caption>
              {% else %}
               <caption>Datos de la Reserva </caption>
              {% endif %}  
@@ -95,6 +95,34 @@
                <tr><td>
                  {{billetera.id}}
                </td></tr>
+               {% if exito %}
+               <tr><td><b><i class="fa fa-money"></i>
+                 Monto recargado:
+               </b></td></tr>
+               <tr><td>
+                 {{recarga|floatformat:2|intcomma}}
+               </td></tr>
+               <tr><td><b><i class="fa fa-money"></i>
+                 Costo deducido por la cancelacion:
+               </b></td></tr>
+               <tr><td>
+                 {{cancelacion.multa|floatformat:2|intcomma}}
+               </td></tr>
+               {% else %}
+               <tr><td><b><i class="fa fa-money"></i>
+                 Monto a recargar:
+               </b></td></tr>
+               <tr><td>
+                 {{recarga|floatformat:2|intcomma}}
+               </td></tr>
+               <tr><td><b><i class="fa fa-money"></i>
+                 Costo a deducir por la cancelacion:
+               </b></td></tr>
+               <tr><td>
+                 {{costo|floatformat:2|intcomma}}
+               </td></tr>
+             {% endif %}
+             <tbody> 
             {% if exito %}
             <tr><td>
             <form action="/estacionamientos/cancelar_reserva">

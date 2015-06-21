@@ -1212,11 +1212,11 @@ def confirmar_cancelacion(request):
             
             pago = Pago.objects.get(id=numero_pago)
             billetera   = Billetera.objects.get(id=billetera_id)
-           
-            cancelacion = crear_cancelacion(billetera_id,numero_pago )
+            cancelacion = crear_cancelacion(billetera_id,numero_pago)
+
+            if (cancelacion[0] == False) :
+                print(cancelacion[1])          
                 
-            recargar_saldo(billetera_id,billetera.pin,pago.monto)
-            
             return render(
                 request,
                 'confirmar_cancelacion.html',
@@ -1224,6 +1224,7 @@ def confirmar_cancelacion(request):
                 'mensaje': 'Cancelacion realizada con Exito',
                 'exito':'exito',
                 "pago" : pago,
+                "recarga" : pago.monto -  cancelacion[1].multa,
                 "cancelacion": cancelacion[1],
                 "billetera" : billetera,
                 }
@@ -1258,6 +1259,11 @@ def cancelar_reserva(request):
                 
                 billetera = Billetera.objects.get(id=billetera_id)
                 pago = Pago.objects.get(id=numero_pago)
+
+                if (pago.tarjetaTipo!= ''):
+                    multa = (10*pago.monto)/100
+                else:
+                    multa = 0    
            
                 request.session['billetera_id']    = billetera_id
                 request.session['numero_pago']  = numero_pago 
@@ -1268,6 +1274,8 @@ def cancelar_reserva(request):
                         {  "pago" : pago,
                            "mensaje":"Datos de la Cancelacion",
                            "color" : "black",
+                           "costo" : multa,
+                           "recarga" : pago.monto - multa,
                            "billetera" : billetera,
                         }
                     )
