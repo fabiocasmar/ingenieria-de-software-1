@@ -188,8 +188,7 @@ def crear_cancelacion(billetera_id,numero_pago ):
 		
 		pago = Pago.objects.get(id=numero_pago)
 		billetera   = Billetera.objects.get(id=billetera_id)
-		consumo = Consumo.objects.get(reserva=pago.reserva.id)
-		
+
 		if (pago.tarjetaTipo!= ''):
 			multa = (10*pago.monto)/100
 		else:
@@ -218,9 +217,10 @@ def crear_cancelacion(billetera_id,numero_pago ):
 								fechaTransaccion = obj.fechaTransaccion,
 								fechaTransaccion_vieja = pago.fechaTransaccion,
 								billetera = billetera,
-								id_viejo = consumo.id,
+								id_viejo = pago.reserva.id,
+								monto_reserva = pago.monto
 								)
-		i="falla 5"
+	
 		reembolso.save()
 		reserva.delete()
 		obj.save()
