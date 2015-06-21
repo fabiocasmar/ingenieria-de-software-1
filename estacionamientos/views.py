@@ -33,7 +33,8 @@ from estacionamientos.controller import (
     obtener_consumos,
     obtener_reembolsos,
     chequear_consumo,
-    calcular_mover_reserva
+    calcular_mover_reserva,
+    reserva_reembolso
 )
 
 from estacionamientos.forms import (
@@ -1339,8 +1340,8 @@ def mover_reserva_2(request):
     reserva = Reserva.objects.get(id = reserva_id)
     estacionamiento = Estacionamiento.objects.get(id = reserva.estacionamiento.id)
     form = MoverReservaForm()
-    form2 = ReembolsoForm()
     if request.method == 'POST':
+
         form = MoverReservaForm(request.POST)
         # Verificamos si es valido con los validadores del formulario
         if form.is_valid():
@@ -1441,7 +1442,7 @@ def mover_reserva_2(request):
                                     , 'reserva'       : reservaFinal
                                     , 'color'         : 'green'
                                     , 'mensaje'       : 'Existe un puesto disponible'
-                                    , 'form'          : form2
+                                    , 'form'          : form
                                     }
                                 )
 
@@ -1464,9 +1465,10 @@ def mover_reserva_2(request):
     )
 
 def reserva_devolver_dinero(request):
-    form = ReembolsoForm()
     estacionamiento_id = request.session['estacionamiento_id']
+    # Monto a reembolsar
     monto_pagar = request.session['monto_pagar'] 
+    # El usuario debe pagar por el servicio
     pago_servicio= request.session['pago_servicio'] 
     reserva_id = request.session['reserva_id']
     reservaFinal_id = request.session['reservaFinal_id']
@@ -1475,23 +1477,44 @@ def reserva_devolver_dinero(request):
     estacionamiento = Estacionamiento.objects.get(id = estacionamiento_id)
     reservaFinal = Reserva.objects.get(id = reservaFinal_id)
     pago = Pago.objects.get(id = pago_id)
+
+    form = ReembolsoForm()
+
     if request.method == 'POST':
+
+        form = ReembolsoForm(request.POST)
+        
         if form.is_valid():
-            billetera_id = form.cleaned_data['billetera_id']
-            pin = form.cleaned_data['pin']
+
+            try:
+                billetera_id = form.cleaned_data['billetera_id']
+                billetera = Billetera.objects.get(id = billetera_id)
+
+            except ObjectDoesNotExist:
+                return render(
+                request,
+                'datos-invalidos_reembolso.html'
+                )
+            pin = form.cleaned_data['pin']    
+            # Se crea el reembolso para la billetera indicada
             reembolso = reserva_reembolso(billetera_id,pago,monto_pagar)
+
+            request.session['nombre'] = billetera.usuario.nombre
+            request.session['apellido'] = billetera.usuario.apellido
+            request.session['cedula'] = billetera.usuario.cedula
             request.session['monto'] = reembolso.saldo
-            billetera = Billetera.objects.get(id = billetera_id)
+            request.session['reembolso_id'] = reembolso.id
             recargar_saldo(billetera_id,billetera.pin,reembolso.saldo)
+            
             return render(
                 request,
-                'reembolso-reserva_satisfactorio.html',
+                'pagar_servicio-reembolso.html',
                 {'form'      : form
-                , 'nombre'   : billetera.nombre
-                , 'apellido' : billetera.apellido
-                , 'cedula'   : billetera.cedula
+                , 'nombre'   : billetera.usuario.nombre
+                , 'apellido' : billetera.usuario.apellido
+                , 'cedula'   : billetera.usuario.cedula
                 , 'fecha'    : reembolso.fechaTransaccion
-                , 'monto'    : reembolso.monto
+                , 'monto'    : reembolso.saldo
                 }
             )
         else:
@@ -1502,7 +1525,7 @@ def reserva_devolver_dinero(request):
 
     return render(
         request,
-        'confirmar_mover-reserva_devolver_dinero.html',
+        'reserva_devolver_dinero.html',
         { 'id'            : estacionamiento.id
         , 'monto_total'   : monto_pagar
         , 'multa'         : pago_servicio
@@ -1512,3 +1535,163 @@ def reserva_devolver_dinero(request):
         , 'form'          : form
         }
     )
+
+def pagar_servicio_reembolso(request):
+    nombre          = request.session['nombre']
+    apellido        = request.session['apellido']
+    cedula          = request.session['cedula'] 
+    monto           = request.session['monto']
+    reembolso_id    = request.session['reembolso_id']
+    reembolso = Reembolso.objects.get(id = reembolso_id)
+
+    return render(
+    request,
+    'pagar_servicio-reembolso.html',
+            { 'nombre'   : nombre
+            , 'apellido' : apellido
+            , 'cedula'   : cedula
+            , 'fecha'    : reembolso.fechaTransaccion
+            , 'monto'    : monto
+            })
+
+def pagar_servicio_reembolso_tarjeta(request):
+
+    nombre              = request.session['nombre']
+    apellido            = request.session['apellido']
+    cedula              = request.session['cedula'] 
+    monto               = request.session['monto']
+    reembolso_id        = request.session['reembolso_id']
+    reservaFinal_id     = request.session['reservaFinal_id']
+    pago_servicio       = request.session['pago_servicio'] 
+    estacionamiento_id  = request.session['estacionamiento_id']
+
+
+    reembolso = Reembolso.objects.get(id = reembolso_id)
+    reserva = Reserva.objects.get (id = reservaFinal_id)
+
+    form = PagoForm()
+    if request.method == 'POST':
+        form = PagoForm(request.POST)
+        if form.is_valid():
+            nombre = form.cleaned_data['nombre']
+            apellido = form.cleaned_data['apellido']
+            cedula = form.cleaned_data['cedula']
+            tarjetaTipo = form.cleaned_data['tarjetaTipo']
+            tarjeta = form.cleaned_data['tarjeta']
+            pago = Pago (fechaTransaccion = datetime.now(),
+                         cedula = cedula,
+                         tarjetaTipo = tarjetaTipo,
+                         reserva = reserva,
+                         monto = pago_servicio
+                        )
+            pago.save()
+            return render(
+                request,
+                'pago.html',
+                { "id"      : estacionamiento_id
+                , "pago"    : pago
+                , "color"   : "green"
+                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                }
+            )
+            
+
+    return render(
+        request,
+        'pago.html',
+                { 'form' : form
+                }
+        )
+
+def pagar_servicio_reembolso_billetera(request):
+
+    nombre              = request.session['nombre']
+    apellido            = request.session['apellido']
+    cedula              = request.session['cedula'] 
+    monto               = request.session['monto']
+    reembolso_id        = request.session['reembolso_id']
+    reservaFinal_id     = request.session['reservaFinal_id']
+    pago_servicio       = request.session['pago_servicio'] 
+    estacionamiento_id  = request.session['estacionamiento_id']
+
+    estacionamiento = Estacionamiento.objects.get(id = estacionamiento_id)
+    reservaFinal = Reserva.objects.get(id = reservaFinal_id)
+
+    form = ConsumirForm()
+
+    if request.method == 'POST':
+        form = ConsumirForm(request.POST)
+        if form.is_valid():
+
+            billetera_id = form.cleaned_data['billetera_id']
+            pin = form.cleaned_data['pin']
+
+            check = consumir_saldo(billetera_id,pin,monto)
+
+            if check == True:
+                 bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
+                 usuario = bille.usuario
+                 # Se crea el objeto pago.
+                 pago = Pago(
+                   fechaTransaccion = datetime.now(),
+                   cedula           = bille.usuario.cedula,
+                   monto            = pago_servicio,
+                   reserva          = reservaFinal,
+                 )
+                 #Se guarda el recibo de pago en la base de datos
+                 pago.save()
+                 #Se realiza el consumo de la billetera.
+
+                 bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
+
+                 consumo = Consumo(saldo = pago_servicio,
+                          fechaTransaccion = datetime.now(),
+                          billetera = bille,
+                          establecimiento = estacionamiento,
+                          reserva = reservaFinal,
+                          )
+
+                 if (float(bille.saldo) == 0.00):
+                    mensaje2 = "Su billetera se quedo sin fondos."
+                    mensaje3 = "Se recomienda recargar la billetera."
+                 else:
+                    mensaje3 = ""
+                    mensaje2 = ""
+                    consumo.save()
+                 return render(
+                    request,
+                    'pago_billetera.html',
+                    {  'id' : estacionamiento_id
+                    ,  'pago' : pago
+                    , "color"   : "green"
+                    , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                    , 'mensaje2' : mensaje2
+                    , 'mensaje3' : mensaje3
+                    }
+                 )
+            elif check==False:
+                msg="Autenticacion denegada"
+                return render(
+                    request,
+                        'denegado_pago_billetera.html',
+                        {  'msg' : msg,
+                            "color": "red" }
+                )
+            else:
+                msg="Saldo Insuficiente."
+                msg2="Se recomienda recargar."
+                return render(
+                    request,
+                        'denegado_pago_billetera.html',
+                        {  'msg' : msg,
+                           'msg2' : msg2,
+                            "color": "red" }
+                )
+
+    return render(
+        request,
+        'pago_billetera.html',
+        {   'form' : form, 
+            'monto': pago_servicio }
+    )
+    

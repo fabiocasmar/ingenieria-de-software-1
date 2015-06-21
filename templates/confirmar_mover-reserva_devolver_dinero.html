@@ -53,49 +53,13 @@
           <tr><td>
             BsF. {{pago_servicio|floatformat:2|intcomma }}
           </td></tr>
-          <tr><td>
-            Introduzca los datos de la billetera a reembolsar
-          </td></tr>
         </tbody>
       </table>
-      {% csrf_token %}
-      {% for field in form %}
-        <div class="control-group">
-          <div class="controls">
-              {{ field }}
-              {{ field.errors }}
-          </div>
-        </div>
-        <br/>
-      {% endfor %}
-      <a href="{{id}}/pago" onClick="return popup(this, 'Pago de Reserva')">
-              <button class="btn btn-primary">
-                Pagar con tarjeta
-              </button>
-            </a>
-            <a href="pago_billetera/{{pago_servicio}}" onClick="return popup(this, 'Pago de Reserva')">
-              <button class="btn btn-primary">
-                Pagar con billetera
-              </button>
-            </a>
-            <a href="/estacionamientos/mover_reserva_2">
+            <a href="/estacionamientos/reserva_devolver_dinero">
               <button type="submit" class="btn btn-primary">
-                Volver
+                Continuar
               </button>
             </a>
     </div>
   </div>
-  <script type="text/javascript">
-    function popup(mylink, windowname) {
-      if (! window.focus)
-        return true;
-      var href;
-      if (typeof(mylink) == 'string')
-        href=mylink;
-      else
-        href=mylink.href;
-      window.open(href, windowname, 'width=800,height=600,scrollbars=yes');
-      return false;
-    }
-  </script>
-{% endblock %}
+{%endblock%}

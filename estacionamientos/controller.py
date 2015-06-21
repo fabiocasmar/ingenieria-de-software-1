@@ -288,7 +288,6 @@ def calcular_mover_reserva(viejo,nuevo):
 def reserva_reembolso(billetera_id,pago,monto_pagar):
 	billetera = Billetera.objects.get(id = billetera_id)
 	reserva = pago.reserva
-	consumo = Consumo.objects.get(billetera = billetera)
 	reembolso = Reembolso(	nombre= reserva.nombre,
 								apellido = reserva.apellido,
 								cedula = reserva.cedula,
@@ -299,7 +298,8 @@ def reserva_reembolso(billetera_id,pago,monto_pagar):
 								fechaTransaccion = datetime.now(),
 								fechaTransaccion_vieja = pago.fechaTransaccion,
 								billetera = billetera,
-								id_viejo = consumo.id,
+								id_viejo = pago.id,
 							)
+	
 	reembolso.save()
 	return reembolso
