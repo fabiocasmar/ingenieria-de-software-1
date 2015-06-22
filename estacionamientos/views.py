@@ -31,7 +31,9 @@ from estacionamientos.controller import (
     crear_cancelacion,
     obtener_recargas,
     obtener_consumos,
-    obtener_reembolsos
+    obtener_reembolsos,
+    chequear_mover_reserva,
+    nuevo_monto_reserva
 )
 
 from estacionamientos.forms import (
@@ -49,6 +51,8 @@ from estacionamientos.forms import (
     ModificarPropietarioForm,
     CancelarReservaForm,
     MovimientosForm,
+    ReservaCIForm,
+    CambiarReservaForm,
 )
 
 from estacionamientos.models import (
@@ -1294,5 +1298,202 @@ def cancelar_reserva(request):
         { "form" : form }
     )
     
-    
-    
+def mover_reserva(request):
+    form = ReservaCIForm()
+    form2 = CambiarReservaForm()
+    if request.method == 'POST':
+        form = ReservaCIForm(request.POST)
+        if form.is_valid():
+            reserva_id = form.cleaned_data['reserva_id']
+            request.session['reserva_id'] = reserva_id
+            cedula = form.cleaned_data['cedula']
+            check = chequear_mover_reserva(cedula,reserva_id)
+            if check == False:
+                return render(
+                    request,
+                    'reserva_no_existe.html'
+                )
+            elif check == True:
+                request.session['reserva_id'] = reserva_id
+                return render(
+                    request,
+                    'cambiar_datos_reserva.html',
+                    {'form' : form2
+                    }
+                )
+            
+    return render(
+        request,
+        'reserva_cedula.html',
+        {'form' : form
+        }
+    )
+
+def cambiar_datos_reserva(request):
+    reserva_id = request.session['reserva_id']
+    form = CambiarReservaForm()
+    if request.method == 'POST':
+        form = CambiarReservaForm(request.POST)
+        # Verificamos si es valido con los validadores del formulario
+        if form.is_valid():
+
+            inicioReserva = form.cleaned_data['inicio']
+            finalReserva = form.cleaned_data['final']
+
+            reserva = Reserva.objects.get(id = reserva_id)
+            estacionamiento = reserva.estacionamiento
+
+            #Obtenemos el pago correspondiente a la reserva
+            pago = Pago.objects.get(reserva = reserva)
+            monto_viejo = pago.monto
+            # debería funcionar con excepciones, y el mensaje debe ser mostrado
+            # en el mismo formulario
+            m_validado = validarHorarioReserva(
+                inicioReserva,
+                finalReserva,
+                estacionamiento.apertura,
+                estacionamiento.cierre,
+            )
+
+            # Si no es valido devolvemos el request
+            if not m_validado[0]:
+                return render(
+                    request,
+                    'template-mensaje.html',
+                    { 'color'  :'red'
+                    , 'mensaje': m_validado[1]
+                    }
+                )
+
+            if marzullo(estacionamiento.id, inicioReserva, finalReserva):
+                #cambiamos los datos de la reserva
+                reserva.inicioReserva = inicioReserva
+                reserva.finalReserva  = finalReserva
+                reserva.save()
+
+                monto = Decimal(
+                    estacionamiento.tarifa.calcularPrecio(
+                        inicioReserva,finalReserva
+                    )
+                )
+
+                monto_total = nuevo_monto_reserva(monto_viejo,monto)
+
+                request.session['monto'] = float(
+                    estacionamiento.tarifa.calcularPrecio(
+                        inicioReserva,
+                        finalReserva
+                    )
+                )
+                # Si el monto anterior es mayor, hay que proceder
+                # a reembolsar
+
+                request.session['reembolso'] = float(monto_total[1])
+                
+                if monto_total[0] == True:
+                    print("Entre en reembolso !!")
+                    return render(
+                                request,
+                                'confirmar_mover_reserva_reembolso.html',
+                                { 'id'      : estacionamiento.id
+                                , 'monto'   : monto_total[1]
+                                , 'reserva' : reserva
+                                , 'color'   : 'green'
+                                , 'mensaje' : 'Existe un puesto disponible'
+                                }
+                            )
+                # Si el monto nuevo es mayor, hay que proceder
+                # a pagar la diferencia
+                elif monto_total[0] == False:
+                    print("Entre en pagar !!")
+                    return render(
+                        request,
+                        'confirmar_mover_reserva_pagar.html',
+                            { 'id'      : estacionamiento.id
+                            , 'monto'   : monto_total[1]
+                            , 'reserva' : reserva
+                            , 'color'   : 'green'
+                            , 'mensaje' : 'Existe un puesto disponible'
+                            }
+                       )
+                # El monto nuevo es igual al monto anterior
+                elif monto_total[0] == -1:
+                    return render(
+                        request,
+                        'confirmar_mover_reserva.html',
+                            { 'id'      : estacionamiento.id
+                            , 'monto'   : monto_total[1]
+                            , 'reserva' : reserva
+                            , 'color'   : 'green'
+                            , 'mensaje' : 'Existe un puesto disponible'
+                            }
+                       )
+            else:
+                # Cambiar mensaje
+                return render(
+                    request,
+                    'template-mensaje.html',
+                    {'color'   : 'red'
+                    , 'mensaje' : 'No hay un puesto disponible para ese horario'
+                    }
+                )
+
+    return render(
+        request,
+        'cambiar_datos_reserva.html',
+        {'form' : form
+        }
+    )
+
+# Este es el metodo para el pago de la diferencia
+def pagar_mover_reserva(request):
+    return 0
+
+# Este es el metodo para el reembolso
+def reembolsar_reserva(request):
+    # Reutilizamos el form de chequear movimientos de la billetera
+    form = MovimientosForm()
+
+    if request.method == 'POST':
+        reembolso = request.session['reembolso'] 
+        form = MovimientosForm(request.POST)
+        if form.is_valid():
+            billetera_id = form.cleaned_data['billetera_id']
+            pin = form.cleaned_data['pin']
+            recargar = recargar_saldo(billetera_id,pin,reembolso)
+
+            if recargar == False:
+                return render(
+                    request,
+                    'datos_invalidos_reembolso.html'
+                    )
+            elif recargar == True:
+                return render(
+                    request,
+                    'saldo_exceso_reembolso.html'
+                    )
+            else:
+                billetera = Billetera.objects.get(id = billetera_id)
+                return render(
+                    request,
+                    'mover_reserva_exitosa_reembolso.html',
+                    {'nombre': billetera.usuario.nombre,
+                     'apellido': billetera.usuario.apellido,
+                     'cedula'  : billetera.usuario.cedula,
+                     'fecha'   : datetime.now(),
+                     'monto'   : reembolso
+                    }
+                )
+
+    return render(
+        request,
+        'reembolsar_reserva.html',
+        {'form': form
+        }
+    )
+
+def mover_reserva_exitosa(request):
+    return render(
+        request,
+        'mover_reserva_exitosa_reembolso.html'
+    )

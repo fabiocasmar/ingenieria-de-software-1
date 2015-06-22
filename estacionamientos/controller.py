@@ -274,3 +274,31 @@ def obtener_reembolsos(_id,_pin):
 			return reembolsos
 	else:
 		return False
+
+def chequear_mover_reserva(cedula,reserva_id):
+	
+	try:
+		reserva = Reserva.objects.get(id = reserva_id)
+	except ObjectDoesNotExist:
+		return False
+
+	if reserva.cedula != cedula:
+		return False
+	else:
+		return True
+
+def nuevo_monto_reserva(monto_viejo,monto_nuevo):
+	if monto_viejo>monto_nuevo:
+		monto_actual = monto_viejo-monto_nuevo
+		return True,monto_actual
+	elif monto_nuevo>monto_viejo:
+		monto_actual = monto_nuevo-monto_viejo
+		return False,monto_actual
+	elif monto_viejo==monto_nuevo:
+		monto_actual = monto_nuevo-monto_viejo
+		return -1,monto_actual
+
+def mover_reserva(reserva,inicio,fin):
+	reserva.inicioReserva = inicio
+	reserva.finalReserva = fin
+	reserva.save()
