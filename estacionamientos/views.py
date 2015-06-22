@@ -31,7 +31,8 @@ from estacionamientos.controller import (
     crear_cancelacion,
     obtener_recargas,
     obtener_consumos,
-    obtener_reembolsos
+    obtener_reembolsos,
+    guardar_configuracion
 )
 
 from estacionamientos.forms import (
@@ -49,6 +50,7 @@ from estacionamientos.forms import (
     ModificarPropietarioForm,
     CancelarReservaForm,
     MovimientosForm,
+    SageForm
 )
 
 from estacionamientos.models import (
@@ -66,7 +68,8 @@ from estacionamientos.models import (
     Recarga,
     Consumo,
     CancelarReserva,
-    Reembolso
+    Reembolso,
+    Sage
    # QuienReserva
 )
 
@@ -1260,11 +1263,21 @@ def cancelar_reserva(request):
                 billetera = Billetera.objects.get(id=billetera_id)
                 pago = Pago.objects.get(id=numero_pago)
 
+               
                 if (pago.tarjetaTipo!= ''):
-                    multa = (10*pago.monto)/100
+                    try:
+                        sage = Sage.objects.all() 
+                        for elemento in sage:
+                            multa = elemento.deduccion 
+
+                    except ObjectDoesNotExist:  
+                        multa = 0   
+
                 else:
-                    multa = 0    
-           
+                    multa = 0
+
+                multa = pago.monto * multa
+                    
                 request.session['billetera_id']    = billetera_id
                 request.session['numero_pago']  = numero_pago 
                                                            
@@ -1295,4 +1308,48 @@ def cancelar_reserva(request):
     )
     
     
-    
+def configuracion(request):
+
+    form = SageForm()
+
+    if request.method == 'POST':
+
+        form = SageForm(request.POST)
+        
+        if form.is_valid():
+
+            deduccion = form.cleaned_data['porcentaje']
+            exito = guardar_configuracion(deduccion)
+
+            if (exito[0] == True):
+
+                sage = Sage.objects.all() 
+                for elemento in sage:
+                    multa = elemento.deduccion
+                
+                return render(
+                        request,
+                        'configuracion.html',
+                        { 'color'  :'green'
+                        , 'mensaje': exito[1]
+                        , 'monto' : multa * 100
+                        }
+                    ) 
+            else:
+                form2 = SageForm()
+                return render(
+                        request,
+                        'configuracion.html',
+                        { 'color'  :'red'
+                        , 'mensaje': exito[1]
+                       
+                        }
+                    ) 
+
+    return render(
+        request,
+        'configuracion.html',
+        {"form" : form
+        }
+    )
+

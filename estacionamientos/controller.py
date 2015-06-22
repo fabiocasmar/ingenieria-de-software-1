@@ -1,5 +1,5 @@
 # Archivo con funciones de control para SAGE
-from estacionamientos.models import Estacionamiento, Reserva, Pago, Billetera, Recarga, Consumo, CancelarReserva, Reembolso
+from estacionamientos.models import Estacionamiento, Reserva, Pago, Billetera, Recarga, Consumo, CancelarReserva, Reembolso, Sage
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime, timedelta, time
 from decimal import Decimal
@@ -190,9 +190,18 @@ def crear_cancelacion(billetera_id,numero_pago ):
 		billetera   = Billetera.objects.get(id=billetera_id)
 
 		if (pago.tarjetaTipo!= ''):
-			multa = (10*pago.monto)/100
+			try:
+				sage = Sage.objects.all() 
+				for elemento in sage:
+					multa = elemento.deduccion
+
+			except ObjectDoesNotExist:	
+				multa = 0	
+			
 		else:
 			multa = 0 
+
+		multa = pago.monto * multa		
 		
 		obj = CancelarReserva(
 			estacionamiento   = Estacionamiento.objects.get(id=pago.reserva.estacionamiento.id),
@@ -274,3 +283,23 @@ def obtener_reembolsos(_id,_pin):
 			return reembolsos
 	else:
 		return False
+
+
+def guardar_configuracion(deduc):
+
+	if (0.00>float(deduc) or 10.00<float(deduc)):
+		return (False, 'El monto de deduccion debe estar entre 0.00 y 10.00')
+
+	else:	
+		Sage.objects.all().delete()
+		obj = Sage(
+			deduccion = (float(deduc)/100)
+			)
+
+		obj.save()
+		return (True, 'Configuracion realizada con exito')
+
+
+
+
+	

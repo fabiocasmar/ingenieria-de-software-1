@@ -3,10 +3,32 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.forms.widgets import SplitDateTimeWidget
 
+
 class CustomSplitDateTimeWidget(SplitDateTimeWidget):
 
     def format_output(self, rendered_widgets):
         return '<p></p>'.join(rendered_widgets)
+
+class SageForm(forms.Form):
+
+	monto_validator = RegexValidator(	
+		regex   = '^([0-9]+(\.[0-9]+)?)$',
+		message = 'El ID solo puede contener caracteres numéricos.'
+	)
+
+	porcentaje = forms.CharField(
+		required = True,
+		label = 'porcentaje',
+		validators = [monto_validator],
+		widget = forms.TextInput(attrs =
+				{ 'class'       : 'form-control'
+				, 'placeholder' : 'Porcentaje'
+				, 'pattern'     : monto_validator.regex.pattern
+				, 'message'     : monto_validator.message
+				}
+			)
+	)
+
 
 class EstacionamientoForm(forms.Form):
 
