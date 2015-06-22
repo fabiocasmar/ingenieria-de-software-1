@@ -391,6 +391,36 @@ class EstacionamientoExtendedForm(forms.Form):
         )
     )
 
+    horizonteDias = forms.IntegerField(
+        required = True,
+        min_value = 0,
+        max_value = 15,
+        label    = 'Numero de dias a reservar',
+        widget = forms.NumberInput(attrs = 
+            {   'class'        : 'form-control'
+            ,    'placeholder' :  'Dias a reservar'
+            ,   'pattern'      :  '^[0-9]+'
+            ,   'message'      :  'La entrada debe ser un número entero no negativo.'
+            }
+        )
+
+    )
+
+    horizonteHoras = forms.IntegerField(
+        required = True,
+        min_value = 0,
+        max_value = 23,
+        label    = 'Numero de horas a reservar',
+        widget = forms.NumberInput(attrs = 
+            {   'class'        : 'form-control'
+            ,    'placeholder' :  'Horas a reservar'
+            ,   'pattern'      :  '^[0-9]+'
+            ,   'message'      :  'La entrada debe ser una hora valida'
+            }
+        )
+
+    )
+
 class ReservaForm(forms.Form):
  
     id_validator = RegexValidator(
