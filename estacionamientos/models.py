@@ -233,3 +233,11 @@ class QuienReserva(models.Model):
 
 	def __str__(self):
 		return self.cedula+' '+str(self.id)
+
+class DiaFeriado(models.Model):
+	dia			 = models.PositiveIntegerField(null = True)
+	mes 		 = models.PositiveIntegerField(null = True)
+	descripcion  = models.CharField(max_length = 50, blank = True, null = True)
+
+	def __str__(self):
+		return str(self.dia)+'/'+str(self.mes)+' '+self.descripcion
