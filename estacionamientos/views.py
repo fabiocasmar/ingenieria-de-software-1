@@ -1297,7 +1297,9 @@ def cancelar_reserva(request):
         'cancelar_reserva.html',
         { "form" : form }
     )
-    
+
+# Chequea principalmente que la cedula corresponda con el id
+# de reserva
 def mover_reserva(request):
     form = ReservaCIForm()
     form2 = CambiarReservaForm()
@@ -1307,6 +1309,7 @@ def mover_reserva(request):
             reserva_id = form.cleaned_data['reserva_id']
             request.session['reserva_id'] = reserva_id
             cedula = form.cleaned_data['cedula']
+            # hace el chequeo id-cedula
             check = chequear_mover_reserva(cedula,reserva_id)
             if check == False:
                 return render(
@@ -1314,6 +1317,7 @@ def mover_reserva(request):
                     'reserva_no_existe.html'
                 )
             elif check == True:
+                # Necesitaremos el id de la reserva en otra vista
                 request.session['reserva_id'] = reserva_id
                 return render(
                     request,
@@ -1329,6 +1333,7 @@ def mover_reserva(request):
         }
     )
 
+# Aqui se cambian los datos de la reserva
 def cambiar_datos_reserva(request):
     reserva_id = request.session['reserva_id']
     form = CambiarReservaForm()
@@ -1365,6 +1370,7 @@ def cambiar_datos_reserva(request):
                     }
                 )
 
+            # verificamos que hay puesto disponible
             if marzullo(estacionamiento.id, inicioReserva, finalReserva):
                 #cambiamos los datos de la reserva
                 reserva.inicioReserva = inicioReserva
@@ -1376,7 +1382,7 @@ def cambiar_datos_reserva(request):
                         inicioReserva,finalReserva
                     )
                 )
-
+                # calculamos el nuevo monto de la reserva
                 monto_total = nuevo_monto_reserva(monto_viejo,monto)
 
                 request.session['monto'] = float(
@@ -1389,9 +1395,10 @@ def cambiar_datos_reserva(request):
                 # a reembolsar
 
                 request.session['reembolso'] = float(monto_total[1])
+                request.session['monto_diferencia'] = float(monto_total[1])
+                request.session['estacionamiento_id'] = estacionamiento.id
                 
                 if monto_total[0] == True:
-                    print("Entre en reembolso !!")
                     return render(
                                 request,
                                 'confirmar_mover_reserva_reembolso.html',
@@ -1405,7 +1412,6 @@ def cambiar_datos_reserva(request):
                 # Si el monto nuevo es mayor, hay que proceder
                 # a pagar la diferencia
                 elif monto_total[0] == False:
-                    print("Entre en pagar !!")
                     return render(
                         request,
                         'confirmar_mover_reserva_pagar.html',
@@ -1416,7 +1422,8 @@ def cambiar_datos_reserva(request):
                             , 'mensaje' : 'Existe un puesto disponible'
                             }
                        )
-                # El monto nuevo es igual al monto anterior
+                # El monto nuevo es igual al monto anterior, no hay que pagar
+                # ni reembolsar
                 elif monto_total[0] == -1:
                     return render(
                         request,
@@ -1429,7 +1436,7 @@ def cambiar_datos_reserva(request):
                             }
                        )
             else:
-                # Cambiar mensaje
+                
                 return render(
                     request,
                     'template-mensaje.html',
@@ -1445,9 +1452,105 @@ def cambiar_datos_reserva(request):
         }
     )
 
-# Este es el metodo para el pago de la diferencia
-def pagar_mover_reserva(request):
-    return 0
+# Este es el metodo para el pago de la diferencia con la tarjeta
+def pagar_tarjeta_mover_reserva(request):
+    form = PagoForm()
+    if request.method == 'POST':
+        form = PagoForm(request.POST)
+        if form.is_valid():
+            nombre = form.cleaned_data['nombre']
+            apellido = form.cleaned_data['apellido']
+            cedula = form.cleaned_data['cedula']
+            tarjetaTipo = form.cleaned_data['tarjetaTipo']
+            tarjeta = form.cleaned_data['tarjeta']
+
+            reserva_id = request.session['reserva_id']
+            monto = request.session['monto_diferencia']
+            estacionamiento_id = request.session['estacionamiento_id']
+            
+            reserva = Reserva.objects.get(id = reserva_id)
+            # Hay que generar el recibo de pago
+            pago = Pago(
+                fechaTransaccion = datetime.now(),
+                cedula           = cedula,
+                monto            = monto,
+                tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
+                reserva          = reserva,
+            )
+
+            # Se guarda el recibo de pago en la base de datos
+            #pago.save()
+
+            return render(
+                        request,
+                        'pago.html',
+                        { "id"      : estacionamiento_id
+                        , "pago"    : pago
+                        , "color"   : "green"
+                        , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                        }
+                    )
+
+    return render(
+        request,
+        'pago.html',
+        { 'form' : form }
+    )
+
+# Este es el metodo para el pago de la diferencia con la billetera
+def pagar_billetera_mover_reserva(request):
+    monto = request.session['monto_diferencia']
+    reserva_id = request.session['reserva_id']
+    estacionamiento_id = request.session['estacionamiento_id']
+
+    form = ConsumirForm()
+    if request.method == 'POST':
+        form = ConsumirForm(request.POST)
+        if form.is_valid():
+            billetera_id = form.cleaned_data['billetera_id']
+            pin = form.cleaned_data['pin']
+            # Hay que consumir el dinero de la billetera
+            consumir = consumir_saldo(billetera_id,pin,monto)
+            if consumir == False:
+                return render(
+                    request,
+                    'datos_invalidos_billetera_mover_reserva.html'
+                )
+            elif consumir == True:
+                billetera = Billetera.objects.get(id = billetera_id)
+                reserva = Reserva.objects.get(id=reserva_id)
+                pago = Pago(
+                   fechaTransaccion = datetime.now(),
+                   cedula           = billetera.usuario.cedula,
+                   monto            = monto,
+                   reserva          = reserva,
+                 )
+                #pago.save()
+                return render(
+                    request,
+                    'pago_billetera.html',
+                    {  'id' : estacionamiento_id
+                    ,  'pago' : pago
+                    , "color"   : "green"
+                    , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                    , 'mensaje2' : " "
+                    , 'mensaje3' : " "
+                    }
+                )
+
+            else:
+                return render(
+                    request,
+                    'monto_exceso_pago.html',
+                )
+
+    return render(
+        request,
+        'pago_billetera.html',
+        {'form' : form,
+        'monto' : monto
+        }
+    )
 
 # Este es el metodo para el reembolso
 def reembolsar_reserva(request):
@@ -1460,6 +1563,7 @@ def reembolsar_reserva(request):
         if form.is_valid():
             billetera_id = form.cleaned_data['billetera_id']
             pin = form.cleaned_data['pin']
+            # Se reembolsa el dinero a la billetera como una recarga
             recargar = recargar_saldo(billetera_id,pin,reembolso)
 
             if recargar == False:
@@ -1492,6 +1596,7 @@ def reembolsar_reserva(request):
         }
     )
 
+# Simplementa se muestra el mensaje que se movio la reserva exitosamente
 def mover_reserva_exitosa(request):
     return render(
         request,

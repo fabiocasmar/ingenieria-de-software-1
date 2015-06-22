@@ -48,14 +48,38 @@
           </td></tr>
 
           <tr><td>
-            <a href="/estacionamientos/pagar_mover_reserva">
+            <a href="pagar_tarjeta_mover_reserva" onClick="return popup(this, 'Pago de Reserva')">
+              <button class="btn btn-primary">
+                Pagar con tarjeta
+              </button>
+            </a>
+            <a href="pagar_billetera_mover_reserva" onClick="return popup(this, 'Pago de Reserva')">
+              <button class="btn btn-primary">
+                Pagar con billetera
+              </button>
+            </a>
+            <a href="/estacionamientos/mover_reserva">
               <button type="submit" class="btn btn-primary">
-                Confirmar
+                Cancelar
               </button>
             </a>
           </td></tr>
+
         </tbody>
       </table>
     </div>
   </div>
+  <script type="text/javascript">
+    function popup(mylink, windowname) {
+      if (! window.focus)
+        return true;
+      var href;
+      if (typeof(mylink) == 'string')
+        href=mylink;
+      else
+        href=mylink.href;
+      window.open(href, windowname, 'width=800,height=600,scrollbars=yes');
+      return false;
+    }
+  </script>
 {% endblock %}

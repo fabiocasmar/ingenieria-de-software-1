@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+
+{% block title %}
+  SAGE - Estacionamiento {{estacionamiento.nombre}}
+{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Estacionamientos
+    </h3>
+    <hr>
+    <div class="col-md-8">
+      <table class="table table-striped">
+          <h3>Consumo Satisfactorio</h3>
+              <tr>
+      <td>Usuario</td>
+      <td>{{nombre}}&nbsp;{{apellido}}</td>
+    </tr><tr>
+      <td>Cédula Usuario</td>
+      <td>{{cedula}}</td>
+    </tr><tr>
+      <td>Fecha Transacción</td>
+      <td>{{fecha}}</td>
+    </tr></tr><tr>
+      <td>Monto Transacción</td>
+      <td>{{monto}}</td>
+    </tr>
+      </table>
+      <hr>
+    </div>
+    
+  </div>
+      <p>
+      <p>
+      <p>
+      <p>
+        <div class="controls">
+    <form action="/estacionamientos/">
+      <input type="submit" class="btn btn-primary" value="Volver al Menu Inicial">
+    </form>
+{% endblock %}
