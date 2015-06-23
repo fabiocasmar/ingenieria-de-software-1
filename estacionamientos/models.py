@@ -48,10 +48,11 @@ class Estacionamiento(models.Model):
 
 	content_type = models.ForeignKey(ContentType, null = True)
 	object_id    = models.PositiveIntegerField(null = True)
-	tarifa       = GenericForeignKey()
 	apertura     = models.TimeField(blank = True, null = True)
 	cierre       = models.TimeField(blank = True, null = True)
 	capacidad    = models.IntegerField(blank = True, null = True)
+	tarifa       = GenericForeignKey()
+	tarifaFeriado = GenericForeignKey()
 
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
@@ -142,6 +143,9 @@ class EsquemaTarifario(models.Model):
 	def __str__(self):
 		return str(self.tarifa)
 
+class Ninguno(EsquemaTarifario):
+	def tipo(self):
+		return("Ninguno")
 
 class TarifaHora(EsquemaTarifario):
 	def calcularPrecio(self,horaInicio,horaFinal):
@@ -149,6 +153,7 @@ class TarifaHora(EsquemaTarifario):
 		a = a.days*24+a.seconds/3600
 		a = ceil(a) #  De las horas se calcula el techo de ellas
 		return(Decimal(self.tarifa*a).quantize(Decimal('1.00')))
+	
 	def tipo(self):
 		return("Por Hora")
 
@@ -157,6 +162,7 @@ class TarifaMinuto(EsquemaTarifario):
 		minutes = horaFinal-horaInicio
 		minutes = minutes.days*24*60+minutes.seconds/60
 		return (Decimal(minutes)*Decimal(self.tarifa/60)).quantize(Decimal('1.00'))
+	
 	def tipo(self):
 		return("Por Minuto")
 
