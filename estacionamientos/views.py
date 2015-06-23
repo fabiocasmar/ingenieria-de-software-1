@@ -1507,7 +1507,7 @@ def pagar_billetera_mover_reserva(request):
     monto = request.session['monto_diferencia']
     pago_id = request.session['pago_id']
     estacionamiento_id = request.session['estacionamiento_id']
-
+    estacionamiento = Estacionamiento.objects.get(id=estacionamiento_id)
     form = ConsumirForm()
     if request.method == 'POST':
         form = ConsumirForm(request.POST)
@@ -1533,6 +1533,14 @@ def pagar_billetera_mover_reserva(request):
                    reserva          = reserva,
                  )
                 pago.save()
+
+                consumo = Consumo (saldo = monto,
+                                   fechaTransaccion = datetime.now(),
+                                   billetera = billetera,
+                                   establecimiento = estacionamiento,
+                                   reserva = reserva)
+                consumo.save()
+
                 return render(
                     request,
                     'pago_billetera.html',
@@ -1561,6 +1569,11 @@ def pagar_billetera_mover_reserva(request):
 
 # Este es el metodo para el reembolso
 def reembolsar_reserva(request):
+    estacionamiento_id = request.session['estacionamiento_id']
+    pago_id = request.session['pago_id']
+    pago = Pago.objects.get(id = pago_id)
+    reserva = pago.reserva
+    estacionamiento = Estacionamiento.objects.get(id=estacionamiento_id)
     # Reutilizamos el form de chequear movimientos de la billetera
     form = MovimientosForm()
 
@@ -1585,6 +1598,21 @@ def reembolsar_reserva(request):
                     )
             else:
                 billetera = Billetera.objects.get(id = billetera_id)
+                usuario = billetera.usuario
+                reembolso = Reembolso(nombre = usuario.nombre,
+                                      apellido = usuario.apellido,
+                                      cedula = usuario.cedula,
+                                      estacionamiento = estacionamiento,
+                                      inicioReserva = reserva.inicioReserva,
+                                      finalReserva = reserva.finalReserva,
+                                      saldo = reembolso,
+                                      fechaTransaccion_vieja = pago.fechaTransaccion,
+                                      fechaTransaccion = datetime.now(),
+                                      billetera = billetera,
+                                      id_viejo = pago.id,
+                                      monto_reserva = pago.monto
+                                      )
+                reembolso.save()
                 return render(
                     request,
                     'mover_reserva_exitosa_reembolso.html',
