@@ -220,7 +220,9 @@ def estacionamiento_detail(request, _id):
                 'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
                 'finTarifa2' : estacionamiento.tarifa.finEspecial,
                 'puestos' : estacionamiento.capacidad,
-                'esquema' : estacionamiento.tarifa.__class__.__name__
+                'esquema' : estacionamiento.tarifa.__class__.__name__,
+                'horizonteDias': estacionamiento.horizontedias,
+                'horizonteHoras': estacionamiento.horizontehoras 
             }
             form = EstacionamientoExtendedForm(data = form_data)
         else:
@@ -231,13 +233,15 @@ def estacionamiento_detail(request, _id):
         form = EstacionamientoExtendedForm(request.POST)
         # Si el formulario
         if form.is_valid():
-            horaIn        = form.cleaned_data['horarioin']
-            horaOut       = form.cleaned_data['horarioout']
-            tarifa        = form.cleaned_data['tarifa']
-            tipo          = form.cleaned_data['esquema']
-            inicioTarifa2 = form.cleaned_data['inicioTarifa2']
-            finTarifa2    = form.cleaned_data['finTarifa2']
-            tarifa2       = form.cleaned_data['tarifa2']
+            horaIn         = form.cleaned_data['horarioin']
+            horaOut        = form.cleaned_data['horarioout']
+            tarifa         = form.cleaned_data['tarifa']
+            tipo           = form.cleaned_data['esquema']
+            inicioTarifa2  = form.cleaned_data['inicioTarifa2']
+            finTarifa2     = form.cleaned_data['finTarifa2']
+            tarifa2        = form.cleaned_data['tarifa2']
+            horizonteDias  = form.cleaned_data['horizonteDias'] 
+            horizonteHoras = form.cleaned_data['horizonteHoras'] 
 
             esquemaTarifa = eval(tipo)(
                 tarifa         = tarifa,
@@ -258,10 +262,12 @@ def estacionamiento_detail(request, _id):
                     }
                 )
             # debería funcionar con excepciones
-            estacionamiento.tarifa    = esquemaTarifa
-            estacionamiento.apertura  = horaIn
-            estacionamiento.cierre    = horaOut
-            estacionamiento.capacidad = form.cleaned_data['puestos']
+            estacionamiento.tarifa         = esquemaTarifa
+            estacionamiento.apertura       = horaIn
+            estacionamiento.cierre         = horaOut
+            estacionamiento.capacidad      = form.cleaned_data['puestos']
+            estacionamiento.horizontedias  = horizonteDias
+            estacionamiento.horizontehoras = horizonteHoras
 
             estacionamiento.save()
             form = EstacionamientoExtendedForm()

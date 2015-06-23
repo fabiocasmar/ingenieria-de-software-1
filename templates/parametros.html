@@ -32,5 +32,17 @@
       <tr><td><b><i class="fa fa-money"></i></i> Tarifa:</b></td></tr>
       <tr><td>BsF. {{estacionamiento.tarifa.tarifa|floatformat:2|intcomma}}</td></tr>
     {% endif %}
+        <tr><td><b><i class="fa fa-circle"></i>
+      Cantidad de Dias de Horizonte:
+    </b></td></tr>
+    <tr><td>
+      {{estacionamiento.horizontedias}} dia(s)
+    </td></tr>
+        <tr><td><b><i class="fa fa-circle"></i>
+      Cantidad de Horas de Horizonte:
+    </b></td></tr>
+    <tr><td>
+      {{estacionamiento.horizontehoras}} horas
+    </td></tr>
   </tbody>
 </table>
