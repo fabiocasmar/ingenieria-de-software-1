@@ -988,3 +988,63 @@ class CancelarReservaForm(forms.Form):
         )
     )
 
+class ReservaCIForm(forms.Form):
+
+    id_validator = RegexValidator(
+        regex   = '^[1-9]{1}([0-9]+)?$',
+        message = 'El ID solo puede contener caracteres numéricos distintos de cero.'
+    )
+    
+    reserva_id = forms.CharField(
+        required   = True,
+        label      = "ID",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'ID Reserva'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+
+    ci_validator = RegexValidator(
+        regex   = '^[VE]-[0-9]+$',
+        message = 'La cédula debe estar en formato V/E-NumCedula'   
+    )
+    
+    cedula = forms.CharField(
+        required   = True,
+        label      = "Cédula",
+        validators = [ci_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula asociada'
+            , 'pattern'     : ci_validator.regex.pattern
+            , 'message'     : ci_validator.message
+            }
+        )
+    )
+
+class CambiarReservaForm(forms.Form):
+    inicio = forms.SplitDateTimeField(
+        required = True,
+        label = 'Horario Inicio Reserva',
+        widget= CustomSplitDateTimeWidget(attrs=
+            { 'class'       : 'form-control'
+            , 'type'        : 'date'
+            , 'placeholder' : 'Hora Inicio Reserva'
+            }
+        )
+    )
+
+    final = forms.SplitDateTimeField(
+        required = True,
+        label    = 'Horario Final Reserva',
+        widget   = CustomSplitDateTimeWidget(attrs=
+            { 'class'       : 'form-control'
+            , 'type'        : 'date'
+            , 'placeholder' : 'Hora Final Reserva'
+            }
+        )
+    )

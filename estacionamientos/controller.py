@@ -185,34 +185,43 @@ def cancelacion(_ci,_pin,_billetera,_pago ):
 	
 def crear_cancelacion(billetera_id,numero_pago ):
 	try:
+		
 		pago = Pago.objects.get(id=numero_pago)
 		billetera   = Billetera.objects.get(id=billetera_id)
-		consumo = Consumo.objects.get(reserva=pago.reserva.id)
+
+		if (pago.tarjetaTipo!= ''):
+			multa = (10*pago.monto)/100
+		else:
+			multa = 0 
+		
 		obj = CancelarReserva(
 			estacionamiento   = Estacionamiento.objects.get(id=pago.reserva.estacionamiento.id),
 			fechaTransaccion = datetime.now(),
 			billetera   = Billetera.objects.get(id=billetera_id),
 			inicioReserva = pago.reserva.inicioReserva,
 			finalReserva = pago.reserva.finalReserva,
-			cedula = pago.cedula,                    
+			cedula = pago.cedula,
+			multa = multa                    
 	    )
-		
 		reserva  = Reserva.objects.get(id=pago.reserva.id)
+		
+		recargar_saldo(billetera_id,billetera.pin,pago.monto - multa)
+		
 		reembolso = Reembolso(	nombre= reserva.nombre,
 								apellido = reserva.apellido,
 								cedula = reserva.cedula,
 								estacionamiento = reserva.estacionamiento,
 								inicioReserva = reserva.inicioReserva,
 								finalReserva = reserva.finalReserva,
-								saldo = pago.monto,
+								saldo = pago.monto - multa,
 								fechaTransaccion = obj.fechaTransaccion,
 								fechaTransaccion_vieja = pago.fechaTransaccion,
 								billetera = billetera,
-								id_viejo = consumo.id,
+								id_viejo = pago.reserva.id,
+								monto_reserva = pago.monto
 								)
+	
 		reembolso.save()
-		print("Veo reembolso:")
-		print(reembolso.nombre)
 		reserva.delete()
 		obj.save()
 		
@@ -263,5 +272,46 @@ def obtener_reembolsos(_id,_pin):
 		for elemento in reembolsos:
 			listaReembolsos.append(elemento)
 			return reembolsos
+	else:
+		return False
+
+def chequear_mover_reserva(cedula,reserva_id):
+	
+	try:
+		pago = Pago.objects.get(id = reserva_id)
+		#reserva = Reserva.objects.get(id = reserva_id)
+	except ObjectDoesNotExist:
+		return False
+	reserva = pago.reserva
+	if reserva.cedula != cedula:
+		return False
+	else:
+		return True
+
+def nuevo_monto_reserva(monto_viejo,monto_nuevo):
+	if monto_viejo>monto_nuevo:
+		monto_actual = monto_viejo-monto_nuevo
+		return True,monto_actual
+	elif monto_nuevo>monto_viejo:
+		monto_actual = monto_nuevo-monto_viejo
+		return False,monto_actual
+	elif monto_viejo==monto_nuevo:
+		monto_actual = monto_nuevo-monto_viejo
+		return -1,monto_actual
+
+def mover_reserva(reserva,inicio,fin):
+	reserva.inicioReserva = inicio
+	reserva.finalReserva = fin
+	reserva.save()
+
+# Chequear si el usuario pago con billetera
+def chequear_consumo_billetera(pago,reserva):
+	consumo = Consumo.objects.filter(reserva=reserva)
+	if len(consumo)>0:
+		for obj in consumo:
+			if obj.flag==1 and reserva.movidas==1:
+				return True
+			else:
+				return False
 	else:
 		return False

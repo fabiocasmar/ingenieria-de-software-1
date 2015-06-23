@@ -15,7 +15,7 @@
         <p>
         <p>
         <p>
-        <font size=4 color="black"> Saldo actual: {{billetera.saldo}}</font>
+        <font size=4 color="black"> Saldo actual: {{billetera.saldo|floatformat:2}}</font>
 
       </h>
 <!--
@@ -93,11 +93,11 @@
           {% for obj in listaTotal %}
             <!-- Condicional para recarga-->
             {% if obj.tarjetaTipo  %}
-              <td> Tarjeta Habiente: {{obj.nombre}}&nbsp;{{obj.apellido}}
+              <td> Recarga: <br> Tarjeta Habiente: {{obj.nombre}}&nbsp;{{obj.apellido}}
                   <p>
                   Últimos dígitos Tarjeta: {{obj.numtarjeta}}</td>
               <td> {{obj.fechaTransaccion}}</td>
-              <td> rc{{obj.id}}</td>
+              <td>{{obj.id}}</td>
               <td></td>
               <td> {{obj.saldo}}</td>
               <tr></tr>
@@ -106,23 +106,23 @@
             {% if obj.establecimiento%}
               <td>Reservó: {{obj.reserva.nombre}}&nbsp;{{obj.reserva.apellido}}</td>
               <td>{{obj.fechaTransaccion}}</td>
-              <td>co{{obj.id}}</td>
+              <td>{{obj.id}}</td>
               <td>{{obj.saldo}}</td>
               <td></td>
               <tr></tr>
             {%endif%}
             <!-- Condicional para reembolso-->
             {% if obj.inicioReserva%}
-              <td>Canceló reserva: {{obj.nombre}}&nbsp;{{obj.apellido}}</td>
+              <td>Recarga por cancelación: <br>{{obj.nombre}}&nbsp;{{obj.apellido}}</td>
               <td>{{obj.fechaTransaccion}}</td>
-              <td>re{{obj.id}}</td>
+              <td>{{obj.id}}</td>
               <td></td>
               <td>{{obj.saldo}}</td>
               <tr></tr>
-              <td>Reserva Cancelada: {{obj.nombre}}&nbsp;{{obj.apellido}}</td>
+              <td>Reserva Cancelada: <br>{{obj.nombre}}&nbsp;{{obj.apellido}}</td>
               <td>{{obj.fechaTransaccion_vieja}}</td>
-              <td>co{{obj.id_viejo}}</td>
-              <td>{{obj.saldo}}</td>
+              <td>{{obj.id_viejo}}</td>
+              <td>{{obj.monto_reserva}}</td>
               <td></td>
               <tr></tr>
             {%endif%}

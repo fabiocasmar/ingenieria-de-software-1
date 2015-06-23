@@ -147,14 +147,14 @@
                   Monto:
                 </b></td></tr>
                 <tr><td>
-                  BsF. {{pago.monto|floatformat:2|intcomma }}
+                  BsF. {{monto|floatformat:2|intcomma }}
                 </td></tr>
               </tbody>
             </table>
             <div>
               <input
                 type="button"
-                value="Volver"
+                value="Salir"
                 onclick="javascript: closepopup();"
                 class="btn btn-primary"
               >
@@ -181,7 +181,7 @@
     }
 
     function openlink(){
-      opener.location='/estacionamientos/{{id}}/reserva';
+      opener.location='/estacionamientos/';
     }
   </script>
 {% endblock %}
