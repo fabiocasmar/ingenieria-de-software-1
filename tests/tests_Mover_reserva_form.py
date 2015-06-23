@@ -169,14 +169,6 @@ class MoverReservaFormTestCase(TestCase):
 		form = CambiarReservaForm(data = form_data)
 		self.assertFalse(form.is_valid())
 
-	# esquina
-	def test_MoverReserva_DosCampos_final0Inicio1(self):
-		form_data = {'inicio_1': date(year=2015,month=2,day=27),
-					 'final_0': time(hour = 18, minute = 0)
-					}
-		form = CambiarReservaForm(data = form_data)
-		self.assertFalse(form.is_valid())
-
 	# malicia
 	def test_MoverReserva_TresCampos_inicio1Final1Final0(self):
 		form_data = {'inicio_1': time(hour = 15, minute = 0),
