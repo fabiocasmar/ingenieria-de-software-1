@@ -289,7 +289,49 @@ class EstacionamientoExtendedForm(forms.Form):
         message = 'Sólo debe contener dígitos.'
     )
     
-    puestos = forms.IntegerField(
+    puestos1 = forms.IntegerField(
+        required  = True,
+        min_value = 1,
+        label     = 'Número de Puestos',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Número de Puestos'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'La entrada debe ser un número entero no negativo.'
+            }
+        )
+    )
+
+    puestos2 = forms.IntegerField(
+        required  = True,
+        min_value = 1,
+        label     = 'Número de Puestos',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Número de Puestos'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'La entrada debe ser un número entero no negativo.'
+            }
+        )
+    )
+
+    puestos3 = forms.IntegerField(
+        required  = True,
+        min_value = 1,
+        label     = 'Número de Puestos',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Número de Puestos'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'La entrada debe ser un número entero no negativo.'
+            }
+        )
+    )
+
+    puestos4 = forms.IntegerField(
         required  = True,
         min_value = 1,
         label     = 'Número de Puestos',

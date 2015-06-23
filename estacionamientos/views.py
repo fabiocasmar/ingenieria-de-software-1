@@ -219,7 +219,10 @@ def estacionamiento_detail(request, _id):
                 'tarifa2' : estacionamiento.tarifa.tarifa2,
                 'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
                 'finTarifa2' : estacionamiento.tarifa.finEspecial,
-                'puestos' : estacionamiento.capacidad,
+                'puestos1' : estacionamiento.capacidad.particular,
+                'puestos2' : estacionamiento.capacidad.moto,
+                'puestos3' : estacionamiento.capacidad.carga,
+                'puestos4' : estacionamiento.capacidad.discapacitado,
                 'esquema' : estacionamiento.tarifa.__class__.__name__
             }
             form = EstacionamientoExtendedForm(data = form_data)
@@ -261,7 +264,10 @@ def estacionamiento_detail(request, _id):
             estacionamiento.tarifa    = esquemaTarifa
             estacionamiento.apertura  = horaIn
             estacionamiento.cierre    = horaOut
-            estacionamiento.capacidad = form.cleaned_data['puestos']
+            estacionamiento.capacidad.particular = form.cleaned_data['puestos1']
+            estacionamiento.capacidad.moto = form.cleaned_data['puestos2']
+            estacionamiento.capacidad.carga = form.cleaned_data['puestos3']
+            estacionamiento.capacidad.discapacitado = form.cleaned_data['puestos4']
 
             estacionamiento.save()
             form = EstacionamientoExtendedForm()

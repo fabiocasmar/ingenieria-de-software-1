@@ -33,6 +33,12 @@ class Propietario(models.Model):
 	def __str__(self):
 		return self.cedula+' '+str(self.id)
 
+class Puestos(models.Model):
+	particular     = models.PositiveIntegerField(null = True)
+	moto 		   = models.PositiveIntegerField(null = True)
+	carga 		   = models.PositiveIntegerField(null = True)
+	discapacitado  = models.PositiveIntegerField(null = True)
+
 class Estacionamiento(models.Model):
 	propietario = models.ForeignKey(Propietario)
 	nombre      = models.CharField(max_length = 50)
@@ -51,7 +57,7 @@ class Estacionamiento(models.Model):
 	tarifa       = GenericForeignKey()
 	apertura     = models.TimeField(blank = True, null = True)
 	cierre       = models.TimeField(blank = True, null = True)
-	capacidad    = models.IntegerField(blank = True, null = True)
+	capacidad    = models.ForeignKey(Puestos,default=0)
 
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
