@@ -66,7 +66,8 @@ from estacionamientos.models import (
     Recarga,
     Consumo,
     CancelarReserva,
-    Reembolso
+    Reembolso,
+    Puestos
    # QuienReserva
 )
 
@@ -264,10 +265,12 @@ def estacionamiento_detail(request, _id):
             estacionamiento.tarifa    = esquemaTarifa
             estacionamiento.apertura  = horaIn
             estacionamiento.cierre    = horaOut
-            estacionamiento.capacidad.particular = form.cleaned_data['puestos1']
-            estacionamiento.capacidad.moto = form.cleaned_data['puestos2']
-            estacionamiento.capacidad.carga = form.cleaned_data['puestos3']
-            estacionamiento.capacidad.discapacitado = form.cleaned_data['puestos4']
+            puestos = Puestos(particular = form.cleaned_data['puestos1'],
+            moto = form.cleaned_data['puestos2'],
+            carga = form.cleaned_data['puestos3'],
+            discapacitado = form.cleaned_data['puestos4'])
+            puestos.save()
+            estacionamiento.capacidad = puestos
 
             estacionamiento.save()
             form = EstacionamientoExtendedForm()
