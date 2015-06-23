@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 def HorarioEstacionamiento(HoraInicio, HoraFin):
 	return HoraFin > HoraInicio
 
-def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre):
+def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre, horizonteDias, horizonteHoras):
 	if inicioReserva >= finReserva:
 		return (False, 'El horario de inicio de reservacion debe ser menor al horario de fin de la reserva.')
 	if finReserva - inicioReserva < timedelta(hours=1):
@@ -21,11 +21,11 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre):
 		return (False, 'La reserva debe estar dentro de los próximos 7 días.')
 	if apertura.hour==0 and apertura.minute==0 \
 		and cierre.hour==23 and cierre.minute==59:
-		seven_days=timedelta(days=7)
-		if finReserva-inicioReserva<=seven_days :
+		horizonte=timedelta(days=int(horizonteDias),hours=int(horizonteHoras))
+		if finReserva-inicioReserva<=horizonte :
 			return (True,'')
 		else:
-			return(False,'Se puede reservar un puesto por un maximo de 7 dias.')
+			return(False,str('Se puede reservar un puesto por un máximo de '+horizonteDias+' dias '+horizonteHoras+' horas'))
 	else:
 		hora_inicio = time(hour = inicioReserva.hour, minute = inicioReserva.minute)
 		hora_final  = time(hour = finReserva.hour   , minute = finReserva.minute)

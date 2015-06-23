@@ -11,6 +11,7 @@ from urllib.parse import urlencode
 from matplotlib import pyplot
 from decimal import *
 from collections import OrderedDict
+from datetime import datetime, timedelta, time
 
 from datetime import (
     datetime,
@@ -233,16 +234,25 @@ def estacionamiento_detail(request, _id):
         form = EstacionamientoExtendedForm(request.POST)
         # Si el formulario
         if form.is_valid():
-            horaIn         = form.cleaned_data['horarioin']
-            horaOut        = form.cleaned_data['horarioout']
-            tarifa         = form.cleaned_data['tarifa']
-            tipo           = form.cleaned_data['esquema']
-            inicioTarifa2  = form.cleaned_data['inicioTarifa2']
-            finTarifa2     = form.cleaned_data['finTarifa2']
-            tarifa2        = form.cleaned_data['tarifa2']
-            horizonteDias  = form.cleaned_data['horizonteDias'] 
-            horizonteHoras = form.cleaned_data['horizonteHoras'] 
-
+            horaIn          = form.cleaned_data['horarioin']
+            horaOut         = form.cleaned_data['horarioout']
+            tarifa          = form.cleaned_data['tarifa']
+            tipo            = form.cleaned_data['esquema']
+            inicioTarifa2   = form.cleaned_data['inicioTarifa2']
+            finTarifa2      = form.cleaned_data['finTarifa2']
+            tarifa2         = form.cleaned_data['tarifa2']
+            horizonteDias   = form.cleaned_data['horizonteDias'] 
+            horizonteHoras  = form.cleaned_data['horizonteHoras'] 
+            horizonteActual = timedelta(days=int(horizonteDias),hours=int(horizonteHoras))
+            horizonteMaximo = timedelta(days=15)
+            if horizonteActual > horizonteMaximo:
+                return render(
+                    request,
+                    'template-mensaje.html',
+                    { 'color':'red'
+                    , 'mensaje': 'El horizonte máximo de reserva es de 15 días'
+                    }
+                )
             esquemaTarifa = eval(tipo)(
                 tarifa         = tarifa,
                 tarifa2        = tarifa2,
@@ -270,7 +280,6 @@ def estacionamiento_detail(request, _id):
             estacionamiento.horizontehoras = horizonteHoras
 
             estacionamiento.save()
-            form = EstacionamientoExtendedForm()
 
     return render(
         request,
@@ -316,6 +325,8 @@ def estacionamiento_reserva(request, _id):
                 finalReserva,
                 estacionamiento.apertura,
                 estacionamiento.cierre,
+                estacionamiento.horizontedias,
+                estacionamiento.horizontehoras
             )
 
             # Si no es valido devolvemos el request
@@ -895,6 +906,8 @@ def receive_sms(request):
         final_reserva,
         estacionamiento.apertura,
         estacionamiento.cierre,
+        estacionamiento.horizontedias,
+        estacionamiento.horizontehoras
     )
     if m_validado[0]:
         '''reserva_sms = Reserva(
