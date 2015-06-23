@@ -24,7 +24,9 @@ class ReservaFormControllerTestCase(TestCase):
         ReservaFin = datetime(hoy.year,hoy.month,hoy.day,17) + timedelta(days=1)
         HoraApertura = time(hour = 12, minute = 0, second = 0)
         HoraCierre = time(hour = 18, minute = 0, second = 0)
-        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
+        horizonteDias = 15
+        horizonteHoras = 0
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre, horizonteDias, horizonteHoras)
         self.assertEqual(x, (True, ''))
 
     # borde
@@ -34,7 +36,9 @@ class ReservaFormControllerTestCase(TestCase):
         HoraCierre=time(18,0)
         ReservaInicio=datetime(hoy.year,hoy.month,hoy.day,15) + timedelta(days=1)
         ReservaFin=datetime(hoy.year,hoy.month,hoy.day,15) + timedelta(days=2)
-        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
+        horizonteDias = 15
+        horizonteHoras = 0
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre, horizonteDias, horizonteHoras)
         self.assertEqual(x, (False, 'No puede haber reservas entre dos dias distintos'))
     #Borde
     def test_reservaHorarioCompleto(self):
@@ -43,7 +47,9 @@ class ReservaFormControllerTestCase(TestCase):
         HoraCierre=time(18,0)
         ReservaInicio=datetime(hoy.year,hoy.month,hoy.day,6) + timedelta(days=1)
         ReservaFin=datetime(hoy.year,hoy.month,hoy.day,18) + timedelta(days=1)
-        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
+        horizonteDias = 15
+        horizonteHoras = 0
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre, horizonteDias, horizonteHoras)
         self.assertEqual(x, (True,''))
 
     def test_reservaHorarioCompletoYUnMinuto(self):
@@ -52,7 +58,9 @@ class ReservaFormControllerTestCase(TestCase):
         HoraCierre=time(18,0)
         ReservaInicio=datetime(hoy.year,hoy.month,hoy.day,6) + timedelta(days=1)
         ReservaFin=datetime(hoy.year,hoy.month,hoy.day,18,1) + timedelta(days=2)
-        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
+        horizonteDias = 15
+        horizonteHoras = 0
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre, horizonteDias, horizonteHoras)
         self.assertEqual(x, (False, 'El horario de fin de la reserva debe estar en un horario válido.'))
 
 
@@ -63,7 +71,9 @@ class ReservaFormControllerTestCase(TestCase):
         HoraCierre=time(23,59)
         ReservaInicio=datetime(hoy.year,hoy.month,hoy.day,15) + timedelta(days=1)
         ReservaFin=datetime(hoy.year,hoy.month,hoy.day,15) + timedelta(days=2)
-        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
+        horizonteDias = 15
+        horizonteHoras = 0
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre, horizonteDias, horizonteHoras)
         self.assertEqual(x, (True, ''))
 
     #Esquina
@@ -73,7 +83,9 @@ class ReservaFormControllerTestCase(TestCase):
         HoraCierre=time(23,59)
         ReservaInicio=hoy
         ReservaFin=hoy + timedelta(7) - timedelta(minutes=1)
-        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
+        horizonteDias = 15
+        horizonteHoras = 0
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre, horizonteDias, horizonteHoras)
         self.assertEqual(x, (True, ''))
 
     def test_SieteDiasDeReservaYUnMinuto(self):
@@ -82,7 +94,9 @@ class ReservaFormControllerTestCase(TestCase):
         HoraCierre=time(23,59)
         ReservaInicio=hoy
         ReservaFin=hoy + timedelta(days=7,minutes=1)
-        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
+        horizonteDias = 15
+        horizonteHoras = 0
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre, horizonteDias, horizonteHoras)
         self.assertEqual(x, (False, 'La reserva debe estar dentro de los próximos 7 días.'))
 
     # caso borde
@@ -91,7 +105,9 @@ class ReservaFormControllerTestCase(TestCase):
         ReservaFin = datetime.now()
         HoraApertura = time(hour = 0, minute = 0, second = 0)
         HoraCierre = time(hour = 23, minute = 59, second = 59)
-        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
+        horizonteDias = 15
+        horizonteHoras = 0
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre, horizonteDias, horizonteHoras)
         self.assertEqual(x, (False, 'El horario de inicio de reservacion debe ser menor al horario de fin de la reserva.'))
 
     # caso borde
@@ -100,7 +116,9 @@ class ReservaFormControllerTestCase(TestCase):
         ReservaFin = datetime(year=2000,month=2,day=6,hour = 13, minute = 59, second = 59)
         HoraApertura = time(hour = 12, minute = 0, second = 0)
         HoraCierre = time(hour = 18, minute = 0, second = 0)
-        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
+        horizonteDias = 15
+        horizonteHoras = 0
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre, horizonteDias, horizonteHoras)
         self.assertEqual(x, (False, 'El tiempo de reserva debe ser al menos de 1 hora.'))
 
     # caso borde.
@@ -110,7 +128,9 @@ class ReservaFormControllerTestCase(TestCase):
         hoy=datetime.today()
         ReservaInicio=datetime(hoy.year,hoy.month,hoy.day,17) + timedelta(days=1)
         ReservaFin=datetime(hoy.year,hoy.month,hoy.day,23) + timedelta(days=1)
-        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
+        horizonteDias = 15
+        horizonteHoras = 0
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre, horizonteDias, horizonteHoras)
         self.assertEqual(x, (False, 'El horario de fin de la reserva debe estar en un horario válido.'))
 
     # Caso borde
@@ -120,7 +140,9 @@ class ReservaFormControllerTestCase(TestCase):
         ReservaFin = datetime(hoy.year,hoy.month,hoy.day,15) + timedelta(days=1)
         HoraApertura=time(8,0)
         HoraCierre=time(18,0)
-        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre)
+        horizonteDias = 15
+        horizonteHoras = 0
+        x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre, horizonteDias, horizonteHoras)
         self.assertEqual(x, (False, 'El horario de inicio de reserva debe estar en un horario válido.'))
 
     # malicia
