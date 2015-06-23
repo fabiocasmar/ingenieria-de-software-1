@@ -1599,7 +1599,7 @@ def reembolsar_reserva(request):
             else:
                 billetera = Billetera.objects.get(id = billetera_id)
                 usuario = billetera.usuario
-                reembolso = Reembolso(nombre = usuario.nombre,
+                _reembolso = Reembolso(nombre = usuario.nombre,
                                       apellido = usuario.apellido,
                                       cedula = usuario.cedula,
                                       estacionamiento = estacionamiento,
@@ -1612,7 +1612,7 @@ def reembolsar_reserva(request):
                                       id_viejo = pago.id,
                                       monto_reserva = pago.monto
                                       )
-                reembolso.save()
+                _reembolso.save()
                 return render(
                     request,
                     'mover_reserva_exitosa_reembolso.html',
