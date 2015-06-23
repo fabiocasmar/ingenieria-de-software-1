@@ -13,7 +13,7 @@
 {% block innerContents%}
   <div class="col-sm-10">
     <h3><i class="fa fa-money"></i>
-      Pago con tarjeta
+      Pago con billetera
     </h3>
     <hr>
     <div class="col-md-4">
@@ -22,67 +22,33 @@
           method="post"
           class="form form-vertical"
         >
-          {% csrf_token %}
-          <div class="control-group">
-            <div class="controls">
-              <p>
-                {{ form.nombre }}
-                <span
-                  class='error'
-                  id='{{form.nombre.name}}_error'
-                  aria-live="polite"
-                ></span>
-              </p>
-              {{ form.nombre.errors }}
-              <p>
-                {{ form.apellido }}
-                <span
-                  class='error'
-                  id='{{form.apellido.name}}_error'
-                  aria-live="polite"
-                ></span>
-              </p>
-              {{ form.apellido.errors }}
-              <p>
-                <table><tbody><tr>
-                  <td>
-                    {{ form.cedula }}
-                  </td>
-                </tr></tbody></table>
-                <span
-                  class='error'
-                  id='{{form.cedula.name}}_error'
-                  aria-live="polite"
-                ></span>
-                {{ form.cedula.errors }}
-              </p>
-              <table width="300" border="0" cellspacing="0">
-                <tr>
-                  <td><font size="32" color="blue"><i class="fa fa-cc-visa"> </i></font></td>
-                  <td><font size="32" color="red"><i class="fa fa-cc-mastercard"> </i></font></td>
-                  <td><font size="32" color="gray"><i class="fa fa-cc-amex"> </i></font></td>
-                </tr>
-                <tr>
-                  {% for choice in form.tarjetaTipo %}
-                    <td> {{ choice }} </td>
-                  {% endfor %}
-                </tr>
-              </table>
-              {{ form.tarjetaTipo.errors }}
-              <p>
-                {{ form.tarjeta }}
-                <span
-                  class='error'
-                  id='{{form.tarjeta.name}}_error'
-                  aria-live="polite"
-                ></span>
-              </p>
-              {{ form.tarjeta.errors }}
-            </div>
-          </div>
+                      {% csrf_token %}
+              {% for field in form %}
+                <div class="control-group">
+                  <div class="controls">
+                  {% if field.name != 'monto' %}
+                    {{ field }}
+                    <span class='error' id='{{field.name}}_error' aria-live="   polite">{{ field.errors }}</span>
+                    <p></p>
+                  {% else %}
+
+                    <input class="form-control dirty" id="id_monto" message="El monto debe ser un número positivo" name="monto" pattern="^[0-9]+$" placeholder="Monto" type="text" value="{{monto}}" readonly>
+                    <span class='error' id='monto_error' aria-live="   polite">{{ field.errors }}</span>
+                    <p></p>
+                  {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
           <input
             type="submit"
             value="Realizar Pago"
+            class="btn btn-primary"
+          >
+
+          <input 
+            type="button"
+            value="Crear Billetera"
+            onclick="window.open('/estacionamientos/billetera')"
             class="btn btn-primary"
           >
           <input
@@ -91,12 +57,16 @@
             onclick="self.close()"
             class="btn btn-primary"
           >
+
+
         </form>
       {% endif %}
       {% if pago %}
         <div class="row">
           <div class="col-md-7" style="color:{{color}}">
             {{mensaje}}
+            <hr>
+            <font color='red'> {{mensaje2}} {{mensaje3}} </font>
             <hr>
           </div>
           <div class="col-md-4">
@@ -130,19 +100,6 @@
                   {{pago.reserva.finalReserva}}
                 </td></tr>
 
-                <tr><td><b><i class="fa fa-user"></i>
-                  Cédula:
-                </b></td></tr>
-                <tr><td>
-                  {{pago.cedula}}
-                </td></tr>
-
-                <tr><td><b><i class="fa fa-money"></i>
-                  Tarjeta de Crédito:
-                </b></td></tr>
-                <tr><td>
-                  {{pago.tarjetaTipo}} </td></tr>
-
                 <tr><td><b><i class="fa fa-money"></i>
                   Monto:
                 </b></td></tr>
@@ -154,7 +111,7 @@
             <div>
               <input
                 type="button"
-                value="Volver"
+                value="Salir"
                 onclick="javascript: closepopup();"
                 class="btn btn-primary"
               >
@@ -181,7 +138,7 @@
     }
 
     function openlink(){
-      opener.location='/estacionamientos/{{id}}/reserva';
+      opener.location='/estacionamientos/';
     }
   </script>
 {% endblock %}

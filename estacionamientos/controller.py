@@ -303,3 +303,15 @@ def mover_reserva(reserva,inicio,fin):
 	reserva.inicioReserva = inicio
 	reserva.finalReserva = fin
 	reserva.save()
+
+# Chequear si el usuario pago con billetera
+def chequear_consumo_billetera(pago,reserva):
+	consumo = Consumo.objects.filter(reserva=reserva)
+	if len(consumo)>0:
+		for obj in consumo:
+			if obj.flag==1 and reserva.movidas==1:
+				return True
+			else:
+				return False
+	else:
+		return False

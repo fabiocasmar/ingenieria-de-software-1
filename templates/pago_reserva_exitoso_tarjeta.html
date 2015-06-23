@@ -154,7 +154,7 @@
             <div>
               <input
                 type="button"
-                value="Volver"
+                value="Pagar por el servicio"
                 onclick="javascript: closepopup();"
                 class="btn btn-primary"
               >
@@ -181,7 +181,7 @@
     }
 
     function openlink(){
-      opener.location='/estacionamientos/{{id}}/reserva';
+      opener.location='/estacionamientos/pagar_servicio_mover_reserva';
     }
   </script>
 {% endblock %}

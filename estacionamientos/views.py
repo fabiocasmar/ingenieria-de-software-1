@@ -33,7 +33,9 @@ from estacionamientos.controller import (
     obtener_consumos,
     obtener_reembolsos,
     chequear_mover_reserva,
-    nuevo_monto_reserva
+    nuevo_monto_reserva,
+    mover_reserva,
+    chequear_consumo_billetera
 )
 
 from estacionamientos.forms import (
@@ -667,6 +669,7 @@ def billetera_consumir(request,_id,_monto):
                           billetera = bille,
                           establecimiento = estacionamiento,
                           reserva = reservaFinal,
+                          flag = 1
                           )
 
                  if (float(bille.saldo) == 0.00):
@@ -1470,8 +1473,8 @@ def pagar_tarjeta_mover_reserva(request):
             monto = request.session['monto_diferencia']
             estacionamiento_id = request.session['estacionamiento_id']
             
-            pago = Pago.objects.get(id = pago_id)
-            reserva = pago.reserva
+            _pago = Pago.objects.get(id = pago_id)
+            reserva = _pago.reserva
             #reserva = Reserva.objects.get(id = reserva_id)
             
             # Hay que generar el recibo de pago
@@ -1485,6 +1488,34 @@ def pagar_tarjeta_mover_reserva(request):
 
             # Se guarda el recibo de pago en la base de datos
             pago.save()
+
+            reserva.movidas+= 1
+            reserva.save()
+
+            # Chequeamos si el usuario pago con billetera la reserva
+            check = chequear_consumo_billetera(_pago,reserva)
+            # Si el usuario no pago con billetera, paga por el servicio
+            if check == False:
+                return render(
+                request,
+                'pago_reserva_exitoso_tarjeta.html',
+                { "id"      : estacionamiento_id
+                , "pago"    : pago
+                , "color"   : "green"
+                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                }
+    )
+            # Si el usuario pago con billetera, no paga por el servicio
+            else:
+                return render(
+                request,
+                'pago_reserva_exitoso_tarjeta2.html',
+                { "id"      : estacionamiento_id
+                , "pago"    : pago
+                , "color"   : "green"
+                , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                }
+            )
 
             return render(
                         request,
@@ -1523,8 +1554,8 @@ def pagar_billetera_mover_reserva(request):
                 )
             elif consumir == True:
                 billetera = Billetera.objects.get(id = billetera_id)
-                pago = Pago.objects.get(id = pago_id)
-                reserva = pago.reserva
+                _pago = Pago.objects.get(id = pago_id)
+                reserva = _pago.reserva
                 #reserva = Reserva.objects.get(id=reserva_id)
                 pago = Pago(
                    fechaTransaccion = datetime.now(),
@@ -1538,12 +1569,33 @@ def pagar_billetera_mover_reserva(request):
                                    fechaTransaccion = datetime.now(),
                                    billetera = billetera,
                                    establecimiento = estacionamiento,
-                                   reserva = reserva)
+                                   reserva = reserva
+                                   )
                 consumo.save()
 
-                return render(
+                reserva.movidas+= 1
+                reserva.save()
+
+                # Chequeamos si el usuario pago con billetera la reserva
+                check = chequear_consumo_billetera(_pago,reserva)
+                # Si el usuario no pago con billetera, paga por el servicio
+                if check == False:
+                    return render(
                     request,
-                    'pago_billetera.html',
+                    'pago_reserva_exitoso_billetera.html',
+                    {  'id' : estacionamiento_id
+                    ,  'pago' : pago
+                    , "color"   : "green"
+                    , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                    , 'mensaje2' : " "
+                    , 'mensaje3' : " "
+                    }
+                )
+                # Si el usuario pago con billetera, no paga por el servicio
+                else:
+                    return render(
+                    request,
+                    'pago_reserva_exitoso_billetera2.html',
                     {  'id' : estacionamiento_id
                     ,  'pago' : pago
                     , "color"   : "green"
@@ -1613,16 +1665,37 @@ def reembolsar_reserva(request):
                                       monto_reserva = pago.monto
                                       )
                 _reembolso.save()
-                return render(
-                    request,
-                    'mover_reserva_exitosa_reembolso.html',
-                    {'nombre': billetera.usuario.nombre,
-                     'apellido': billetera.usuario.apellido,
-                     'cedula'  : billetera.usuario.cedula,
-                     'fecha'   : datetime.now(),
-                     'monto'   : reembolso
-                    }
-                )
+
+                reserva.movidas+= 1
+                reserva.save()
+
+                # Chequeamos si el usuario pago con billetera la reserva
+                check = chequear_consumo_billetera(pago,reserva)
+                # Si el usuario no pago con billetera, paga por el servicio
+                if check == False:
+                    return render(
+                        request,
+                        'mover_reserva_exitosa_reembolso.html',
+                        {'nombre': billetera.usuario.nombre,
+                         'apellido': billetera.usuario.apellido,
+                         'cedula'  : billetera.usuario.cedula,
+                         'fecha'   : datetime.now(),
+                         'monto'   : reembolso
+                        }
+                    )
+                # Si el usuario pago con billetera, no paga por el servicio
+                else:
+                    return render(
+                        request,
+                        'mover_reserva_exitosa_reembolso2.html',
+                        {'nombre': billetera.usuario.nombre,
+                         'apellido': billetera.usuario.apellido,
+                         'cedula'  : billetera.usuario.cedula,
+                         'fecha'   : datetime.now(),
+                         'monto'   : reembolso
+                        }
+                    )
+
 
     return render(
         request,
@@ -1636,4 +1709,136 @@ def mover_reserva_exitosa(request):
     return render(
         request,
         'mover_reserva_exitosa_reembolso.html'
+    )
+
+def pagar_servicio_mover_reserva(request):
+    return render(
+        request,
+        'seleccionar_pago_servicio.html'
+    )
+
+def pagar_servicio_tarjeta(request):
+    form = PagoForm()
+    if request.method == 'POST':
+        form = PagoForm(request.POST)
+        if form.is_valid():
+            nombre = form.cleaned_data['nombre']
+            apellido = form.cleaned_data['apellido']
+            cedula = form.cleaned_data['cedula']
+            tarjetaTipo = form.cleaned_data['tarjetaTipo']
+            tarjeta = form.cleaned_data['tarjeta']
+
+            pago_id = request.session['pago_id']
+            monto = request.session['monto_diferencia']
+            estacionamiento_id = request.session['estacionamiento_id']
+            
+            # Hay que generar el recibo de pago
+            pago = Pago(
+                fechaTransaccion = datetime.now(),
+                cedula           = cedula,
+                monto            = monto,
+                tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
+            )
+
+            # Se guarda el recibo de pago en la base de datos
+            pago.save()
+            # De acuerdo a la tarifa establecida
+            _monto = (10*monto)/100
+            return render(
+                        request,
+                        'pago_servicio_tarjeta.html',
+                        { "id"      : estacionamiento_id
+                        , "pago"    : pago
+                        ,"monto"    : _monto
+                        , "color"   : "green"
+                        , 'mensaje' : "Se realizo el pago de servicio satisfactoriamente."
+                        }
+                    )
+
+    return render(
+        request,
+        'pago_servicio_tarjeta.html',
+        { 'form' : form }
+    )
+
+def pagar_servicio_billetera(request):
+    form = ConsumirForm()
+    monto = request.session['monto_diferencia']
+    estacionamiento_id = request.session['estacionamiento_id']
+    estacionamiento = Estacionamiento.objects.get(id = estacionamiento_id)
+    if request.method == 'POST':
+        form = ConsumirForm(request.POST)
+        if form.is_valid():
+
+            billetera_id = form.cleaned_data['billetera_id']
+            pin = form.cleaned_data['pin']
+
+            check = consumir_saldo(billetera_id,pin,monto)
+            if check == True:
+                 bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
+                 usuario = bille.usuario
+                 
+                 # Se crea el objeto pago.
+                 pago = Pago(
+                   fechaTransaccion = datetime.now(),
+                   cedula           = bille.usuario.cedula,
+                   monto            = monto,
+                 )
+                 #Se guarda el recibo de pago en la base de datos
+                 pago.save()
+                 #Se realiza el consumo de la billetera.
+
+                 bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
+                 montoo = round(monto,2)
+                 consumo = Consumo(saldo = montoo,
+                          fechaTransaccion = datetime.now(),
+                          billetera = bille,
+                          establecimiento = estacionamiento
+                          )
+
+                 if (float(bille.saldo) == 0.00):
+                    mensaje2 = "Su billetera se quedo sin fondos."
+                    mensaje3 = "Se recomienda recargar la billetera."
+                 else:
+                    mensaje3 = ""
+                    mensaje2 = ""
+                    consumo.save()
+                 return render(
+                    request,
+                    'pago_servicio_billetera.html',
+                    {  'id' : estacionamiento_id
+                    , 'monto' : montoo
+                    ,  'pago' : pago
+                    , "color"   : "green"
+                    , 'mensaje' : "Se realizo el pago de reserva satisfactoriamente."
+                    , 'mensaje2' : mensaje2
+                    , 'mensaje3' : mensaje3
+                    }
+                 )
+            elif check==False:
+                msg="Autenticacion denegada"
+                return render(
+                    request,
+                        'denegado_pago_billetera.html',
+                        {  'msg' : msg,
+                            "color": "red" }
+                )
+            else:
+                msg="Saldo Insuficiente."
+                msg2="Se recomienda recargar."
+                return render(
+                    request,
+                        'denegado_pago_billetera.html',
+                        {  'msg' : msg,
+                           'msg2' : msg2,
+                            "color": "red" }
+                )
+
+
+    return render(
+        request,
+        'pago_servicio_billetera.html',
+        { 'form' : form, 
+          'monto': monto 
+        }
     )
