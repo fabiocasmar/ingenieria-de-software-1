@@ -1484,7 +1484,7 @@ def pagar_tarjeta_mover_reserva(request):
             )
 
             # Se guarda el recibo de pago en la base de datos
-            #pago.save()
+            pago.save()
 
             return render(
                         request,
@@ -1532,7 +1532,7 @@ def pagar_billetera_mover_reserva(request):
                    monto            = monto,
                    reserva          = reserva,
                  )
-                #pago.save()
+                pago.save()
                 return render(
                     request,
                     'pago_billetera.html',
