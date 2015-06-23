@@ -19,6 +19,7 @@
               <th></th>
               <th>Inicio</th>
               <th>Fin</th>
+              <th>Tipo</th>
               <th>Estacionamiento</th>
               <th>Telefono</th>
             </tr>
@@ -30,6 +31,7 @@
                 <td></td>
                 <td>{{reserva.inicioReserva}}</td>
                 <td>{{reserva.finalReserva}}</td>
+                <td>{{reserva.tipo_puesto}}</td>
                 <td>{{reserva.estacionamiento.nombre}}</td>
                 <td>{%firstof reserva.estacionamiento.telefono1 reserva.estacionamiento.telefono2 reserva.estacionamiento.telefono3 "N/A"%}
                 </td>

@@ -34,10 +34,10 @@ class Propietario(models.Model):
 		return self.cedula+' '+str(self.id)
 
 class Puestos(models.Model):
-	particular     = models.PositiveIntegerField(null = True)
-	moto 		   = models.PositiveIntegerField(null = True)
-	carga 		   = models.PositiveIntegerField(null = True)
-	discapacitado  = models.PositiveIntegerField(null = True)
+	particular     = models.IntegerField(null = True)
+	moto 		   = models.IntegerField(null = True)
+	carga 		   = models.IntegerField(null = True)
+	discapacitado  = models.IntegerField(null = True)
 
 class Estacionamiento(models.Model):
 	propietario = models.ForeignKey(Propietario)
@@ -95,6 +95,7 @@ class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()
 	finalReserva    = models.DateTimeField()
+	tipo_puesto		= models.CharField(max_length = 50, blank = True, null = True)
 
 	def __str__(self):
 		return self.estacionamiento.nombre+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
