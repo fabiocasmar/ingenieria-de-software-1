@@ -145,4 +145,4 @@ class ReservaFormControllerTestCase(TestCase):
         x = validarHorarioReserva(ReservaInicio, ReservaFin, HoraApertura, HoraCierre, horizonteDias, horizonteHoras)
         self.assertEqual(x, (False, 'El horario de inicio de reserva debe estar en un horario válido.'))
 
-    # malicia
+
