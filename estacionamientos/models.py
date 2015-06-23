@@ -34,15 +34,17 @@ class Propietario(models.Model):
 		return self.cedula+' '+str(self.id)
 
 class Estacionamiento(models.Model):
-	propietario = models.ForeignKey(Propietario)
-	nombre      = models.CharField(max_length = 50)
-	direccion   = models.TextField(max_length = 120)
-	telefono1   = models.CharField(blank = True, null = True, max_length = 30)
-	telefono2   = models.CharField(blank = True, null = True, max_length = 30)
-	telefono3   = models.CharField(blank = True, null = True, max_length = 30)
-	email1      = models.EmailField(blank = True, null = True)
-	email2      = models.EmailField(blank = True, null = True)
-	rif         = models.CharField(max_length = 12)
+	propietario    = models.ForeignKey(Propietario)
+	nombre         = models.CharField(max_length = 50)
+	direccion      = models.TextField(max_length = 120)
+	telefono1      = models.CharField(blank = True, null = True, max_length = 30)
+	telefono2      = models.CharField(blank = True, null = True, max_length = 30)
+	telefono3      = models.CharField(blank = True, null = True, max_length = 30)
+	email1         = models.EmailField(blank = True, null = True)
+	email2         = models.EmailField(blank = True, null = True)
+	horizontedias  = models.CharField(max_length = 2,null = False)
+	horizontehoras = models.CharField(max_length = 2,null = False)
+	rif            = models.CharField(max_length = 12)
 
 	# Campos para referenciar al esquema de tarifa
 
