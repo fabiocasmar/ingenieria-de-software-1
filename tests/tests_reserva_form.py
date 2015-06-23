@@ -32,6 +32,7 @@ class ReservaFormTestCase(TestCase):
         form_data = {'nombre': 'Marisela',
                      'apellido': 'Del Valle',
                      'cedula': 'V-23638870',
+                     'tipo_puesto':'Particular',
                      'inicio_1': time(hour=6, minute=0),
                      'final_1' : time(hour=15, minute=0),
                      'final_0' : date(year=2015, month=2, day=27),
@@ -43,6 +44,7 @@ class ReservaFormTestCase(TestCase):
     # malicia
     def test_EstacionamientoReserva_InicioString(self):
         form_data = {'inicio_1': 'teruel',
+                     'tipo_puesto':'Particular',
                      'final_1': time(hour = 15, minute = 0),
                      'final_0': date(year=2015,month=2,day=27),
                      'inicio_0': date(year=2015,month=2,day=27)
@@ -54,6 +56,7 @@ class ReservaFormTestCase(TestCase):
     def test_EstacionamientoReserva_FinString(self):
         form_data = {'inicio_1': time(hour = 6, minute = 0),
                      'final_1': 'Reinoza',
+                     'tipo_puesto':'Particular',
                      'final_0': date(year=2015,month=2,day=27),
                      'inicio_0': date(year=2015,month=2,day=27)
         }
@@ -65,7 +68,8 @@ class ReservaFormTestCase(TestCase):
         form_data = {'inicio_1': None,
                      'final_1': time(hour = 15, minute = 0),
                      'final_0': date(year=2015,month=2,day=27),
-                     'inicio_0': date(year=2015,month=2,day=27)
+                     'inicio_0': date(year=2015,month=2,day=27),
+                     'tipo_puesto':'Particular'
         }
         form = ReservaForm(data = form_data)
         self.assertFalse(form.is_valid())
@@ -75,7 +79,8 @@ class ReservaFormTestCase(TestCase):
         form_data = {'inicio_1': time(hour = 6, minute = 0),
                      'final_1': time(hour = 15, minute = 0),
                      'final_0': None,
-                     'inicio_0': date(year=2015,month=2,day=27)
+                     'inicio_0': date(year=2015,month=2,day=27),
+                     'tipo_puesto':'Particular'
         }
         form = ReservaForm(data = form_data)
         self.assertFalse(form.is_valid())
