@@ -962,7 +962,7 @@ class ReservaCIForm(forms.Form):
 
     id_validator = RegexValidator(
         regex   = '^[1-9]{1}([0-9]+)?$',
-        message = 'El ID solo puede contener caracteres numéricos.'
+        message = 'El ID solo puede contener caracteres numéricos distintos de cero.'
     )
     
     reserva_id = forms.CharField(

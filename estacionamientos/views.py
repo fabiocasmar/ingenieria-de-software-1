@@ -1307,7 +1307,7 @@ def mover_reserva(request):
         form = ReservaCIForm(request.POST)
         if form.is_valid():
             reserva_id = form.cleaned_data['reserva_id']
-            request.session['reserva_id'] = reserva_id
+            request.session['pago_id'] = reserva_id
             cedula = form.cleaned_data['cedula']
             # hace el chequeo id-cedula
             check = chequear_mover_reserva(cedula,reserva_id)
@@ -1318,7 +1318,7 @@ def mover_reserva(request):
                 )
             elif check == True:
                 # Necesitaremos el id de la reserva en otra vista
-                request.session['reserva_id'] = reserva_id
+                request.session['pago_id'] = reserva_id
                 return render(
                     request,
                     'cambiar_datos_reserva.html',
@@ -1335,7 +1335,7 @@ def mover_reserva(request):
 
 # Aqui se cambian los datos de la reserva
 def cambiar_datos_reserva(request):
-    reserva_id = request.session['reserva_id']
+    pago_id = request.session['pago_id']
     form = CambiarReservaForm()
     if request.method == 'POST':
         form = CambiarReservaForm(request.POST)
@@ -1345,11 +1345,13 @@ def cambiar_datos_reserva(request):
             inicioReserva = form.cleaned_data['inicio']
             finalReserva = form.cleaned_data['final']
 
-            reserva = Reserva.objects.get(id = reserva_id)
+            pago = Pago.objects.get(id = pago_id)
+            reserva = pago.reserva
+            #reserva = Reserva.objects.get(id = reserva_id)
             estacionamiento = reserva.estacionamiento
 
             #Obtenemos el pago correspondiente a la reserva
-            pago = Pago.objects.get(reserva = reserva)
+            #pago = Pago.objects.get(reserva = reserva)
             monto_viejo = pago.monto
             # debería funcionar con excepciones, y el mensaje debe ser mostrado
             # en el mismo formulario
@@ -1464,11 +1466,14 @@ def pagar_tarjeta_mover_reserva(request):
             tarjetaTipo = form.cleaned_data['tarjetaTipo']
             tarjeta = form.cleaned_data['tarjeta']
 
-            reserva_id = request.session['reserva_id']
+            pago_id = request.session['pago_id']
             monto = request.session['monto_diferencia']
             estacionamiento_id = request.session['estacionamiento_id']
             
-            reserva = Reserva.objects.get(id = reserva_id)
+            pago = Pago.objects.get(id = pago_id)
+            reserva = pago.reserva
+            #reserva = Reserva.objects.get(id = reserva_id)
+            
             # Hay que generar el recibo de pago
             pago = Pago(
                 fechaTransaccion = datetime.now(),
@@ -1500,7 +1505,7 @@ def pagar_tarjeta_mover_reserva(request):
 # Este es el metodo para el pago de la diferencia con la billetera
 def pagar_billetera_mover_reserva(request):
     monto = request.session['monto_diferencia']
-    reserva_id = request.session['reserva_id']
+    pago_id = request.session['pago_id']
     estacionamiento_id = request.session['estacionamiento_id']
 
     form = ConsumirForm()
@@ -1518,7 +1523,9 @@ def pagar_billetera_mover_reserva(request):
                 )
             elif consumir == True:
                 billetera = Billetera.objects.get(id = billetera_id)
-                reserva = Reserva.objects.get(id=reserva_id)
+                pago = Pago.objects.get(id = pago_id)
+                reserva = pago.reserva
+                #reserva = Reserva.objects.get(id=reserva_id)
                 pago = Pago(
                    fechaTransaccion = datetime.now(),
                    cedula           = billetera.usuario.cedula,

@@ -278,10 +278,11 @@ def obtener_reembolsos(_id,_pin):
 def chequear_mover_reserva(cedula,reserva_id):
 	
 	try:
-		reserva = Reserva.objects.get(id = reserva_id)
+		pago = Pago.objects.get(id = reserva_id)
+		#reserva = Reserva.objects.get(id = reserva_id)
 	except ObjectDoesNotExist:
 		return False
-
+	reserva = pago.reserva
 	if reserva.cedula != cedula:
 		return False
 	else:
