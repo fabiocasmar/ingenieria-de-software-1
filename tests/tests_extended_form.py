@@ -103,6 +103,19 @@ class ExtendedFormTestCase(TestCase):
         form = EstacionamientoExtendedForm(data = form_data)
         self.assertTrue(form.is_valid())
 
+    # malicia
+    def test_estacionamiento_extended_form_puestos_negativos(self):
+        form_data = { 'puestos1': -1,
+                      'puestos2': -1,
+                      'puestos3': -1,
+                      'puestos4': -1,
+                      'horarioin': time(hour = 6,  minute = 0),
+                      'horarioout': time(hour = 19,  minute = 0),
+                      'tarifa': '12',
+                      'esquema':'TarifaHora'}
+        form = EstacionamientoExtendedForm(data = form_data)
+        self.assertFalse(form.is_valid())
+
     # caso borde
     def test_estacionamiento_extended_form_puestos_0(self):
         form_data = { 'puestos1': 0,
@@ -122,6 +135,20 @@ class ExtendedFormTestCase(TestCase):
                       'puestos2': 2,
                       'puestos3': 2,
                       'puestos4': 2,
+                      'horarioin': time(hour = 6,  minute = 0),
+                      'horarioout': time(hour = 6,  minute = 0),
+                      'tarifa': '12',
+                      'esquema':'TarifaHora'
+                    }
+        form = EstacionamientoExtendedForm(data = form_data)
+        self.assertTrue(form.is_valid())
+
+    # esquina
+    def test_estacionamiento_extended_form_hora_inicio_igual_hora_cierre_y_puesto_0(self):
+        form_data = { 'puestos1': 0,
+                      'puestos2': 0,
+                      'puestos3': 0,
+                      'puestos4': 0,
                       'horarioin': time(hour = 6,  minute = 0),
                       'horarioout': time(hour = 6,  minute = 0),
                       'tarifa': '12',
@@ -168,6 +195,20 @@ class ExtendedFormTestCase(TestCase):
                       'horarioout': time(hour = 19,  minute = 0),
                       'tarifa': None,
                       'esquema':'TarifaHora'
+                    }
+        form = EstacionamientoExtendedForm(data = form_data)
+        self.assertFalse(form.is_valid())
+
+     # malicia
+    def test_estacionamiento_extended_form_none_en_esquema(self):
+        form_data = { 'puestos1': 2,
+                      'puestos2': 2,
+                      'puestos3': 2,
+                      'puestos4': 2,
+                      'horarioin': time( hour = 6,  minute = 0),
+                      'horarioout': time(hour = 19,  minute = 0),
+                      'tarifa': '12',
+                      'esquema':None
                     }
         form = EstacionamientoExtendedForm(data = form_data)
         self.assertFalse(form.is_valid())
