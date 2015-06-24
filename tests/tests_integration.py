@@ -9,7 +9,7 @@ from datetime import (
     timedelta,
 )
 
-from estacionamientos.models import (Estacionamiento, Propietario, Usuario, Billetera)
+from estacionamientos.models import (Estacionamiento, Propietario, Usuario, Billetera, Puestos)
 
 ###################################################################
 #                    ESTACIONAMIENTO VISTA DISPONIBLE
@@ -93,12 +93,18 @@ class IntegrationTest(TestCase):
     
     # integracion TDD
     def test_llamada_a_reserva(self):
+        p = Puestos(particular = 20,
+                    moto = 20,
+                    carga = 20,
+                    discapacitado = 20
+        )
+        p.save()
         e = Estacionamiento(
             propietario = self.crear_propietario(),
             nombre = "nom",
             direccion = "dir",
             rif = "rif",
-            capacidad = 20,
+            capacidad = p,
             apertura = time(0,0),
             cierre = time(23,59),
         )
@@ -208,12 +214,18 @@ class IntegrationTest(TestCase):
     
     # integracion TDD
     def test_llamada_a_pago_get(self):
+        p = Puestos(particular = 20,
+                    moto = 20,
+                    carga = 20,
+                    discapacitado = 20
+        )
+        p.save()
         e = Estacionamiento(
             propietario = self.crear_propietario(),
             nombre = "nom",
             direccion = "dir",
             rif = "rif",
-            capacidad = 20,
+            capacidad = p,
             apertura = time(0,0),
             cierre = time(23,59),
         )
@@ -224,12 +236,18 @@ class IntegrationTest(TestCase):
     
     # integracion TDD  
     def test_llamada_a_pago_post(self):
+        p = Puestos(particular = 20,
+                    moto = 20,
+                    carga = 20,
+                    discapacitado = 20
+        )
+        p.save()
         e = Estacionamiento(
             propietario = self.crear_propietario(),
             nombre = "nom",
             direccion = "dir",
             rif = "rif",
-            capacidad = 20,
+            capacidad = p,
             apertura = time(0,0),
             cierre = time(23,59),
         )

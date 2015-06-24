@@ -116,6 +116,13 @@
                   {{pago.fechaTransaccion}}
                 </td></tr>
 
+                 <tr><td><b><i class="fa fa-car"></i>
+                  Tipo de Puesto:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.tipo_puesto}}
+                </td></tr>
+
                 <tr><td><b><i class="fa fa-clock-o"></i>
                   Horario inicio de reserva:
                 </b></td></tr>
@@ -181,7 +188,7 @@
     }
 
     function openlink(){
-      opener.location='/estacionamientos/{{ id }}/reserva';
+      opener.location='/estacionamientos/{{id}}/reserva';
     }
   </script>
 {% endblock %}

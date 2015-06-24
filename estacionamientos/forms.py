@@ -1,12 +1,35 @@
 #-*- coding: utf-8 -*-
 from django import forms
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.forms.widgets import SplitDateTimeWidget
+
 
 class CustomSplitDateTimeWidget(SplitDateTimeWidget):
 
     def format_output(self, rendered_widgets):
         return '<p></p>'.join(rendered_widgets)
+
+class SageForm(forms.Form):
+
+	monto_validator = RegexValidator(	
+		regex   = '^([0-9]+(\.[0-9]+)?)$',
+		message = 'El ID solo puede contener caracteres numéricos.'
+	)
+
+	porcentaje = forms.CharField(
+		required = True,
+		label = 'porcentaje',
+		validators = [monto_validator],
+		widget = forms.TextInput(attrs =
+				{ 'class'       : 'form-control'
+				, 'placeholder' : 'Porcentaje'
+				, 'pattern'     : monto_validator.regex.pattern
+				, 'message'     : monto_validator.message
+				}
+			)
+	)
+
 
 class EstacionamientoForm(forms.Form):
 
@@ -196,7 +219,8 @@ class CrearBilleteraForm(forms.Form):
     pin = forms.CharField(
         required = True,
         widget = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
+            { 'type'        : 'password'
+            , 'class'       : 'form-control'
             , 'placeholder' : 'PIN de la billetera'
             , 'pattern'     : pin_validator.regex.pattern
             , 'message'     : pin_validator.message
@@ -289,13 +313,55 @@ class EstacionamientoExtendedForm(forms.Form):
         message = 'Sólo debe contener dígitos.'
     )
     
-    puestos = forms.IntegerField(
+    puestos1 = forms.IntegerField(
         required  = True,
-        min_value = 1,
-        label     = 'Número de Puestos',
+        min_value = 0,
+        label     = 'Puestos Vehiculos Particulares',
         widget    = forms.NumberInput(attrs=
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Número de Puestos'
+            , 'placeholder' : 'Puestos Vehiculos Particulares'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'La entrada debe ser un número entero no negativo.'
+            }
+        )
+    )
+
+    puestos2 = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        label     = 'Puestos Motocicletas',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Puestos Motocicletas'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'La entrada debe ser un número entero no negativo.'
+            }
+        )
+    )
+
+    puestos3 = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        label     = 'Puestos Vehiculos de Carga',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Puestos Vehiculos de Carga'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'La entrada debe ser un número entero no negativo.'
+            }
+        )
+    )
+
+    puestos4 = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        label     = 'Puestos para Discapacitados',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Puestos para Discapacitados'
             , 'min'         : "0"
             , 'pattern'     : '^[0-9]+'
             , 'message'     : 'La entrada debe ser un número entero no negativo.'
@@ -335,15 +401,6 @@ class EstacionamientoExtendedForm(forms.Form):
         ('TarifaFinDeSemana', 'Diferenciada para fines de semana')
     ]
 
-    choices_esquema2 = [
-        ('Ninguno', 'None'),
-        ('TarifaHora', 'Por hora'),
-        ('TarifaMinuto', 'Por minuto'),
-        ('TarifaHorayFraccion', 'Por hora y fracción'),
-        ('TarifaHoraPico', 'Diferenciada por horario pico'),
-        ('TarifaFinDeSemana', 'Diferenciada para fines de semana')
-    ]
-
     esquema = forms.ChoiceField(
         required = True,
         choices  = choices_esquema,
@@ -357,7 +414,7 @@ class EstacionamientoExtendedForm(forms.Form):
         validators = [tarifa_validator],
         widget     = forms.TextInput(attrs =
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Tarifa Regular'
+            , 'placeholder' : 'Tarifa'
             , 'pattern'     : '^([0-9]+(\.[0-9]+)?)$'
             , 'message'     : 'La entrada debe ser un número decimal.'
             }
@@ -369,7 +426,7 @@ class EstacionamientoExtendedForm(forms.Form):
             validators = [tarifa_validator],
             widget     = forms.TextInput(attrs = {
                 'class'       : 'form-control',
-                'placeholder' : 'Tarifa',
+                'placeholder' : 'Tarifa 2',
                 'pattern'     : '^([0-9]+(\.[0-9]+)?)$',
                 'message'     : 'La entrada debe ser un número decimal.'
             }
@@ -400,60 +457,34 @@ class EstacionamientoExtendedForm(forms.Form):
         )
     )
 
-    esquemaFeriado = forms.ChoiceField(
-        required = False,
-        choices  = choices_esquema2,
-        widget   = forms.Select(attrs =
-            { 'class' : 'form-control' }
-        )
-    )
-
-    tarifaFeriado = forms.DecimalField(
-        required   = False,
-        validators = [tarifa_validator],
-        widget     = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Tarifa Feriado'
-            , 'pattern'     : '^([0-9]+(\.[0-9]+)?)$'
-            , 'message'     : 'La entrada debe ser un número decimal.'
+    horizonteDias = forms.IntegerField(
+        required = True,
+        min_value = 0,
+        max_value = 15,
+        label    = 'Numero de dias a reservar',
+        widget = forms.NumberInput(attrs = 
+            {   'class'        : 'form-control'
+            ,    'placeholder' :  'Dias a reservar'
+            ,   'pattern'      :  '^[0-9]+'
+            ,   'message'      :  'La entrada debe ser un número entero no negativo.'
             }
         )
+
     )
 
-    tarifa2Feriado = forms.DecimalField(
-            required   = False,
-            validators = [tarifa_validator],
-            widget     = forms.TextInput(attrs = {
-                'class'       : 'form-control',
-                'placeholder' : 'Tarifa Especial Feriado',
-                'pattern'     : '^([0-9]+(\.[0-9]+)?)$',
-                'message'     : 'La entrada debe ser un número decimal.'
+    horizonteHoras = forms.IntegerField(
+        required = True,
+        min_value = 0,
+        max_value = 23,
+        label    = 'Numero de horas a reservar',
+        widget = forms.NumberInput(attrs = 
+            {   'class'        : 'form-control'
+            ,    'placeholder' :  'Horas a reservar'
+            ,   'pattern'      :  '^[0-9]+'
+            ,   'message'      :  'La entrada debe ser una hora valida'
             }
         )
-    )
 
-    inicioEspecialFeriado = forms.TimeField(
-        required = False,
-        label    = 'Inicio Horario Especial',
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Inicio Horario Especial'
-            , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
-            , 'message'     : 'La entrada debe ser una hora válida.'
-            }
-        )
-    )
-
-    finEspecialFeriado = forms.TimeField(
-        required = False,
-        label    = 'Fin Horario Especial',
-        widget   = forms.TextInput(attrs =
-            { 'class'       : 'form-control'
-            , 'placeholder' : 'Fin Horario Especial'
-            , 'pattern'     : '^([0-1]?[0-9]|2[0-3]):[0-5][0-9]'
-            , 'message'     : 'La entrada debe ser una hora válida.'
-            }
-        )
     )
 
 class ReservaForm(forms.Form):
@@ -487,6 +518,21 @@ class ReservaForm(forms.Form):
             , 'type'        : 'date'
             , 'placeholder' : 'Hora Final Reserva'
             }
+        )
+    )
+
+    choices_puesto = [
+        ('Particular', 'Particular'),
+        ('Motocicleta', 'Motoclicleta'),
+        ('Carga', 'De Carga'),
+        ('Discapacitado', 'Discapacitado')
+    ]
+
+    tipo_puesto = forms.ChoiceField(
+        required = True,
+        choices  = choices_puesto,
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
         )
     )
         
@@ -773,7 +819,8 @@ class RecargaForm(forms.Form):
         label = "PIN",
         validators = [validar_pin],
         widget = forms.TextInput(attrs =
-                { 'class'       : 'form-control'
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'PIN Billetera'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message
@@ -826,7 +873,8 @@ class ConsumirForm(forms.Form):
         label = "PIN",
         validators = [validar_pin],
         widget = forms.TextInput(attrs =
-                { 'class'       : 'form-control'
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'PIN'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message
@@ -882,13 +930,90 @@ class SaldoForm(forms.Form):
         label = "PIN",
         validators = [validar_pin],
         widget = forms.TextInput(attrs =
-                { 'class'       : 'form-control'
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'PIN'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message
                 }
         )
     )
+
+class CambiarPinForm(forms.Form):
+
+    id_validator = RegexValidator(
+        regex   = '^[1-9]{1}([0-9]+)?$',
+        message = 'El ID solo puede contener caracteres numéricos.'
+    )
+    
+    billetera_id = forms.CharField(
+        required   = True,
+        label      = "ID",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'ID'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+
+    validar_pin = RegexValidator(
+        regex = '^[\s\S]{4,6}$',
+        message = 'El PIN debe contener entre 4 y 6 caracteres'
+        )
+
+    pin = forms.CharField(
+        required = True,
+        label = "PIN",
+        validators = [validar_pin],
+        widget = forms.TextInput(attrs =
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
+                , 'placeholder' : 'Introduzca PIN actual'
+                , 'pattern'     : validar_pin.regex.pattern
+                , 'message'     : validar_pin.message
+                }
+        )
+    )
+
+    nuevoPin = forms.CharField(
+        required = True,
+        label = "PIN",
+        validators = [validar_pin],
+        widget = forms.TextInput(attrs =
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
+                , 'placeholder' : 'Introduzca nuevo PIN'
+                , 'pattern'     : validar_pin.regex.pattern
+                , 'message'     : validar_pin.message
+                }
+        )
+    )
+
+    nuevoPin2 = forms.CharField(
+        required = True,
+        label = "PIN",
+        validators = [validar_pin],
+        widget = forms.TextInput(attrs =
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
+                , 'placeholder' : 'Vuelva a introducir nuevo PIN'
+                , 'pattern'     : validar_pin.regex.pattern
+                , 'message'     : validar_pin.message
+                }
+        )
+    )
+
+    def clean(self):
+        cleaned_data = self.cleaned_data # individual field's clean methods have already been called
+        password1 = cleaned_data.get("nuevoPin")
+        password2 = cleaned_data.get("nuevoPin2")
+        if password1 != password2:
+            raise forms.ValidationError("Passwords must be identical.")
+
+        return cleaned_data
 
 class MovimientosForm(forms.Form):
 
@@ -920,7 +1045,8 @@ class MovimientosForm(forms.Form):
         label = "PIN",
         validators = [validar_pin],
         widget = forms.TextInput(attrs =
-                { 'class'       : 'form-control'
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'PIN'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message
@@ -1015,10 +1141,72 @@ class CancelarReservaForm(forms.Form):
         label = "PIN",
         validators = [validar_pin],
         widget = forms.TextInput(attrs =
-                { 'class'       : 'form-control'
+                { 'type'        : 'password'
+                , 'class'       : 'form-control'
                 , 'placeholder' : 'PIN'
                 , 'pattern'     : validar_pin.regex.pattern
                 , 'message'     : validar_pin.message
                 }
+        )
+    )
+
+class ReservaCIForm(forms.Form):
+
+    id_validator = RegexValidator(
+        regex   = '^[1-9]{1}([0-9]+)?$',
+        message = 'El ID solo puede contener caracteres numéricos distintos de cero.'
+    )
+    
+    reserva_id = forms.CharField(
+        required   = True,
+        label      = "ID",
+        validators = [id_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'ID Reserva'
+            , 'pattern'     : id_validator.regex.pattern
+            , 'message'     : id_validator.message
+            }
+        )
+    )
+
+    ci_validator = RegexValidator(
+        regex   = '^[VE]-[0-9]+$',
+        message = 'La cédula debe estar en formato V/E-NumCedula'   
+    )
+    
+    cedula = forms.CharField(
+        required   = True,
+        label      = "Cédula",
+        validators = [ci_validator],
+        widget = forms.TextInput(attrs =
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Cédula asociada'
+            , 'pattern'     : ci_validator.regex.pattern
+            , 'message'     : ci_validator.message
+            }
+        )
+    )
+
+class CambiarReservaForm(forms.Form):
+    inicio = forms.SplitDateTimeField(
+        required = True,
+        label = 'Horario Inicio Reserva',
+        widget= CustomSplitDateTimeWidget(attrs=
+            { 'class'       : 'form-control'
+            , 'type'        : 'date'
+            , 'placeholder' : 'Hora Inicio Reserva'
+            }
+        )
+    )
+
+    final = forms.SplitDateTimeField(
+        required = True,
+        label    = 'Horario Final Reserva',
+        widget   = CustomSplitDateTimeWidget(attrs=
+            { 'class'       : 'form-control'
+            , 'type'        : 'date'
+            , 'placeholder' : 'Hora Final Reserva'
+            }
         )
     )

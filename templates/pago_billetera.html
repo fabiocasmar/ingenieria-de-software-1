@@ -87,6 +87,13 @@
                 </td></tr>
 
                 <tr><td><b><i class="fa fa-clock-o"></i>
+                  Tipo de Puesto:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.tipo_puesto}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
                   Horario inicio de reserva:
                 </b></td></tr>
                 <tr><td>
@@ -138,7 +145,7 @@
     }
 
     function openlink(){
-      opener.location='/estacionamientos/ingreso';
+      opener.location='/estacionamientos/';
     }
   </script>
 {% endblock %}

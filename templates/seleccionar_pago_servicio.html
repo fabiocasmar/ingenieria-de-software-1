@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}
+  SAGE - Pago
+{% endblock %}
+{% block innerContents %}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Mover Reservación
+    </h3>
+    <hr>
+    <div class="row">
+      <div class="col-md-8" style="color:{{color}}">
+        <font size=4>Pagar servicio de mover reserva</font>
+        <hr>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <table class="table table-striped">
+        <thead><font size=3>Seleccione el método de pago</font></thead>
+        <p>
+        <p>
+        <p>
+        <tbody>
+          <tr><td>
+            <a href="pagar_servicio_tarjeta" onClick="return popup(this, 'Pago de Reserva')">
+              <button class="btn btn-primary">
+                Pagar con tarjeta
+              </button>
+            </a>
+            <a href="pagar_servicio_billetera" onClick="return popup(this, 'Pago de Reserva')">
+              <button class="btn btn-primary">
+                Pagar con billetera
+              </button>
+            </a>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script type="text/javascript">
+    function popup(mylink, windowname) {
+      if (! window.focus)
+        return true;
+      var href;
+      if (typeof(mylink) == 'string')
+        href=mylink;
+      else
+        href=mylink.href;
+      window.open(href, windowname, 'width=800,height=600,scrollbars=yes');
+      return false;
+    }
+  </script>
+{% endblock %}

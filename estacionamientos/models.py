@@ -6,6 +6,11 @@ from django.contrib.contenttypes.models import ContentType
 from decimal import Decimal
 from datetime import timedelta
 
+class Sage(models.Model):
+	deduccion  = models.DecimalField(decimal_places = 2, max_digits = 256)
+
+	def __str__(self):
+		return str(self.id)
 
 class Usuario(models.Model):
 	nombre       = models.CharField(max_length = 50, blank = True, null = True)
@@ -33,20 +38,33 @@ class Propietario(models.Model):
 	def __str__(self):
 		return self.cedula+' '+str(self.id)
 
+class Puestos(models.Model):
+	particular     = models.IntegerField(null = True)
+	moto 		   = models.IntegerField(null = True)
+	carga 		   = models.IntegerField(null = True)
+	discapacitado  = models.IntegerField(null = True)
+
 class Estacionamiento(models.Model):
-	propietario = models.ForeignKey(Propietario)
-	nombre      = models.CharField(max_length = 50)
-	direccion   = models.TextField(max_length = 120)
-	telefono1   = models.CharField(blank = True, null = True, max_length = 30)
-	telefono2   = models.CharField(blank = True, null = True, max_length = 30)
-	telefono3   = models.CharField(blank = True, null = True, max_length = 30)
-	email1      = models.EmailField(blank = True, null = True)
-	email2      = models.EmailField(blank = True, null = True)
-	rif         = models.CharField(max_length = 12)
+	propietario    = models.ForeignKey(Propietario)
+	nombre         = models.CharField(max_length = 50)
+	direccion      = models.TextField(max_length = 120)
+	telefono1      = models.CharField(blank = True, null = True, max_length = 30)
+	telefono2      = models.CharField(blank = True, null = True, max_length = 30)
+	telefono3      = models.CharField(blank = True, null = True, max_length = 30)
+	email1         = models.EmailField(blank = True, null = True)
+	email2         = models.EmailField(blank = True, null = True)
+	horizontedias  = models.CharField(max_length = 2,null = False)
+	horizontehoras = models.CharField(max_length = 2,null = False)
+	rif            = models.CharField(max_length = 12)
+
 	# Campos para referenciar al esquema de tarifa
-	apertura        = models.TimeField(blank = True, null = True)
-	cierre          = models.TimeField(blank = True, null = True)
-	capacidad       = models.IntegerField(blank = True, null = True)
+
+	content_type = models.ForeignKey(ContentType, null = True)
+	object_id    = models.PositiveIntegerField(null = True)
+	tarifa       = GenericForeignKey()
+	apertura     = models.TimeField(blank = True, null = True)
+	cierre       = models.TimeField(blank = True, null = True)
+	capacidad    = models.ForeignKey(Puestos,default=0)
 
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
@@ -73,6 +91,8 @@ class Reembolso(models.Model):
 	fechaTransaccion 	   = models.DateTimeField()
 	billetera 		       = models.ForeignKey(Billetera)
 	id_viejo			   = models.CharField(max_length = 10, null = False)
+	monto_reserva		   = models.FloatField(blank = True, null = True)
+	mensaje 			   = models.CharField(max_length = 100, blank = True, null = True)
 
 	def __str__(self):
 		return self.estacionamiento.nombre+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
@@ -84,7 +104,8 @@ class Reserva(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
 	inicioReserva   = models.DateTimeField()
 	finalReserva    = models.DateTimeField()
-
+	movidas 		= models.FloatField(null=False, blank=False,default=0)
+	tipo_puesto		= models.CharField(max_length = 50, blank = True, null = True)
 	def __str__(self):
 		return self.estacionamiento.nombre+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
 
@@ -94,6 +115,8 @@ class Consumo(models.Model):
 	billetera 		 = models.ForeignKey(Billetera)
 	establecimiento	 = models.ForeignKey(Estacionamiento)
 	reserva 		 = models.ForeignKey(Reserva,default=0)
+	flag			 = models.CharField(max_length = 1, blank = True, null = True)
+	servicio 		 = models.CharField(max_length = 1, blank = True, null = True)
 
 class ConfiguracionSMS(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
@@ -107,7 +130,7 @@ class Pago(models.Model):
 	fechaTransaccion = models.DateTimeField()
 	cedula           = models.CharField(max_length = 10)
 	tarjetaTipo      = models.CharField(max_length = 6)
-	reserva          = models.ForeignKey(Reserva)
+	reserva          = models.ForeignKey(Reserva,default=0)
 	monto            = models.DecimalField(decimal_places = 2, max_digits = 256)
 
 	def __str__(self):
@@ -120,6 +143,7 @@ class CancelarReserva(models.Model):
 	cedula           = models.CharField(max_length = 10,blank = True, null = True)
 	inicioReserva    = models.DateTimeField(blank = True, null = True)
 	finalReserva     = models.DateTimeField(blank = True, null = True)
+	multa = models.DecimalField(decimal_places = 2, max_digits = 256, blank = True, null = True)
 		
 	def __str__(self):
 		return str(self.id)
@@ -127,24 +151,16 @@ class CancelarReserva(models.Model):
 class EsquemaTarifario(models.Model):
 
 	# No se cuantos digitos deberiamos poner
-	tarifa                 = models.DecimalField(null = True, max_digits=20, decimal_places=2)
-	tarifa2                = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
-	inicioEspecial         = models.TimeField(blank = True, null = True)
-	finEspecial            = models.TimeField(blank = True, null = True)
-	tarifaFeriado          = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
-	tarifa2Feriado         = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
-	inicioEspecialFeriado  = models.TimeField(blank = True, null = True)
-	finEspecialFeriado     = models.TimeField(blank = True, null = True)
-	estacionamiento  	   = models.ForeignKey(Estacionamiento, default=None)
+	tarifa         = models.DecimalField(max_digits=20, decimal_places=2)
+	tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
+	inicioEspecial = models.TimeField(blank = True, null = True)
+	finEspecial    = models.TimeField(blank = True, null = True)
 
 	class Meta:
 		abstract = True
 	def __str__(self):
 		return str(self.tarifa)
 
-class Ninguno(EsquemaTarifario):
-	def tipo(self):
-		return("Ninguno")
 
 class TarifaHora(EsquemaTarifario):
 	def calcularPrecio(self,horaInicio,horaFinal):
@@ -152,7 +168,6 @@ class TarifaHora(EsquemaTarifario):
 		a = a.days*24+a.seconds/3600
 		a = ceil(a) #  De las horas se calcula el techo de ellas
 		return(Decimal(self.tarifa*a).quantize(Decimal('1.00')))
-	
 	def tipo(self):
 		return("Por Hora")
 
@@ -161,7 +176,6 @@ class TarifaMinuto(EsquemaTarifario):
 		minutes = horaFinal-horaInicio
 		minutes = minutes.days*24*60+minutes.seconds/60
 		return (Decimal(minutes)*Decimal(self.tarifa/60)).quantize(Decimal('1.00'))
-	
 	def tipo(self):
 		return("Por Minuto")
 
@@ -238,11 +252,3 @@ class QuienReserva(models.Model):
 
 	def __str__(self):
 		return self.cedula+' '+str(self.id)
-
-class DiaFeriado(models.Model):
-	dia			 = models.PositiveIntegerField(null = True)
-	mes 		 = models.PositiveIntegerField(null = True)
-	descripcion  = models.CharField(max_length = 50, blank = True, null = True)
-
-	def __str__(self):
-		return str(self.dia)+'/'+str(self.mes)+' '+self.descripcion

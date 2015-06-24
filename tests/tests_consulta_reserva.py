@@ -8,7 +8,8 @@ from estacionamientos.models import (
                                         Pago,
                                         Estacionamiento,
                                         Propietario,
-                                        Reserva
+                                        Reserva,
+                                        Puestos
                                     )
 
 ###################################################################
@@ -34,6 +35,13 @@ class consultaReservaTestCase(TestCase):
 
     # TDD
     def test_estacionamiento_sin_pagos(self):
+        p = Puestos(
+            particular = 20,
+            moto = 20,
+            carga = 20,
+            discapacitado = 20
+            )
+        p.save()
         e = Estacionamiento(
             propietario = self.crear_propietario(),
             nombre = "nom",
@@ -44,7 +52,7 @@ class consultaReservaTestCase(TestCase):
             email1 = "hola@gmail.com",
             email2 = "hola@gmail.com",
             rif = "J-123456789",
-            capacidad   = 20,
+            capacidad   = p,
             apertura    = time(0,0),
             cierre      = time(23,59),
         )
@@ -54,6 +62,13 @@ class consultaReservaTestCase(TestCase):
 
     # TDD
     def test_un_estacionamiento_un_pago(self):
+        p = Puestos(
+            particular = 20,
+            moto = 20,
+            carga = 20,
+            discapacitado = 20
+            )
+        p.save()
         e = Estacionamiento(
             propietario = self.crear_propietario(),
             nombre = "nom",
@@ -64,7 +79,7 @@ class consultaReservaTestCase(TestCase):
             email1 = "hola@gmail.com",
             email2 = "hola@gmail.com",
             rif =   "J-123456789",
-            capacidad   = 20,
+            capacidad   = p,
             apertura    = time(0,0),
             cierre      = time(23,59),
         )
@@ -72,7 +87,8 @@ class consultaReservaTestCase(TestCase):
         r = Reserva(
                 estacionamiento = e,
                 inicioReserva = datetime(2015,3,10,3,0),
-                finalReserva  = datetime(2015,3,10,5,0)
+                finalReserva  = datetime(2015,3,10,5,0),
+                tipo_puesto = 'Particular'
             )
         r.save()
         p = Pago(
@@ -88,6 +104,13 @@ class consultaReservaTestCase(TestCase):
     #TDD malicia
     def test_un_estacionamiento_muchos_pagos(self):
         n = 1000
+        p = Puestos(
+            particular = n,
+            moto = 20,
+            carga = 20,
+            discapacitado = 20
+            )
+        p.save()
         e = Estacionamiento(
             propietario = self.crear_propietario(),
             nombre = "nom",
@@ -98,7 +121,7 @@ class consultaReservaTestCase(TestCase):
             email1 = "hola@gmail.com",
             email2 = "hola@gmail.com",
             rif = "J-123456789",
-            capacidad   = n,
+            capacidad   = p,
             apertura    = time(0,0),
             cierre      = time(23,59),
         )
@@ -107,7 +130,8 @@ class consultaReservaTestCase(TestCase):
             r = Reserva(
                     estacionamiento = e,
                     inicioReserva = datetime(2015,3,10,3,0),
-                    finalReserva  = datetime(2015,3,10,5,0)
+                    finalReserva  = datetime(2015,3,10,5,0),
+                    tipo_puesto = 'Particular'
                 )
             r.save()
             p = Pago(
@@ -124,6 +148,13 @@ class consultaReservaTestCase(TestCase):
     #malicia
     def test_dos_estacionamiento_muchos_pagos(self):
         n = 1000
+        p = Puestos(
+            particular = n,
+            moto = 20,
+            carga = 20,
+            discapacitado = 20
+            )
+        p.save()
         e = Estacionamiento(
             propietario = self.crear_propietario(),
             nombre = "nom",
@@ -134,7 +165,7 @@ class consultaReservaTestCase(TestCase):
             email1 = "hola@gmail.com",
             email2 = "hola@gmail.com",
             rif = "J-123456789",
-            capacidad   = n,
+            capacidad   = p,
             apertura    = time(0,0),
             cierre      = time(23,59),
         )
@@ -143,7 +174,8 @@ class consultaReservaTestCase(TestCase):
             r = Reserva(
                     estacionamiento = e,
                     inicioReserva = datetime(2015,3,10,3,0),
-                    finalReserva  = datetime(2015,3,10,5,0)
+                    finalReserva  = datetime(2015,3,10,5,0),
+                    tipo_puesto = 'Particular'
                 )
             r.save()
             p = Pago(
@@ -162,8 +194,22 @@ class consultaReservaTestCase(TestCase):
 
 
     def test_muchos_estacionamiento_mitad_sin_pagos(self):
-        n  = 100
-        m  = 10
+        n = 100
+        m = 10
+        p1 = Puestos(
+            particular = n,
+            moto = 20,
+            carga = 20,
+            discapacitado = 20
+            )
+        p1.save()
+        p2 = Puestos(
+            particular = m,
+            moto = 20,
+            carga = 20,
+            discapacitado = 20
+            )
+        p2.save()
         for i in range(0,n):
             prop = Propietario(
             nombre = "prop%d"%i,
@@ -178,7 +224,7 @@ class consultaReservaTestCase(TestCase):
                 nombre      = "nom%d"%i,
                 direccion   = "dir1",
                 rif         = "J-123456789",
-                capacidad   = m,
+                capacidad   = p1,
                 apertura    = time(0,0),
                 cierre      = time(23,59),
             )
@@ -195,7 +241,7 @@ class consultaReservaTestCase(TestCase):
                 nombre      = "no%d"%i,
                 direccion   = "dir3",
                 rif         = "J-123456789",
-                capacidad   = m,
+                capacidad   = p2,
                 apertura    = time(0,0),
                 cierre      = time(23,59),
             )
@@ -205,7 +251,8 @@ class consultaReservaTestCase(TestCase):
                 r = Reserva(
                         estacionamiento = e1,
                         inicioReserva = datetime(2015,3,10,3,0),
-                        finalReserva  = datetime(2015,3,10,5,0)
+                        finalReserva  = datetime(2015,3,10,5,0),
+                        tipo_puesto = 'Particular'
                     )
                 r.save()
                 p = Pago(
@@ -222,6 +269,13 @@ class consultaReservaTestCase(TestCase):
 
     def test_muchos_estacionamiento_sin_pagos(self):
         n  = 1000
+        p = Puestos(
+            particular = n,
+            moto = 20,
+            carga = 20,
+            discapacitado = 20
+            )
+        p.save()
         for i in range(0,n):
             prop = Propietario(
             nombre = "prop%d"%i,
@@ -236,7 +290,7 @@ class consultaReservaTestCase(TestCase):
                 nombre      = "nom%d"%i,
                 direccion   = "dir1",
                 rif         = "J-123456789",
-                capacidad   = n,
+                capacidad   = p,
                 apertura    = time(0,0),
                 cierre      = time(23,59),
             )
@@ -255,12 +309,19 @@ class consultaReservaTestCase(TestCase):
             email = "hola@gmail.com",
             )
             prop.save()
+            p = Puestos(
+                particular = n,
+                moto = 20,
+                carga = 20,
+                discapacitado = 20
+                )
+            p.save()
             e1 = Estacionamiento(
                 propietario = prop,
                 nombre      = "nom%d"%i,
                 direccion   = "dir1",
                 rif         = "J-%i"%(123456789-i),
-                capacidad   = n,
+                capacidad   = p,
                 apertura    = time(0,0),
                 cierre      = time(23,59),
             )
@@ -268,7 +329,8 @@ class consultaReservaTestCase(TestCase):
             r = Reserva(
                     estacionamiento = e1,
                     inicioReserva = datetime(2015,3,10,3,0),
-                    finalReserva  = datetime(2015,3,10,5,0)
+                    finalReserva  = datetime(2015,3,10,5,0),
+                    tipo_puesto = 'Particular'
                 )
             r.save()
             p = Pago(

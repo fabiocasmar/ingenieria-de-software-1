@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}
+  SAGE - Pago
+{% endblock %}
+
+{% block body%}
+  <body {% if mensaje %} onunload="openlink()" {% endif %}>
+{% endblock %}
+
+{% block menu %}{% endblock %}
+{% block innerContents%}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-money"></i>
+      Pago con billetera
+    </h3>
+    <hr>
+    <div class="col-md-4">
+      {% if form %}
+        <form
+          method="post"
+          class="form form-vertical"
+        >
+                      {% csrf_token %}
+              {% for field in form %}
+                <div class="control-group">
+                  <div class="controls">
+                  {% if field.name != 'monto' %}
+                    {{ field }}
+                    <span class='error' id='{{field.name}}_error' aria-live="   polite">{{ field.errors }}</span>
+                    <p></p>
+                  {% else %}
+
+                    <input class="form-control dirty" id="id_monto" message="El monto debe ser un número positivo" name="monto" pattern="^[0-9]+$" placeholder="Monto" type="text" value="{{monto}}" readonly>
+                    <span class='error' id='monto_error' aria-live="   polite">{{ field.errors }}</span>
+                    <p></p>
+                  {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+          <input
+            type="submit"
+            value="Realizar Pago"
+            class="btn btn-primary"
+          >
+
+          <input 
+            type="button"
+            value="Crear Billetera"
+            onclick="window.open('/estacionamientos/billetera')"
+            class="btn btn-primary"
+          >
+          <input
+            type="button"
+            value="Volver"
+            onclick="self.close()"
+            class="btn btn-primary"
+          >
+
+
+        </form>
+      {% endif %}
+      {% if pago %}
+        <div class="row">
+          <div class="col-md-7" style="color:{{color}}">
+            {{mensaje}}
+            <hr>
+            <font color='red'> {{mensaje2}} {{mensaje3}} </font>
+            <hr>
+          </div>
+          <div class="col-md-4">
+            <table class="table table-striped">
+              <tbody>
+                <tr><td><b><i class="fa fa-circle"></i>
+                  Número de Transacción:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.id}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
+                  Fecha de Transacción:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.fechaTransaccion}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
+                  Horario inicio de reserva:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.inicioReserva}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
+                  Horario fin de reserva:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.finalReserva}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-money"></i>
+                  Monto:
+                </b></td></tr>
+                <tr><td>
+                  BsF. {{pago.monto|floatformat:2|intcomma }}
+                </td></tr>
+              </tbody>
+            </table>
+            <div>
+              <input
+                type="button"
+                value="Pagar por el servicio"
+                href="javascript: closepopup();"
+                class="btn btn-primary"
+              >
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  {% include "validator.js.html" %}
+
+  <script type="text/javascript">
+    function popuponclick(){
+      my_window = window.open("",
+       "mywindow","status=1,width=350,height=150");
+
+      my_window.document.write('<h1>The Popup Window</h1>');
+    }
+
+    function closepopup(){
+      window.close();
+    }
+
+    function openlink(){
+      opener.location='/estacionamientos/
+      pagar_servicio_mover_reserva';
+    }
+  </script>
+{% endblock %}

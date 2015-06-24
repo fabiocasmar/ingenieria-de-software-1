@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}
+  SAGE - Pago
+{% endblock %}
+{% block innerContents %}
+  <div class="col-sm-10">
+    <h3><i class="fa fa-bus"></i>
+      Reservación
+    </h3>
+    <hr>
+    <div class="row">
+      <div class="col-md-8" style="color:{{color}}">
+        {{ mensaje }}
+        <hr>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <table class="table table-striped">
+        <thead></thead>
+        <tbody>
+          <tr><td><b><i class="fa fa-car"></i>
+            Nombre del estacionamiento:
+          </b></td></tr>
+          <tr><td>
+            {{reserva.estacionamiento.nombre}}
+          </td></tr>
+
+          <tr><td><b><i class="fa fa-clock-o"></i>
+            Horario inicio de reserva:
+          </b></td></tr>
+          <tr><td>
+            {{reserva.inicioReserva}}
+          </td></tr>
+
+          <tr><td><b><i class="fa fa-clock-o"></i>
+            Horario fin de reserva:
+          </b></td></tr>
+          <tr><td>
+            {{reserva.finalReserva}}
+          </td></tr>
+
+          <tr><td><b><i class="fa fa-money"></i>
+            Monto:
+          </b></td></tr>
+          <tr><td>
+            BsF. {{monto|floatformat:2|intcomma }}
+          </td></tr>
+
+          <tr><td>
+            <a href="/estacionamientos/reembolsar_reserva">
+              <button type="submit" class="btn btn-primary">
+                Confirmar
+              </button>
+            </a>
+            <a href="/estacionamientos/mover_reserva">
+              <button type="submit" class="btn btn-primary">
+                Cancelar
+              </button>
+            </a>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

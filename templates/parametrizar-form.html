@@ -9,10 +9,6 @@
   </div>
   <div class="panel-body">
     <form action="." method="post" class="form form-vertical">
-<!--       <select id = 'schema'>
-        <option value="SinFeriado"> Esquema sin Feriado </option>
-        <option value="ConFeriado"> Esquema con Feriado </option>
-      </select> <br/> <br /> -->
       {% csrf_token %}
       {% for field in form %}
         <div class="control-group">
@@ -37,79 +33,6 @@
   </div>
 </div>
 {% include "validator.js.html" %}
-
-<script type="text/javascript">
-
-  esquemaFeriado = document.getElementById('id_esquemaFeriado');
-  tarifaFeriado  = document.getElementById('id_tarifaFeriado');
-  tarifa2Feriado = document.getElementById('id_tarifa2Feriado');
-  inicioEspecialFeriado  = document.getElementById('id_inicioEspecialFeriado');
-  finEspecialFeriado     = document.getElementById('id_finEspecialFeriado');
-
-  //esquemaFeriado.style.display = 'none';
-  tarifaFeriado.style.display  = 'none';
-  tarifa2Feriado.style.display = 'none';
-  inicioEspecialFeriado.style.display = 'none';
-  finEspecialFeriado.style.display    = 'none';
-
-  schema = document.getElementById('schema');
-
-  if (schema) {
-    schema.onchange = function() {
-      if (this.value == "ConFeriado") {
-        esquemaFeriado.style.display = '';
-        tarifaFeriado.style.display  = '';
-      } else if (this.value == "SinFeriado") {
-        esquemaFeriado.style.display = 'none';
-        tarifaFeriado.style.display  = 'none';
-        tarifa2Feriado.style.display = 'none';
-        inicioEspecialFeriado.style.display = 'none';
-        finEspecialFeriado.style.display    = 'none';
-      }
-    }
-  } 
-
-  if (esquemaFeriado) {
-    esquemaFeriado.onchange = function() {
-      if (this.value == "TarifaHoraPico") {
-        tarifaFeriado.style.display  = '';
-        inicioEspecialFeriado.style.display = '';
-        inicioEspecialFeriado.placeholder = "Inicio Horario Pico Feriado"
-        finEspecialFeriado.style.display = '';
-        finEspecialFeriado.placeholder = "Fin Horario Pico Feriado"
-        tarifa2Feriado.style.display = '';
-        tarifa2Feriado.placeholder="Tarifa Horario Pico Feriado";
-      } else if (this.value == "TarifaFinDeSemana") {
-        tarifaFeriado.style.display  = '';
-        inicioEspecialFeriado.style.display = 'none';
-        inicioEspecialFeriado.value = ""
-        finEspecialFeriado.style.display = 'none';
-        finEspecialFeriado.value = ""
-        tarifa2Feriado.style.display = '';
-        tarifa2Feriado.placeholder="Tarifa Feriado de Fin de Semana";
-      } else if (this.value == "Ninguno") {
-        tarifaFeriado.style.display  = 'none';
-        tarifaFeriado.value  = '';
-        tarifa2Feriado.style.display = 'none';
-        tarifa2Feriado.value = '';
-        inicioEspecialFeriado.style.display = 'none';
-        inicioEspecialFeriado.value = '';
-        finEspecialFeriado.style.display    = 'none';
-        finEspecialFeriado.value = '';
-      } else {
-        tarifaFeriado.style.display  = '';
-        tarifaFeriado.placeholder = "Tarifa Feriado";
-        inicioEspecialFeriado.style.display = 'none';
-        inicioEspecialFeriado.value = ""
-        finEspecialFeriado.style.display = 'none';
-        finEspecialFeriado.value = ""
-        tarifa2Feriado.style.display = 'none';
-        tarifa2Feriado.value = ""
-      }
-    }
-  }
-</script>
-
 <script type="text/javascript">
   esquema = document.getElementById('id_esquema');
   tarifa1 = document.getElementById('id_tarifa');
@@ -148,26 +71,4 @@
       }
     }
   }
-</script>
-
-<script type="text/javascript">
-
-  var allRadios = document.getElementsByName('radio');
-  var booRadio;
-  var x;
-    
-    for(x = 0; x < allRadios.length; x++){
-
-      allRadios[x].onclick = function() {
-
-        alert(booRadio);
-        if (booRadio == this) {
-          this.checked = false;
-          booRadio = null;
-        } 
-        else {
-          booRadio = this;
-        }
-      };
-    }
 </script>
