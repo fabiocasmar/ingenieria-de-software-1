@@ -18,9 +18,6 @@ def validarHorarioReserva(inicioReserva, finReserva, apertura, cierre, horizonte
 	if inicioReserva.date() < datetime.now().date():
 		return (False, 'La reserva no puede tener lugar en el pasado.')
 
-	#print(finReserva)
-	#print(inicioReserva)
-	#print (finReserva > (datetime.now()+timedelta(days=int(horizonteDias),hours=int(horizonteHoras))))
 	if finReserva > (datetime.now()+timedelta(days=int(horizonteDias),hours=int(horizonteHoras))):
 		return (False, 'La reserva debe estar dentro de los proximos'+str(horizonteDias)+' dia(s) y '+str(horizonteHoras)+' hora(s)')
 	if apertura.hour==0 and apertura.minute==0 \
@@ -252,7 +249,6 @@ def obtener_recargas(_id,_pin):
 		recargas = Recarga.objects.filter(billetera = billetera_electronica)
 		listaRecargas = []
 		for elemento in recargas:
-			print(elemento.fechaTransaccion)
 			listaRecargas.append(elemento)
 		return recargas
 	else:
@@ -269,8 +265,6 @@ def obtener_consumos(_id,_pin):
 		listaConsumos = []
 		for elemento in consumos:
 			listaConsumos.append(elemento)
-			print("Hola")
-			print(elemento.saldo)
 			return consumos
 	else:
 		return False

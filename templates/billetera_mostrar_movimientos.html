@@ -110,16 +110,24 @@
               <td>{{obj.saldo}}</td>
               <td></td>
               <tr></tr>
+            {%endif%}<!-- Condicional para consumo-->
+            {% if obj.establecimiento and obj.servicio%}
+              <td>Pago por servicio: {{obj.billetera.usuario.nombre}}&nbsp;{{obj.billetera.usuario.apellido}}</td>
+              <td>{{obj.fechaTransaccion}}</td>
+              <td>{{obj.id}}</td>
+              <td>{{obj.saldo}}</td>
+              <td></td>
+              <tr></tr>
             {%endif%}
             <!-- Condicional para reembolso-->
             {% if obj.inicioReserva%}
-              <td>{{obj.mensaje}} <br>{{obj.nombre}}&nbsp;{{obj.apellido}}</td>
+              <td>{{obj.mensaje}} <br>Usuario billetera: {{obj.billetera.usuario.nombre}}&nbsp;{{obj.billetera.usuario.apellido}}</td>
               <td>{{obj.fechaTransaccion}}</td>
               <td>{{obj.id}}</td>
               <td></td>
               <td>{{obj.saldo}}</td>
               <tr></tr>
-              <td>Datos de la reserva anterior: <br></td>
+              <td>Reservó: <br>{{obj.nombre}}&nbsp;{{obj.apellido}}</td>
               <td>{{obj.fechaTransaccion_vieja}}</td>
               <td>{{obj.id_viejo}}</td>
               <td>{{obj.monto_reserva}}</td>

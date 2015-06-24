@@ -1689,9 +1689,9 @@ def reembolsar_reserva(request):
             else:
                 billetera = Billetera.objects.get(id = billetera_id)
                 usuario = billetera.usuario
-                _reembolso = Reembolso(nombre = usuario.nombre,
-                                      apellido = usuario.apellido,
-                                      cedula = usuario.cedula,
+                _reembolso = Reembolso(nombre = reserva.nombre,
+                                      apellido = reserva.apellido,
+                                      cedula = reserva.cedula,
                                       estacionamiento = estacionamiento,
                                       inicioReserva = reserva.inicioReserva,
                                       finalReserva = reserva.finalReserva,
@@ -1852,7 +1852,8 @@ def pagar_servicio_billetera(request):
                  consumo = Consumo(saldo = montoo,
                           fechaTransaccion = datetime.now(),
                           billetera = bille,
-                          establecimiento = estacionamiento
+                          establecimiento = estacionamiento,
+                          servicio = 1
                           )
 
                  if (float(bille.saldo) == 0.00):

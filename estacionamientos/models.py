@@ -110,6 +110,7 @@ class Consumo(models.Model):
 	establecimiento	 = models.ForeignKey(Estacionamiento)
 	reserva 		 = models.ForeignKey(Reserva,default=0)
 	flag			 = models.CharField(max_length = 1, blank = True, null = True)
+	servicio 		 = models.CharField(max_length = 1, blank = True, null = True)
 
 class ConfiguracionSMS(models.Model):
 	estacionamiento = models.ForeignKey(Estacionamiento)
