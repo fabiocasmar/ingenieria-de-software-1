@@ -323,7 +323,7 @@ def chequear_consumo_billetera(pago,reserva):
 	consumo = Consumo.objects.filter(reserva=reserva)
 	if len(consumo)>0:
 		for obj in consumo:
-			if obj.flag==1 and reserva.movidas==1:
+			if obj.flag=="1" and reserva.movidas==1.0:
 				return True
 			else:
 				return False

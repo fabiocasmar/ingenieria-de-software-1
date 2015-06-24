@@ -558,9 +558,6 @@ def billetera_recargar(request):
             #         'autenticacion_denegada.html',
             #         )
             check = recargar_saldo(billetera_id,pin,monto)
-            print(check)
-            print(monto)
-            print(monto=="0")
             
             if check or (monto=="0") or (monto=="0.0") or (monto=="0.00") :
                 billetera = Billetera.objects.get(id = billetera_id)
@@ -736,7 +733,6 @@ def billetera_saldo(request):
     if request.method == 'GET':
         form = SaldoForm()
     if request.method == 'POST':
-        print("entre aca")
         form = SaldoForm(request.POST)
         
         if form.is_valid():
@@ -1241,7 +1237,7 @@ def confirmar_cancelacion(request):
             cancelacion = crear_cancelacion(billetera_id,numero_pago)
 
             if (cancelacion[0] == False) :
-                print(cancelacion[1])          
+            	pass
                 
             return render(
                 request,
@@ -1369,9 +1365,7 @@ def mover_reserva(request):
 def cambiar_datos_reserva(request):
     pago_id = request.session['pago_id']
     form = CambiarReservaForm()
-    print("GET")
     if request.method == 'POST':
-        print("POST")
         form = CambiarReservaForm(request.POST)
         # Verificamos si es valido con los validadores del formulario
         if form.is_valid():
@@ -1397,25 +1391,6 @@ def cambiar_datos_reserva(request):
                 estacionamiento.horizontedias,
                 estacionamiento.horizontehoras
             )
-
-            #print (datetime.now()+
-            #        timedelta(
-            #                days=int(estacionamiento.horizontedias),
-            #                hours=int(estacionamiento.horizontehoras))-
-            #        inicioReserva)
-            #print (finalReserva-
-            #        datetime.now()-
-            #                timedelta(days=int(estacionamiento.horizontedias),
-            #                  hours=int(estacionamiento.horizontehoras)))
-            #print (datetime.now()+
-            #        timedelta(
-            #                days=int(estacionamiento.horizontedias),
-            #                hours=int(estacionamiento.horizontehoras))-
-            #        inicioReserva>
-            #        finalReserva-
-            #        datetime.now()-
-            #                timedelta(days=int(estacionamiento.horizontedias),
-            #                  hours=int(estacionamiento.horizontehoras)))
 
             # Si no es valido devolvemos el request
             if not m_validado[0]:
@@ -1569,7 +1544,7 @@ def pagar_tarjeta_mover_reserva(request):
                 }
     )
             # Si el usuario pago con billetera, no paga por el servicio
-            else:
+            elif check == True:
                 return render(
                 request,
                 'pago_reserva_exitoso_tarjeta2.html',
