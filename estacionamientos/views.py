@@ -1805,7 +1805,7 @@ def pagar_servicio_tarjeta(request):
 
             except ObjectDoesNotExist:  
                 multa = 0   
-            _monto = Decimal(multa)*Decimal(monto)
+            _monto = Decimal(multa)*Decimal(monto) + Decimal(monto)
 
             # Hay que generar el recibo de pago
             pago = Pago(
@@ -1850,7 +1850,7 @@ def pagar_servicio_billetera(request):
 
     except ObjectDoesNotExist:  
         multa = 0   
-    _monto = multa*monto
+    _monto = Decimal(multa)*Decimal(monto) + Decimal(monto)
 
     if request.method == 'POST':
         form = ConsumirForm(request.POST)
