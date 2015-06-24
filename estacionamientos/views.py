@@ -35,7 +35,7 @@ from estacionamientos.controller import (
     nuevo_monto_reserva,
     mover_reserva,
     chequear_consumo_billetera,
-    guardar_configuracion
+    guardar_configuracion,
     cambiar_pin,
     check_pin
 )
@@ -57,7 +57,7 @@ from estacionamientos.forms import (
     MovimientosForm,
     ReservaCIForm,
     CambiarReservaForm,
-    SageForm
+    SageForm,
     CambiarPinForm
 )
 
