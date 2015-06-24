@@ -239,7 +239,6 @@ def crear_cancelacion(billetera_id,numero_pago ):
 		multa = pago.monto * multa		
 		
 		obj = CancelarReserva(
-			tipo_puesto = pago.reserva.tipo_puesto,
 			estacionamiento   = Estacionamiento.objects.get(id=pago.reserva.estacionamiento.id),
 			fechaTransaccion = datetime.now(),
 			billetera   = Billetera.objects.get(id=billetera_id),
