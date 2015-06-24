@@ -78,6 +78,8 @@ from estacionamientos.models import (
     CancelarReserva,
     Reembolso,
     Sage
+    Puestos
+   # QuienReserva
 )
 
 #from django.template.context_processors import request
@@ -233,6 +235,11 @@ def estacionamiento_detail(request, _id):
                 'esquema' : estacionamiento.tarifa.__class__.__name__,
                 'horizonteDias': estacionamiento.horizontedias,
                 'horizonteHoras': estacionamiento.horizontehoras 
+                'puestos1' : estacionamiento.capacidad.particular,
+                'puestos2' : estacionamiento.capacidad.moto,
+                'puestos3' : estacionamiento.capacidad.carga,
+                'puestos4' : estacionamiento.capacidad.discapacitado,
+                'esquema' : estacionamiento.tarifa.__class__.__name__
             }
             form = EstacionamientoExtendedForm(data = form_data)
         else:
@@ -287,6 +294,13 @@ def estacionamiento_detail(request, _id):
             estacionamiento.capacidad      = form.cleaned_data['puestos']
             estacionamiento.horizontedias  = horizonteDias
             estacionamiento.horizontehoras = horizonteHoras
+            puestos = Puestos(particular = form.cleaned_data['puestos1'],
+                                moto = form.cleaned_data['puestos2'],
+                                carga = form.cleaned_data['puestos3'],
+                                discapacitado = form.cleaned_data['puestos4']
+            )
+            puestos.save()
+            estacionamiento.capacidad = puestos
 
             estacionamiento.save()
 
@@ -321,6 +335,7 @@ def estacionamiento_reserva(request, _id):
         # Verificamos si es valido con los validadores del formulario
         if form.is_valid():
 
+            tipo_puesto = form.cleaned_data['tipo_puesto']
             nombre = form.cleaned_data['nombre']
             apellido = form.cleaned_data['apellido']
             cedula = form.cleaned_data['cedula']
@@ -348,14 +363,15 @@ def estacionamiento_reserva(request, _id):
                     }
                 )
 
-            if marzullo(_id, inicioReserva, finalReserva):
+            if marzullo(_id, tipo_puesto, inicioReserva, finalReserva):
                 reservaFinal = Reserva(
                     estacionamiento = estacionamiento,
                     inicioReserva   = inicioReserva,
                     finalReserva    = finalReserva,
                     nombre          = form.cleaned_data['nombre'],
                     cedula          = form.cleaned_data['cedula'],
-                    apellido 	    = form.cleaned_data['apellido']
+                    apellido 	    = form.cleaned_data['apellido'],
+                    tipo_puesto     = form.cleaned_data['tipo_puesto']
 		        )
 
                 monto = Decimal(
@@ -383,6 +399,7 @@ def estacionamiento_reserva(request, _id):
                 request.session['nombre']              = reservaFinal.nombre
                 request.session['apellido']            = reservaFinal.apellido
                 request.session['cedula']              = reservaFinal.cedula
+                request.session['tipo_puesto']         = reservaFinal.tipo_puesto
                 
                 return render(
                             request,
@@ -444,6 +461,7 @@ def estacionamiento_pago(request,_id):
             )
 
             reservaFinal = Reserva(
+                tipo_puesto = request.session['tipo_puesto'],
                 nombre = request.session['nombre'],
                 apellido = request.session['apellido'],
                 cedula = request.session['cedula'],
@@ -661,6 +679,7 @@ def billetera_consumir(request,_id,_monto):
                     nombre = request.session['nombre'],
                     apellido = request.session['apellido'],
                     cedula = request.session['cedula'],
+                    tipo_puesto = request.session['tipo_puesto'],
                     estacionamiento = estacionamiento,
                     inicioReserva   = inicioReserva,
                     finalReserva    = finalReserva

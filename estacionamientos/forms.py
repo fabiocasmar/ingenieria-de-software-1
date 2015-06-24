@@ -312,13 +312,55 @@ class EstacionamientoExtendedForm(forms.Form):
         message = 'Sólo debe contener dígitos.'
     )
     
-    puestos = forms.IntegerField(
+    puestos1 = forms.IntegerField(
         required  = True,
-        min_value = 1,
-        label     = 'Número de Puestos',
+        min_value = 0,
+        label     = 'Puestos Vehiculos Particulares',
         widget    = forms.NumberInput(attrs=
             { 'class'       : 'form-control'
-            , 'placeholder' : 'Número de Puestos'
+            , 'placeholder' : 'Puestos Vehiculos Particulares'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'La entrada debe ser un número entero no negativo.'
+            }
+        )
+    )
+
+    puestos2 = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        label     = 'Puestos Motocicletas',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Puestos Motocicletas'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'La entrada debe ser un número entero no negativo.'
+            }
+        )
+    )
+
+    puestos3 = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        label     = 'Puestos Vehiculos de Carga',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Puestos Vehiculos de Carga'
+            , 'min'         : "0"
+            , 'pattern'     : '^[0-9]+'
+            , 'message'     : 'La entrada debe ser un número entero no negativo.'
+            }
+        )
+    )
+
+    puestos4 = forms.IntegerField(
+        required  = True,
+        min_value = 0,
+        label     = 'Puestos para Discapacitados',
+        widget    = forms.NumberInput(attrs=
+            { 'class'       : 'form-control'
+            , 'placeholder' : 'Puestos para Discapacitados'
             , 'min'         : "0"
             , 'pattern'     : '^[0-9]+'
             , 'message'     : 'La entrada debe ser un número entero no negativo.'
@@ -475,6 +517,21 @@ class ReservaForm(forms.Form):
             , 'type'        : 'date'
             , 'placeholder' : 'Hora Final Reserva'
             }
+        )
+    )
+
+    choices_puesto = [
+        ('Particular', 'Particular'),
+        ('Motocicleta', 'Motoclicleta'),
+        ('Carga', 'De Carga'),
+        ('Discapacitado', 'Discapacitado')
+    ]
+
+    tipo_puesto = forms.ChoiceField(
+        required = True,
+        choices  = choices_puesto,
+        widget   = forms.Select(attrs =
+            { 'class' : 'form-control' }
         )
     )
         

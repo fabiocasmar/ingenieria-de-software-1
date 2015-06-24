@@ -43,6 +43,7 @@ class cancelacionTestCase(TestCase):
 			estacionamiento = self.crear_Estacionamiento(),
 			inicioReserva = datetime(2015,7,12,13,40),
 			finalReserva = datetime(2015,7,12,18,40),
+			tipo_puesto = 'Particular'
 			)
 		reserva.save()
 		return reserva
