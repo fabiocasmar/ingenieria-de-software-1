@@ -1357,7 +1357,9 @@ def mover_reserva(request):
 def cambiar_datos_reserva(request):
     pago_id = request.session['pago_id']
     form = CambiarReservaForm()
+    print("GET")
     if request.method == 'POST':
+        print("POST")
         form = CambiarReservaForm(request.POST)
         # Verificamos si es valido con los validadores del formulario
         if form.is_valid():
@@ -1380,113 +1382,123 @@ def cambiar_datos_reserva(request):
                 finalReserva,
                 estacionamiento.apertura,
                 estacionamiento.cierre,
+                estacionamiento.horizontedias,
+                estacionamiento.horizontehoras
             )
+
+            #print (datetime.now()+
+            #        timedelta(
+            #                days=int(estacionamiento.horizontedias),
+            #                hours=int(estacionamiento.horizontehoras))-
+            #        inicioReserva)
+            #print (finalReserva-
+            #        datetime.now()-
+            #                timedelta(days=int(estacionamiento.horizontedias),
+            #                  hours=int(estacionamiento.horizontehoras)))
+            #print (datetime.now()+
+            #        timedelta(
+            #                days=int(estacionamiento.horizontedias),
+            #                hours=int(estacionamiento.horizontehoras))-
+            #        inicioReserva>
+            #        finalReserva-
+            #        datetime.now()-
+            #                timedelta(days=int(estacionamiento.horizontedias),
+            #                  hours=int(estacionamiento.horizontehoras)))
 
             # Si no es valido devolvemos el request
             if not m_validado[0]:
-                return render(
-                    request,
-                    'template-mensaje.html',
-                    { 'color'  :'red'
-                    , 'mensaje': m_validado[1]
-                    }
-                )
-            if (finalReserva<(datetime.now()+
-                timedelta(days=int(estacionamiento.horizontedias),
-                          hours=int(estacionamiento.horizontehoras))).date()
-            or 
-                timedelta((datetime.now()+
-                timedelta(inicioReserva,
-                          days=int(estacionamiento.horizontedias),
-                          hours=int(estacionamiento.horizontehoras))).date())>
-                timedelta(finalReserva, 
-                timedelta(days=int(estacionamiento.horizontedias),
-                          hours=int(estacionamiento.horizontehoras))).date()):
-
-                # verificamos que hay puesto disponible
-                if marzullo(estacionamiento.id, inicioReserva, finalReserva):
-                    #cambiamos los datos de la reserva
-                    reserva.inicioReserva = inicioReserva
-                    reserva.finalReserva  = finalReserva
-                    reserva.save()
-
-                    monto = Decimal(
-                        estacionamiento.tarifa.calcularPrecio(
-                            inicioReserva,finalReserva
-                        )
-                    )
-                    # calculamos el nuevo monto de la reserva
-                    monto_total = nuevo_monto_reserva(monto_viejo,monto)
-
-                    request.session['monto'] = float(
-                        estacionamiento.tarifa.calcularPrecio(
-                            inicioReserva,
-                            finalReserva
-                        )
-                    )
-                    # Si el monto anterior es mayor, hay que proceder
-                    # a reembolsar
-
-                    request.session['reembolso'] = float(monto_total[1])
-                    request.session['monto_diferencia'] = float(monto_total[1])
-                    request.session['estacionamiento_id'] = estacionamiento.id
-                    
-                    if monto_total[0] == True:
-                        return render(
-                                    request,
-                                    'confirmar_mover_reserva_reembolso.html',
-                                    { 'id'      : estacionamiento.id
-                                    , 'monto'   : monto_total[1]
-                                    , 'reserva' : reserva
-                                    , 'color'   : 'green'
-                                    , 'mensaje' : 'Existe un puesto disponible'
-                                    }
-                                )
-                    # Si el monto nuevo es mayor, hay que proceder
-                    # a pagar la diferencia
-                    elif monto_total[0] == False:
-                        return render(
-                            request,
-                            'confirmar_mover_reserva_pagar.html',
-                                { 'id'      : estacionamiento.id
-                                , 'monto'   : monto_total[1]
-                                , 'reserva' : reserva
-                                , 'color'   : 'green'
-                                , 'mensaje' : 'Existe un puesto disponible'
-                                }
-                           )
-                    # El monto nuevo es igual al monto anterior, no hay que pagar
-                    # ni reembolsar
-                    elif monto_total[0] == -1:
-                        return render(
-                            request,
-                            'confirmar_mover_reserva.html',
-                                { 'id'      : estacionamiento.id
-                                , 'monto'   : monto_total[1]
-                                , 'reserva' : reserva
-                                , 'color'   : 'green'
-                                , 'mensaje' : 'Existe un puesto disponible'
-                                }
-                           )
+                if(datetime.now()+
+                    timedelta(
+                            days=int(estacionamiento.horizontedias),
+                            hours=int(estacionamiento.horizontehoras))-
+                    inicioReserva>
+                    finalReserva-
+                    datetime.now()-
+                            timedelta(days=int(estacionamiento.horizontedias),
+                              hours=int(estacionamiento.horizontehoras))):
+                    pass
                 else:
-                    
                     return render(
                         request,
                         'template-mensaje.html',
-                        {'color'   : 'red'
-                        , 'mensaje' : 'No hay un puesto disponible para ese horario'
+                        { 'color'  :'red'
+                        , 'mensaje': m_validado[1]
                         }
                     )
-            else:
-                # NO PUEDO POVER RESERVACION A DICHO NUEVO RANGO
-                return render(
-                        request,
-                        'template-mensaje.html',
-                        {'color'   : 'red'
-                        , 'mensaje' : 'No hay un puesto disponible para ese horario'
-                        }
-                    )
+            # verificamos que hay puesto disponible
+            if marzullo(estacionamiento.id, inicioReserva, finalReserva):
+                #cambiamos los datos de la reserva
+                reserva.inicioReserva = inicioReserva
+                reserva.finalReserva  = finalReserva
+                reserva.save()
 
+                monto = Decimal(
+                    estacionamiento.tarifa.calcularPrecio(
+                        inicioReserva,finalReserva
+                    )
+                )
+                # calculamos el nuevo monto de la reserva
+                monto_total = nuevo_monto_reserva(monto_viejo,monto)
+
+                request.session['monto'] = float(
+                    estacionamiento.tarifa.calcularPrecio(
+                        inicioReserva,
+                        finalReserva
+                    )
+                )
+                # Si el monto anterior es mayor, hay que proceder
+                # a reembolsar
+
+                request.session['reembolso'] = float(monto_total[1])
+                request.session['monto_diferencia'] = float(monto_total[1])
+                request.session['estacionamiento_id'] = estacionamiento.id
+                
+                if monto_total[0] == True:
+                    return render(
+                                request,
+                                'confirmar_mover_reserva_reembolso.html',
+                                { 'id'      : estacionamiento.id
+                                , 'monto'   : monto_total[1]
+                                , 'reserva' : reserva
+                                , 'color'   : 'green'
+                                , 'mensaje' : 'Existe un puesto disponible'
+                                }
+                            )
+                # Si el monto nuevo es mayor, hay que proceder
+                # a pagar la diferencia
+                elif monto_total[0] == False:
+                    return render(
+                        request,
+                        'confirmar_mover_reserva_pagar.html',
+                            { 'id'      : estacionamiento.id
+                            , 'monto'   : monto_total[1]
+                            , 'reserva' : reserva
+                            , 'color'   : 'green'
+                            , 'mensaje' : 'Existe un puesto disponible'
+                            }
+                       )
+                # El monto nuevo es igual al monto anterior, no hay que pagar
+                # ni reembolsar
+                elif monto_total[0] == -1:
+                    return render(
+                        request,
+                        'confirmar_mover_reserva.html',
+                            { 'id'      : estacionamiento.id
+                            , 'monto'   : monto_total[1]
+                            , 'reserva' : reserva
+                            , 'color'   : 'green'
+                            , 'mensaje' : 'Existe un puesto disponible'
+                            }
+                       )
+            else:
+                
+                return render(
+                    request,
+                    'template-mensaje.html',
+                    {'color'   : 'red'
+                    , 'mensaje' : 'No hay un puesto disponible para ese horario'
+                    }
+                )
 
                        
     return render(
