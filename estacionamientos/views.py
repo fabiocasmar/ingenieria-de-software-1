@@ -212,10 +212,12 @@ def estacionamiento_detail(request, _id):
         raise Http404
 
     if request.method == 'GET':
+        print(_id)
+        print(estacionamiento.tarifa)
 
         # Si el estacionamiento ya esta parametrizado se muestran sus valores.
-        if estacionamiento.tarifa and (estacionamiento.tarifaFeriado != None):
-            
+        if estacionamiento.tarifa:
+
             form_data = {
                 'puestos'    : estacionamiento.capacidad,
                 'horarioin'  : estacionamiento.apertura,
@@ -231,29 +233,18 @@ def estacionamiento_detail(request, _id):
                 'finEspecialFeriado'    : estacionamiento.tarifaFeriado.finEspecial,
                 'esquemaFeriado'        : estacionamiento.tarifaFeriado.__class__.__name__
             }
-            form = EstacionamientoExtendedForm(data = form_data)
 
-        elif estacionamiento.tarifa and (estacionamiento.tarifaFeriado == None):
-
-            form_data = {
-                'puestos'    : estacionamiento.capacidad,
-                'horarioin'  : estacionamiento.apertura,
-                'horarioout' : estacionamiento.cierre,
-                'tarifa'  : estacionamiento.tarifa.tarifa,
-                'tarifa2' : estacionamiento.tarifa.tarifa2,
-                'inicioTarifa2' : estacionamiento.tarifa.inicioEspecial,
-                'finTarifa2'    : estacionamiento.tarifa.finEspecial,
-                'esquema'       : estacionamiento.tarifa.__class__.__name__,
-            }
             form = EstacionamientoExtendedForm(data = form_data)
         
         else:
             form = EstacionamientoExtendedForm()
 
     elif request.method == 'POST':
+        print(_id)
+        print(estacionamiento.tarifa)
         # Leemos el formulario
-        form = EstacionamientoExtendedForm(request.POST)
-        
+        form = EstacionamientoExtendedForm(request.POST) 
+
         # Si el formulario
         if form.is_valid():
             horaIn        = form.cleaned_data['horarioin']
@@ -278,7 +269,7 @@ def estacionamiento_detail(request, _id):
             )
 
             esquemaTarifaFeriado = eval(tipoFeriado)(
-                tarifa  = tarifaFeriado,
+                tarifa = tarifaFeriado,
                 tarifa2 = tarifa2Feriado,
                 inicioEspecial = inicioEspecialFeriado,
                 finEspecial    = finEspecialFeriado
@@ -296,16 +287,19 @@ def estacionamiento_detail(request, _id):
                 )
 
             esquemaTarifa.save()
+            esquemaTarifaFeriado.save()
 
             # debería funcionar con excepciones
             estacionamiento.tarifa    = esquemaTarifa
+            estacionamiento.tarifaFeriado = esquemaTarifaFeriado
             estacionamiento.apertura  = horaIn
             estacionamiento.cierre    = horaOut
             estacionamiento.capacidad = form.cleaned_data['puestos']
 
-            if (tarifaFeriado != None):
-                esquemaTarifaFeriado.save()
-                estacionamiento.tarifaFeriado = esquemaTarifaFeriado
+            # if (tarifaFeriado != None):
+            #     print('a')
+            #     esquemaTarifaFeriado.save()
+            #     estacionamiento.tarifaFeriado = esquemaTarifaFeriado
 
             estacionamiento.save()
             form = EstacionamientoExtendedForm()
@@ -317,6 +311,7 @@ def estacionamiento_detail(request, _id):
         , 'estacionamiento': estacionamiento
         }
     )
+    print(estacionamiento.tarifa.tarifa)
 
 
 def estacionamiento_reserva(request, _id):

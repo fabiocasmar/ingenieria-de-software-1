@@ -33,7 +33,7 @@
       <tr><td>BsF. {{estacionamiento.tarifa.tarifa|floatformat:2|intcomma}}</td></tr>
     {% endif %}
 
-    {% if estacionamiento.tarifaFeriado %}
+    {% if estacionamiento.tarifaFeriado.tipo != "Ninguno" %}
       <tr><td><b><i class="fa fa-circle"></i></i> Esquema Feriado:</b></td></tr>
       <tr><td>{{estacionamiento.tarifaFeriado.tipo}} </td></tr>
     {% endif %}
@@ -51,7 +51,7 @@
       <tr><td>{{estacionamiento.tarifaFeriado.inicioEspecial}}</td></tr>
       <tr><td><b><i class="fa fa-clock-o"></i> Fin Horario Pico en Feriado:</b></td></tr>
       <tr><td>{{estacionamiento.tarifaFeriado.finEspecial}}</td></tr>
-    {% elif estacionamiento.tarifaFeriado %}
+    {% elif estacionamiento.tarifaFeriado.tipo != "Ninguno" %}
       <tr><td><b><i class="fa fa-money"></i></i> Tarifa Feriado: </b></td></tr>
       <tr><td>BsF. {{estacionamiento.tarifaFeriado.tarifa|floatformat:2|intcomma}}</td></tr>
     {% endif %}

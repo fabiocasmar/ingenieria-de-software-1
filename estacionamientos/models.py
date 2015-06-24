@@ -133,10 +133,14 @@ class CancelarReserva(models.Model):
 class EsquemaTarifario(models.Model):
 
 	# No se cuantos digitos deberiamos poner
-	tarifa         = models.DecimalField(max_digits=20, decimal_places=2)
+	tarifa         = models.DecimalField(null = True, max_digits=20, decimal_places=2)
 	tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
 	inicioEspecial = models.TimeField(blank = True, null = True)
 	finEspecial    = models.TimeField(blank = True, null = True)
+	tarifaFeriado  = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
+	tarifa2Feriado = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
+	inicioEspecialFeriado = models.TimeField(blank = True, null = True)
+	finEspecialFeriado    = models.TimeField(blank = True, null = True)
 
 	class Meta:
 		abstract = True
