@@ -43,16 +43,10 @@ class Estacionamiento(models.Model):
 	email1      = models.EmailField(blank = True, null = True)
 	email2      = models.EmailField(blank = True, null = True)
 	rif         = models.CharField(max_length = 12)
-
 	# Campos para referenciar al esquema de tarifa
-
-	content_type = models.ForeignKey(ContentType, null = True)
-	object_id    = models.PositiveIntegerField(null = True)
-	apertura     = models.TimeField(blank = True, null = True)
-	cierre       = models.TimeField(blank = True, null = True)
-	capacidad    = models.IntegerField(blank = True, null = True)
-	tarifa       = GenericForeignKey()
-	tarifaFeriado = GenericForeignKey()
+	apertura        = models.TimeField(blank = True, null = True)
+	cierre          = models.TimeField(blank = True, null = True)
+	capacidad       = models.IntegerField(blank = True, null = True)
 
 	def __str__(self):
 		return self.nombre+' '+str(self.id)
@@ -133,14 +127,15 @@ class CancelarReserva(models.Model):
 class EsquemaTarifario(models.Model):
 
 	# No se cuantos digitos deberiamos poner
-	tarifa         = models.DecimalField(null = True, max_digits=20, decimal_places=2)
-	tarifa2        = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
-	inicioEspecial = models.TimeField(blank = True, null = True)
-	finEspecial    = models.TimeField(blank = True, null = True)
-	tarifaFeriado  = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
-	tarifa2Feriado = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
-	inicioEspecialFeriado = models.TimeField(blank = True, null = True)
-	finEspecialFeriado    = models.TimeField(blank = True, null = True)
+	tarifa                 = models.DecimalField(null = True, max_digits=20, decimal_places=2)
+	tarifa2                = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
+	inicioEspecial         = models.TimeField(blank = True, null = True)
+	finEspecial            = models.TimeField(blank = True, null = True)
+	tarifaFeriado          = models.DecimalField(blank = True, null = True, max_digits=20, decimal_places=2)
+	tarifa2Feriado         = models.DecimalField(blank = True, null = True, max_digits=10, decimal_places=2)
+	inicioEspecialFeriado  = models.TimeField(blank = True, null = True)
+	finEspecialFeriado     = models.TimeField(blank = True, null = True)
+	estacionamiento  	   = models.ForeignKey(Estacionamiento, default=None)
 
 	class Meta:
 		abstract = True

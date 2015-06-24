@@ -1022,4 +1022,3 @@ class CancelarReservaForm(forms.Form):
                 }
         )
     )
-
