@@ -6,6 +6,11 @@ from django.contrib.contenttypes.models import ContentType
 from decimal import Decimal
 from datetime import timedelta
 
+class Sage(models.Model):
+	deduccion  = models.DecimalField(decimal_places = 2, max_digits = 256)
+
+	def __str__(self):
+		return str(self.id)
 
 class Usuario(models.Model):
 	nombre       = models.CharField(max_length = 50, blank = True, null = True)
