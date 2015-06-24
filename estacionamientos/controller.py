@@ -158,6 +158,28 @@ def mostrar_saldo(_id,_pin):
 		return True
 	else:
 		return False
+
+
+def check_pin(id_belletera,pin_billetera):
+    try: 
+        billetera_electronica = Billetera.objects.get(id = id_belletera)
+    except ObjectDoesNotExist:
+        return False
+    if pin_billetera == billetera_electronica.pin:
+        return True
+    else:
+        return False
+
+
+def cambiar_pin(_id,_pin):
+	try: 
+		billetera_electronica = Billetera.objects.get(id = _id)
+	except ObjectDoesNotExist:
+		return False
+	if _pin == billetera_electronica.pin:
+		return True
+	else:
+		return False
 	
 def cancelacion(_ci,_pin,_billetera,_pago ):
 	
