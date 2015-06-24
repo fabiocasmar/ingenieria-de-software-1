@@ -87,6 +87,13 @@
                 </td></tr>
 
                 <tr><td><b><i class="fa fa-clock-o"></i>
+                  Tipo de Puesto:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.tipo_puesto}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
                   Horario inicio de reserva:
                 </b></td></tr>
                 <tr><td>
@@ -111,8 +118,8 @@
             <div>
               <input
                 type="button"
-                value="Pagar por el servicio"
-                href="javascript: closepopup();"
+                value="Pagar servicio"
+                onclick="javascript: closepopup();"
                 class="btn btn-primary"
               >
             </div>
@@ -138,8 +145,7 @@
     }
 
     function openlink(){
-      opener.location='/estacionamientos/
-      pagar_servicio_mover_reserva';
+      opener.location='/estacionamientos/pagar_servicio_mover_reserva';
     }
   </script>
 {% endblock %}

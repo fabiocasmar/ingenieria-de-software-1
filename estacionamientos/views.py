@@ -1573,6 +1573,7 @@ def cambiar_datos_reserva(request):
                 # El monto nuevo es igual al monto anterior, no hay que pagar
                 # ni reembolsar
                 elif monto_total[0] == -1:
+                    print("AJA AQUI")
                     return render(
                         request,
                         'confirmar_mover_reserva.html',
@@ -1886,7 +1887,7 @@ def pagar_servicio_tarjeta(request):
 
             except ObjectDoesNotExist:  
                 multa = 0   
-            _monto = Decimal(multa)*Decimal(monto) + Decimal(monto)
+            _monto = Decimal(multa)*Decimal(monto) 
 
             # Hay que generar el recibo de pago
             pago = Pago(
@@ -1931,7 +1932,7 @@ def pagar_servicio_billetera(request):
 
     except ObjectDoesNotExist:  
         multa = 0   
-    _monto = Decimal(multa)*Decimal(monto) + Decimal(monto)
+    _monto = Decimal(multa)*Decimal(monto) 
 
     if request.method == 'POST':
         form = ConsumirForm(request.POST)

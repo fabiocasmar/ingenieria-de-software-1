@@ -87,6 +87,13 @@
                 </td></tr>
 
                 <tr><td><b><i class="fa fa-clock-o"></i>
+                  Tipo de Puesto:
+                </b></td></tr>
+                <tr><td>
+                  {{pago.reserva.tipo_puesto}}
+                </td></tr>
+
+                <tr><td><b><i class="fa fa-clock-o"></i>
                   Horario inicio de reserva:
                 </b></td></tr>
                 <tr><td>
@@ -104,14 +111,14 @@
                   Monto:
                 </b></td></tr>
                 <tr><td>
-                  BsF. {{monto|floatformat:2|intcomma }}
+                  BsF. {{pago.monto|floatformat:2|intcomma }}
                 </td></tr>
               </tbody>
             </table>
             <div>
               <input
                 type="button"
-                value="Salir"
+                value="Volver"
                 onclick="javascript: closepopup();"
                 class="btn btn-primary"
               >
