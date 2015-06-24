@@ -113,13 +113,13 @@
             {%endif%}
             <!-- Condicional para reembolso-->
             {% if obj.inicioReserva%}
-              <td>Recarga por cancelación: <br>{{obj.nombre}}&nbsp;{{obj.apellido}}</td>
+              <td>{{obj.mensaje}} <br>{{obj.nombre}}&nbsp;{{obj.apellido}}</td>
               <td>{{obj.fechaTransaccion}}</td>
               <td>{{obj.id}}</td>
               <td></td>
               <td>{{obj.saldo}}</td>
               <tr></tr>
-              <td>Reserva Cancelada: <br>{{obj.nombre}}&nbsp;{{obj.apellido}}</td>
+              <td>Datos de la reserva anterior: <br></td>
               <td>{{obj.fechaTransaccion_vieja}}</td>
               <td>{{obj.id_viejo}}</td>
               <td>{{obj.monto_reserva}}</td>

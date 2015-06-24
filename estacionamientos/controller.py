@@ -231,7 +231,8 @@ def crear_cancelacion(billetera_id,numero_pago ):
 								fechaTransaccion_vieja = pago.fechaTransaccion,
 								billetera = billetera,
 								id_viejo = pago.reserva.id,
-								monto_reserva = pago.monto
+								monto_reserva = pago.monto,
+								mensaje = "Reserva cancelada"
 								)
 	
 		reembolso.save()

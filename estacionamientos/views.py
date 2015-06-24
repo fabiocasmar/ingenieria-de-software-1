@@ -1725,7 +1725,8 @@ def reembolsar_reserva(request):
                                       fechaTransaccion = datetime.now(),
                                       billetera = billetera,
                                       id_viejo = pago.id,
-                                      monto_reserva = pago.monto
+                                      monto_reserva = pago.monto,
+                                      mensaje = "Reembolso reserva"
                                       )
                 _reembolso.save()
 
@@ -1795,18 +1796,28 @@ def pagar_servicio_tarjeta(request):
             monto = request.session['monto_diferencia']
             estacionamiento_id = request.session['estacionamiento_id']
             
+            # De acuerdo a la tarifa establecida
+            multa=0
+            try:
+                sage = Sage.objects.all() 
+                for elemento in sage:
+                    multa = elemento.deduccion 
+
+            except ObjectDoesNotExist:  
+                multa = 0   
+            _monto = Decimal(multa)*Decimal(monto)
+
             # Hay que generar el recibo de pago
             pago = Pago(
                 fechaTransaccion = datetime.now(),
                 cedula           = cedula,
-                monto            = monto,
+                monto            = _monto,
                 tarjetaTipo      = form.cleaned_data['tarjetaTipo'],
             )
 
             # Se guarda el recibo de pago en la base de datos
             pago.save()
-            # De acuerdo a la tarifa establecida
-            _monto = (10*monto)/100
+            
             return render(
                         request,
                         'pago_servicio_tarjeta.html',
@@ -1829,6 +1840,18 @@ def pagar_servicio_billetera(request):
     monto = request.session['monto_diferencia']
     estacionamiento_id = request.session['estacionamiento_id']
     estacionamiento = Estacionamiento.objects.get(id = estacionamiento_id)
+
+    # De acuerdo a la tarifa establecida
+    multa=0
+    try:
+        sage = Sage.objects.all() 
+        for elemento in sage:
+            multa = elemento.deduccion 
+
+    except ObjectDoesNotExist:  
+        multa = 0   
+    _monto = multa*monto
+
     if request.method == 'POST':
         form = ConsumirForm(request.POST)
         if form.is_valid():
@@ -1836,7 +1859,7 @@ def pagar_servicio_billetera(request):
             billetera_id = form.cleaned_data['billetera_id']
             pin = form.cleaned_data['pin']
 
-            check = consumir_saldo(billetera_id,pin,monto)
+            check = consumir_saldo(billetera_id,pin,_monto)
             if check == True:
                  bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
                  usuario = bille.usuario
@@ -1845,14 +1868,12 @@ def pagar_servicio_billetera(request):
                  pago = Pago(
                    fechaTransaccion = datetime.now(),
                    cedula           = bille.usuario.cedula,
-                   monto            = monto,
+                   monto            = _monto,
                  )
-                 #Se guarda el recibo de pago en la base de datos
-                 pago.save()
-                 #Se realiza el consumo de la billetera.
 
+                 #Se realiza el consumo de la billetera.
                  bille = Billetera.objects.get(id = form.cleaned_data['billetera_id'])
-                 montoo = round(monto,2)
+                 montoo = round(_monto,2)
                  consumo = Consumo(saldo = montoo,
                           fechaTransaccion = datetime.now(),
                           billetera = bille,
@@ -1865,6 +1886,7 @@ def pagar_servicio_billetera(request):
                  else:
                     mensaje3 = ""
                     mensaje2 = ""
+                    pago.save()
                     consumo.save()
                  return render(
                     request,
@@ -1902,7 +1924,7 @@ def pagar_servicio_billetera(request):
         request,
         'pago_servicio_billetera.html',
         { 'form' : form, 
-          'monto': monto 
+          'monto': _monto 
         }
     )
 

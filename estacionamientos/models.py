@@ -86,6 +86,7 @@ class Reembolso(models.Model):
 	billetera 		       = models.ForeignKey(Billetera)
 	id_viejo			   = models.CharField(max_length = 10, null = False)
 	monto_reserva		   = models.FloatField(blank = True, null = True)
+	mensaje 			   = models.CharField(max_length = 100, blank = True, null = True)
 
 	def __str__(self):
 		return self.estacionamiento.nombre+' ('+str(self.inicioReserva)+','+str(self.finalReserva)+')'
